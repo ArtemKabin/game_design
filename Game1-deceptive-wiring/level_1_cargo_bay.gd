@@ -1,57 +1,121 @@
 extends Node2D
 
-# Level 1: Cargo Bay & Quarantine Maze ("Umfahren" vs "Umgehen")
-# Trap: Steering right around the obstacle ("umgehen") or clicking Cabin A-D loops backward.
-# Solution: Use corner heavy cart to smash left straight through the obstacle ("umfahren").
+# Level 1: Cargo Bay. Instruction: "Fahre das Hindernis um."
+# Trap 1: the inviting bypass corridor on the RIGHT dead-ends ("umgehen").
+# Trap 2: the quarantine cabins loop you straight back to the room start.
+# Solution: board the heavy cart on the LEFT and ram the crates ("umfahren").
 
-@onready var cart_node: Area2D = $HeavyCart
-@onready var obstacle_node: Node2D = $ObstacleWall
+const FAIL_RESET_DELAY := 1.2
+
+@onready var player: CharacterBody2D = $Player
+@onready var start_position: Marker2D = $StartPosition
+@onready var heavy_cart: Area2D = $HeavyCart
+@onready var obstacle_wall: StaticBody2D = $ObstacleWall
+@onready var obstacle_collision: CollisionShape2D = $ObstacleWall/CollisionShape2D
+@onready var bypass_zone: Area2D = $BypassRightZone
+@onready var quarantine_door: Area2D = $QuarantineDoor
 @onready var status_label: Label = $CanvasLayer/HUD/StatusLabel
-@onready var cabin_a_btn: Button = $CanvasLayer/QuarantinePanel/CabinA
-@onready var cabin_b_btn: Button = $CanvasLayer/QuarantinePanel/CabinB
-@onready var cabin_c_btn: Button = $CanvasLayer/QuarantinePanel/CabinC
-@onready var cabin_d_btn: Button = $CanvasLayer/QuarantinePanel/CabinD
-@onready var bypass_right_btn: Button = $CanvasLayer/NavigationPanel/BypassRightBtn
-@onready var smash_left_btn: Button = $CanvasLayer/NavigationPanel/SmashLeftBtn
+@onready var continue_btn: Button = $CanvasLayer/HUD/ContinueButton
+@onready var controls_label: Label = $CanvasLayer/HUD/ControlsGuideLabel
 
+var is_near_cart: bool = false
 var is_solved: bool = false
+var is_resetting: bool = false
+
 
 func _ready() -> void:
-	status_label.text = "FRACHTRAUM: Frachtgut blockiert den Weg. Umgehen Sie das Hindernis?"
-	
-	if cabin_a_btn: cabin_a_btn.pressed.connect(func(): _on_quarantine_cabin_pressed("Kabine A"))
-	if cabin_b_btn: cabin_b_btn.pressed.connect(func(): _on_quarantine_cabin_pressed("Kabine B"))
-	if cabin_c_btn: cabin_c_btn.pressed.connect(func(): _on_quarantine_cabin_pressed("Kabine C"))
-	if cabin_d_btn: cabin_d_btn.pressed.connect(func(): _on_quarantine_cabin_pressed("Kabine D"))
-	
-	if bypass_right_btn: bypass_right_btn.pressed.connect(_on_bypass_right_pressed)
-	if smash_left_btn: smash_left_btn.pressed.connect(_on_smash_left_pressed)
+	continue_btn.visible = false
+	continue_btn.pressed.connect(GameManager.go_to_map)
 
-# TRAP 1: Navigating quarantine cabins (Looping Trap)
-func _on_quarantine_cabin_pressed(cabin_name: String) -> void:
-	if is_solved: return
-	status_label.text = "FALLE! " + cabin_name + " ist eine Schlangen-Quarantäne! Weg blockiert, zurück auf Anfang."
-	_get_game_manager().register_failure(1, "Quarantäne-Schleife ausgelöst.")
+	heavy_cart.body_entered.connect(_on_cart_body_entered)
+	heavy_cart.body_exited.connect(_on_cart_body_exited)
+	bypass_zone.body_entered.connect(_on_bypass_zone_entered)
+	quarantine_door.body_entered.connect(_on_quarantine_door_entered)
+	player.interact_pressed.connect(_on_player_interact)
+	player.hit_pressed.connect(_on_player_hit)
 
-# TRAP 2: Steer right ("umgehen" - to bypass politely)
-func _on_bypass_right_pressed() -> void:
-	if is_solved: return
-	status_label.text = "FALLE: Rechter Ausweichversuch versinkt im automatischen Schutzkreis!"
-	_get_game_manager().register_failure(1, "Rechtsausweichen-Falle ausgelöst.")
+	status_label.text = "FRACHTRAUM: Frachtgut blockiert den Weg. Fahre das Hindernis um."
+	controls_label.text = GameManager.CONTROLS_TEXT
 
-# SOLUTION: Smash Left ("umfahren" - double meaning: to drive over/smash)
-func _on_smash_left_pressed() -> void:
-	if is_solved: return
+
+# --- Cart (solution) --------------------------------------------------------
+
+func _on_cart_body_entered(body: Node2D) -> void:
+	if body == player and not is_solved:
+		is_near_cart = true
+		player.show_interaction_hint("[E] In den Schwerlastwagen steigen")
+
+
+func _on_cart_body_exited(body: Node2D) -> void:
+	if body == player:
+		is_near_cart = false
+		player.hide_interaction_hint()
+
+
+func _on_player_interact() -> void:
+	if is_near_cart and not is_solved and not is_resetting:
+		_smash_obstacle()
+
+
+func _on_player_hit() -> void:
+	if not is_solved:
+		status_label.text = "Schlagen bringt hier nichts. Die Kisten sind zu schwer."
+
+
+func _smash_obstacle() -> void:
 	is_solved = true
-	
-	# Animate heavy cart smashing left through the obstacle wall
-	var tween: Tween = create_tween()
-	if cart_node and obstacle_node:
-		tween.tween_property(cart_node, "position:x", cart_node.position.x - 300, 0.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-		tween.parallel().tween_property(obstacle_node, "modulate:a", 0.0, 0.5)
-	
-	status_label.text = "ERFOLG: Mit dem Schwerlastwagen durch das Hindernis gerammt! Frachtraum passiert."
-	_get_game_manager().complete_level(1)
+	is_near_cart = false
+	player.hide_interaction_hint()
+	player.set_physics_process(false)
+	status_label.text = "Der Schwerlastwagen rollt los ..."
 
-func _get_game_manager() -> Node:
-	return get_node_or_null("/root/GameManager")
+	var tween: Tween = create_tween()
+	tween.tween_property(heavy_cart, "position", obstacle_wall.position, 0.7) \
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	tween.tween_callback(_on_obstacle_hit)
+
+
+func _on_obstacle_hit() -> void:
+	obstacle_collision.set_deferred("disabled", true)
+	var tween: Tween = create_tween()
+	tween.tween_property(obstacle_wall, "modulate:a", 0.0, 0.5)
+	tween.parallel().tween_property(heavy_cart, "modulate:a", 0.0, 0.5)
+	tween.tween_callback(_on_level_solved)
+
+
+func _on_level_solved() -> void:
+	player.set_physics_process(true)
+	status_label.text = "ERFOLG: Umfahren heißt hier durchfahren! Der Weg nach links ist frei."
+	GameManager.complete_level(1)
+	continue_btn.visible = true
+
+
+# --- Traps ------------------------------------------------------------------
+
+func _on_bypass_zone_entered(body: Node2D) -> void:
+	if body != player or is_solved or is_resetting:
+		return
+	_fail("FALLE: Die Umleitung endet im Nichts. Rechts herum geht es nicht.",
+		"Rechtsausweichen-Falle ausgelöst.")
+
+
+func _on_quarantine_door_entered(body: Node2D) -> void:
+	if body != player or is_solved or is_resetting:
+		return
+	_fail("FALLE: Kabine A, B, C, D ... und wieder am Anfang. Die Kabinen führen im Kreis.",
+		"Quarantäne-Schleife ausgelöst.")
+
+
+func _fail(message: String, reason: String) -> void:
+	is_resetting = true
+	status_label.text = message
+	GameManager.register_failure(1, reason)
+	player.set_physics_process(false)
+	player.hide_interaction_hint()
+
+	await get_tree().create_timer(FAIL_RESET_DELAY).timeout
+
+	player.global_position = start_position.global_position
+	player.velocity = Vector2.ZERO
+	player.set_physics_process(true)
+	is_resetting = false

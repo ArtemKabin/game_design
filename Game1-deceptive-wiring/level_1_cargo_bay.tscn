@@ -1,0 +1,291 @@
+[gd_scene format=3 uid="uid://f4xd5dqnm30"]
+
+[ext_resource type="Script" uid="uid://bs0vp4tpo1dqx" path="res://level_1_cargo_bay.gd" id="1_cargo"]
+[ext_resource type="PackedScene" path="res://player.tscn" id="2_player"]
+[ext_resource type="Script" uid="uid://djpchckt2fdbj" path="res://dynamic_hint_popup.gd" id="3_hint"]
+
+[sub_resource type="Gradient" id="Gradient_light"]
+colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_light"]
+gradient = SubResource("Gradient_light")
+width = 512
+height = 512
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_obstacle"]
+size = Vector2(60, 760)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_cart"]
+size = Vector2(130, 100)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_uppqy"]
+size = Vector2(160, 760)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_quarantine"]
+size = Vector2(160, 70)
+
+[node name="Level1_CargoBay" type="Node2D" unique_id=1782222681]
+script = ExtResource("1_cargo")
+
+[node name="CanvasModulate" type="CanvasModulate" parent="." unique_id=1555994683]
+color = Color(0.05, 0.07, 0.12, 1)
+
+[node name="RoomEnvironment" type="Node2D" parent="." unique_id=462864709]
+
+[node name="Floor" type="ColorRect" parent="RoomEnvironment" unique_id=1881996608]
+offset_left = -600.0
+offset_top = -400.0
+offset_right = 600.0
+offset_bottom = 400.0
+color = Color(0.11, 0.13, 0.17, 1)
+
+[node name="WallTop" type="StaticBody2D" parent="RoomEnvironment" unique_id=1491088716]
+position = Vector2(0, -400)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="RoomEnvironment/WallTop" unique_id=809132927]
+polygon = PackedVector2Array(-600, -20, 600, -20, 600, 20, -600, 20)
+
+[node name="WallBottom" type="StaticBody2D" parent="RoomEnvironment" unique_id=1968149774]
+position = Vector2(0, 400)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="RoomEnvironment/WallBottom" unique_id=1090367291]
+polygon = PackedVector2Array(-600, -20, 600, -20, 600, 20, -600, 20)
+
+[node name="WallLeft" type="StaticBody2D" parent="RoomEnvironment" unique_id=438448616]
+position = Vector2(-600, 0)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="RoomEnvironment/WallLeft" unique_id=1001266656]
+polygon = PackedVector2Array(-20, -400, 20, -400, 20, 400, -20, 400)
+
+[node name="WallRight" type="StaticBody2D" parent="RoomEnvironment" unique_id=472875644]
+position = Vector2(600, 0)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="RoomEnvironment/WallRight" unique_id=338519227]
+polygon = PackedVector2Array(-20, -400, 20, -400, 20, 400, -20, 400)
+
+[node name="CargoLight" type="PointLight2D" parent="." unique_id=550418108]
+position = Vector2(0, -60)
+color = Color(0.6, 0.75, 1, 1)
+energy = 0.8
+texture = SubResource("GradientTexture2D_light")
+texture_scale = 3.0
+
+[node name="ExitLabel" type="Label" parent="." unique_id=424082210]
+offset_left = -580.0
+offset_top = -20.0
+offset_right = -340.0
+offset_bottom = 20.0
+theme_override_colors/font_color = Color(0.345, 0.8, 0.929, 1)
+theme_override_font_sizes/font_size = 18
+text = "← AUSGANG"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ObstacleWall" type="StaticBody2D" parent="." unique_id=444040806]
+position = Vector2(-300, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ObstacleWall" unique_id=33466100]
+shape = SubResource("RectangleShape2D_obstacle")
+
+[node name="CrateGraphic" type="ColorRect" parent="ObstacleWall" unique_id=1174717463]
+offset_left = -30.0
+offset_top = -380.0
+offset_right = 30.0
+offset_bottom = 380.0
+color = Color(0.45, 0.3, 0.15, 1)
+
+[node name="Label" type="Label" parent="ObstacleWall" unique_id=2143436379]
+offset_left = -80.0
+offset_top = -60.0
+offset_right = 80.0
+offset_bottom = -30.0
+theme_override_colors/font_color = Color(1, 0.85, 0.5, 1)
+theme_override_font_sizes/font_size = 13
+text = "▓ FRACHTGUT ▓"
+horizontal_alignment = 1
+
+[node name="HeavyCart" type="Area2D" parent="." unique_id=1922119035]
+position = Vector2(-200, 320)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HeavyCart" unique_id=1584426119]
+shape = SubResource("RectangleShape2D_cart")
+
+[node name="CartGraphic" type="ColorRect" parent="HeavyCart" unique_id=294030808]
+offset_left = -40.0
+offset_top = -25.0
+offset_right = 40.0
+offset_bottom = 25.0
+color = Color(0.85, 0.55, 0.15, 1)
+
+[node name="Label" type="Label" parent="HeavyCart" unique_id=679495482]
+offset_left = -90.0
+offset_top = -60.0
+offset_right = 90.0
+offset_bottom = -35.0
+theme_override_colors/font_color = Color(0.9, 0.9, 0.3, 1)
+theme_override_font_sizes/font_size = 12
+text = "SCHWERLASTWAGEN"
+horizontal_alignment = 1
+
+[node name="BypassRightZone" type="Area2D" parent="." unique_id=1092686072]
+position = Vector2(500, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BypassRightZone" unique_id=2015005321]
+shape = SubResource("RectangleShape2D_uppqy")
+
+[node name="FloorGraphic" type="ColorRect" parent="BypassRightZone" unique_id=1678051142]
+offset_left = -80.0
+offset_top = -380.0
+offset_right = 80.0
+offset_bottom = 380.0
+color = Color(0.16, 0.22, 0.3, 1)
+
+[node name="Label" type="Label" parent="BypassRightZone" unique_id=1701730785]
+offset_left = -100.0
+offset_top = -375.0
+offset_right = 100.0
+offset_bottom = -350.0
+theme_override_colors/font_color = Color(1, 0.9, 0.3, 1)
+theme_override_font_sizes/font_size = 14
+text = "→ UMLEITUNG →"
+horizontal_alignment = 1
+
+[node name="QuarantineDoor" type="Area2D" parent="." unique_id=446819436]
+position = Vector2(300, -345)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="QuarantineDoor" unique_id=378041393]
+shape = SubResource("RectangleShape2D_quarantine")
+
+[node name="DoorGraphic" type="ColorRect" parent="QuarantineDoor" unique_id=1003398241]
+offset_left = -80.0
+offset_top = -35.0
+offset_right = 80.0
+offset_bottom = 35.0
+color = Color(0.2, 0.5, 0.3, 1)
+
+[node name="Label" type="Label" parent="QuarantineDoor" unique_id=398757361]
+offset_left = -100.0
+offset_top = 40.0
+offset_right = 100.0
+offset_bottom = 65.0
+theme_override_colors/font_color = Color(0.6, 1, 0.7, 1)
+theme_override_font_sizes/font_size = 12
+text = "QUARANTÄNE-KABINEN A–D"
+horizontal_alignment = 1
+
+[node name="StartPosition" type="Marker2D" parent="." unique_id=1012959311]
+position = Vector2(0, 250)
+
+[node name="Player" parent="." unique_id=768961367 instance=ExtResource("2_player")]
+position = Vector2(0, 250)
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=287444066]
+
+[node name="HUD" type="Control" parent="CanvasLayer" unique_id=168329289]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HeaderLabel" type="Label" parent="CanvasLayer/HUD" unique_id=61520514]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 20.0
+offset_bottom = 50.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.4, 0.8, 1, 1)
+theme_override_font_sizes/font_size = 20
+text = "DECEPTIVE WIRING — LEVEL 1: FRACHTRAUM"
+horizontal_alignment = 1
+
+[node name="StatusLabel" type="Label" parent="CanvasLayer/HUD" unique_id=320717100]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 60.0
+offset_bottom = 90.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(1, 0.8, 0.2, 1)
+theme_override_font_sizes/font_size = 16
+text = "FRACHTRAUM: Frachtgut blockiert den Weg. Fahre das Hindernis um."
+horizontal_alignment = 1
+
+[node name="ControlsGuideLabel" type="Label" parent="CanvasLayer/HUD" unique_id=1603894748]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -400.0
+offset_top = -45.0
+offset_right = 400.0
+offset_bottom = -15.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.7, 0.8, 0.9, 1)
+text = "Steuerung: WASD oder ← ↑ ↓ → = Bewegen  |  E = Interaktion  |  F = Schlagen"
+horizontal_alignment = 1
+
+[node name="ContinueButton" type="Button" parent="CanvasLayer/HUD" unique_id=666318552]
+visible = false
+layout_mode = 0
+offset_left = 396.0
+offset_top = 100.0
+offset_right = 756.0
+offset_bottom = 144.0
+theme_override_font_sizes/font_size = 18
+text = "▶ WEITER ZUR SCHIFFSKARTE"
+
+[node name="DynamicHintPopup" type="Control" parent="CanvasLayer" unique_id=1624218511]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("3_hint")
+
+[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/DynamicHintPopup" unique_id=609609317]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -240.0
+offset_top = -120.0
+offset_right = 240.0
+offset_bottom = 120.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/DynamicHintPopup/PanelContainer" unique_id=443004957]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/DynamicHintPopup/PanelContainer/MarginContainer" unique_id=1670498816]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="TitleLabel" type="Label" parent="CanvasLayer/DynamicHintPopup/PanelContainer/MarginContainer/VBoxContainer" unique_id=849372746]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2, 0.8, 1, 1)
+theme_override_font_sizes/font_size = 18
+text = "=== TERMINAL-HINWEIS ==="
+horizontal_alignment = 1
+
+[node name="HintTextLabel" type="Label" parent="CanvasLayer/DynamicHintPopup/PanelContainer/MarginContainer/VBoxContainer" unique_id=1288560208]
+layout_mode = 2
+text = "Hinweis wird geladen..."
+autowrap_mode = 2
+
+[node name="CloseButton" type="Button" parent="CanvasLayer/DynamicHintPopup/PanelContainer/MarginContainer/VBoxContainer" unique_id=110474266]
+layout_mode = 2
+text = "Verstanden"

@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://yi5rww680bsc"]
 
 [ext_resource type="Script" uid="uid://cnnbt2ud21jna" path="res://level_0_bridge.gd" id="1_bridge"]
-[ext_resource type="Script" uid="uid://c6p4trgukkfgu" path="res://player.gd" id="2_player"]
+[ext_resource type="PackedScene" path="res://player.tscn" id="2_cl5dv"]
 [ext_resource type="Script" uid="uid://djpchckt2fdbj" path="res://dynamic_hint_popup.gd" id="3_hint"]
 
 [sub_resource type="Gradient" id="Gradient_light"]
@@ -17,9 +17,6 @@ fill_to = Vector2(1, 0.5)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_vent"]
 size = Vector2(200, 140)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_player"]
-size = Vector2(32, 32)
 
 [node name="Level0_Bridge" type="Node2D" unique_id=808119582]
 script = ExtResource("1_bridge")
@@ -95,57 +92,12 @@ layout_mode = 2
 theme_override_colors/font_color = Color(0.9, 0.9, 0.3, 1)
 theme_override_font_sizes/font_size = 14
 text = "🛠️ [ LÜFTUNGSVENTIL ]
-(Gehe heran & nutze E / F)"
+(Gehe heran & drücke E)"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Player" type="CharacterBody2D" parent="." unique_id=90036318]
+[node name="Player" parent="." unique_id=1480328098 instance=ExtResource("2_cl5dv")]
 position = Vector2(0, 150)
-script = ExtResource("2_player")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Player" unique_id=1750523638]
-shape = SubResource("RectangleShape2D_player")
-
-[node name="AvatarGraphic" type="ColorRect" parent="Player" unique_id=907031721]
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -16.0
-offset_top = -16.0
-offset_right = 16.0
-offset_bottom = 16.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0.2, 0.7, 1, 1)
-
-[node name="PointLight2D" type="PointLight2D" parent="Player" unique_id=662924147]
-color = Color(0.9, 0.95, 1, 1)
-energy = 2.0
-texture = SubResource("GradientTexture2D_light")
-texture_scale = 1.8
-
-[node name="Camera2D" type="Camera2D" parent="Player" unique_id=1800684604]
-position_smoothing_enabled = true
-
-[node name="InteractHintLabel" type="Label" parent="Player" unique_id=1307881871]
-visible = false
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -200.0
-offset_top = -70.0
-offset_right = 200.0
-offset_bottom = -30.0
-grow_horizontal = 2
-grow_vertical = 0
-theme_override_colors/font_color = Color(1, 0.9, 0.3, 1)
-theme_override_font_sizes/font_size = 14
-text = "[E] Kabel-Schaltkasten | [F] Schlag gegen Lüftung!"
-horizontal_alignment = 1
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1390983958]
 
@@ -200,14 +152,14 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -300.0
+offset_left = -400.0
 offset_top = -45.0
-offset_right = 300.0
+offset_right = 400.0
 offset_bottom = -15.0
 grow_horizontal = 2
 grow_vertical = 0
 theme_override_colors/font_color = Color(0.7, 0.8, 0.9, 1)
-text = "Steuerung: WASD = Bewegen | E = Kabel-Schaltkasten | F = Physischer Schlag"
+text = "Steuerung: WASD oder ← ↑ ↓ → = Bewegen  |  E = Interaktion  |  F = Schlagen"
 horizontal_alignment = 1
 
 [node name="ContinueButton" type="Button" parent="CanvasLayer/HUD" unique_id=450963371]

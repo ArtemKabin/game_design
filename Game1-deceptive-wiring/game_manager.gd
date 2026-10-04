@@ -15,6 +15,8 @@ const LEVEL_SCENES := {
 	2: "",
 }
 const HINT_AFTER_FAILURES := 3
+# Shown at the bottom of every level. Levels read it in _ready so the wording stays identical.
+const CONTROLS_TEXT := "Steuerung: WASD oder ← ↑ ↓ → = Bewegen  |  E = Interaktion  |  F = Schlagen"
 
 signal hint_triggered(hint_text: String)
 signal level_completed(level_id: int)

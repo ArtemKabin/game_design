@@ -10,6 +10,7 @@ extends Node2D
 @onready var status_label: Label = $CanvasLayer/HUD/StatusLabel
 @onready var oxygen_bar: ProgressBar = $CanvasLayer/HUD/OxygenBar
 @onready var continue_btn: Button = $CanvasLayer/HUD/ContinueButton
+@onready var controls_label: Label = $CanvasLayer/HUD/ControlsGuideLabel
 @onready var vent_area: Area2D = $WallVent
 
 # Wiring Panel UI
@@ -70,6 +71,7 @@ func _ready() -> void:
 		continue_btn.pressed.connect(GameManager.go_to_map)
 
 	status_label.text = "SYSTEMFEHLER: Sauerstoffzufuhr instabil. Gehe zur Lüftung!"
+	controls_label.text = GameManager.CONTROLS_TEXT
 
 func _unhandled_input(event: InputEvent) -> void:
 	if game_over_ui and game_over_ui.visible:
@@ -90,7 +92,8 @@ func _on_room_flash_tick() -> void:
 func _on_vent_body_entered(body: Node2D) -> void:
 	if body == player and not is_solved:
 		is_near_vent = true
-		player.show_interaction_hint("[E] Kabel-Schaltkasten öffnen   |   [F] Gegen Lüftung schlagen!")
+		# Only the trap is advertised. Hitting the vent (F) is the part the player must figure out.
+		player.show_interaction_hint("[E] Kabel-Schaltkasten öffnen")
 
 func _on_vent_body_exited(body: Node2D) -> void:
 	if body == player:
