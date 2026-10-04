@@ -1,0 +1,100 @@
+[gd_scene load_steps=6 format=3 uid="uid://c_small_room_001"]
+
+[ext_resource type="Script" path="res://small_room.gd" id="1_small"]
+[ext_resource type="PackedScene" path="res://exit_door.tscn" id="2_door"]
+
+[sub_resource type="Gradient" id="Gradient_light"]
+colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_light"]
+gradient = SubResource("Gradient_light")
+width = 512
+height = 512
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_pickup"]
+size = Vector2(90, 90)
+
+[node name="SmallRoom" type="Node2D"]
+script = ExtResource("1_small")
+bounds = Rect2(-300, -200, 600, 400)
+
+[node name="RoomEnvironment" type="Node2D" parent="."]
+
+[node name="Floor" type="ColorRect" parent="RoomEnvironment"]
+offset_left = -300.0
+offset_top = -200.0
+offset_right = 300.0
+offset_bottom = 200.0
+color = Color(0.12, 0.14, 0.17, 1)
+
+[node name="WallTop" type="StaticBody2D" parent="RoomEnvironment"]
+position = Vector2(0, -200)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="RoomEnvironment/WallTop"]
+polygon = PackedVector2Array(-300, -20, 300, -20, 300, 20, -300, 20)
+
+[node name="WallBottom" type="StaticBody2D" parent="RoomEnvironment"]
+position = Vector2(0, 200)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="RoomEnvironment/WallBottom"]
+polygon = PackedVector2Array(-300, -20, 300, -20, 300, 20, -300, 20)
+
+[node name="WallLeft" type="StaticBody2D" parent="RoomEnvironment"]
+position = Vector2(-300, 0)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="RoomEnvironment/WallLeft"]
+polygon = PackedVector2Array(-20, -200, 20, -200, 20, 200, -20, 200)
+
+[node name="WallRight" type="StaticBody2D" parent="RoomEnvironment"]
+position = Vector2(300, 0)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="RoomEnvironment/WallRight"]
+polygon = PackedVector2Array(-20, -200, 20, -200, 20, 200, -20, 200)
+
+[node name="Light" type="PointLight2D" parent="."]
+color = Color(0.7, 0.85, 1, 1)
+energy = 1.0
+texture = SubResource("GradientTexture2D_light")
+texture_scale = 1.8
+
+[node name="TitleLabel" type="Label" parent="."]
+offset_left = -280.0
+offset_top = -170.0
+offset_right = -40.0
+offset_bottom = -146.0
+theme_override_colors/font_color = Color(0.6, 1, 0.7, 1)
+theme_override_font_sizes/font_size = 13
+text = "KABINE"
+
+[node name="DoorIn" parent="." instance=ExtResource("2_door")]
+position = Vector2(0, -160)
+rotation = 1.5707964
+
+[node name="DoorOut" parent="." instance=ExtResource("2_door")]
+position = Vector2(260, 0)
+
+[node name="Pickup" type="Area2D" parent="."]
+position = Vector2(60, 60)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Pickup"]
+shape = SubResource("RectangleShape2D_pickup")
+
+[node name="Graphic" type="ColorRect" parent="Pickup"]
+offset_left = -18.0
+offset_top = -8.0
+offset_right = 18.0
+offset_bottom = 8.0
+color = Color(0.95, 0.6, 0.2, 1)
+
+[node name="Label" type="Label" parent="Pickup"]
+offset_left = -80.0
+offset_top = 14.0
+offset_right = 80.0
+offset_bottom = 36.0
+theme_override_colors/font_color = Color(1, 0.9, 0.5, 1)
+theme_override_font_sizes/font_size = 12
+text = "WERKZEUG"
+horizontal_alignment = 1

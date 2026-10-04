@@ -1,9 +1,10 @@
-[gd_scene load_steps=9 format=3 uid="uid://c_world_001"]
+[gd_scene load_steps=10 format=3 uid="uid://c_world_001"]
 
 [ext_resource type="Script" path="res://world.gd" id="1_world"]
 [ext_resource type="PackedScene" path="res://level_0_bridge.tscn" id="2_level0"]
 [ext_resource type="PackedScene" path="res://corridor_l.tscn" id="3_corridor"]
 [ext_resource type="PackedScene" path="res://level_1_cargo_bay.tscn" id="4_level1"]
+[ext_resource type="PackedScene" path="res://small_room.tscn" id="9_small"]
 [ext_resource type="PackedScene" path="res://player.tscn" id="5_player"]
 [ext_resource type="PackedScene" path="res://game_over_ui.tscn" id="6_gameover"]
 [ext_resource type="Script" path="res://dynamic_hint_popup.gd" id="7_hint"]
@@ -24,6 +25,62 @@ position = Vector2(-620, 0)
 
 [node name="Level1" parent="Rooms" instance=ExtResource("4_level1")]
 position = Vector2(-1710, 1340)
+
+[node name="CabinA" parent="Rooms" instance=ExtResource("9_small")]
+position = Vector2(-1810, 1960)
+room_id = 11
+room_title = "KABINE A"
+intro_text = "KABINE A — Virus Alpha. Desinfiziert. Leer. Die nächste Kabine ist rechts."
+loop_text = "KABINE A. Schon wieder. Die Kabinen führen im Kreis. Nach oben geht es zurück in den Frachtraum."
+door_in_target_room = 1
+door_in_spawn = Vector2(-100, 285)
+door_out_target_room = 12
+door_out_spawn = Vector2(0, -100)
+
+[node name="CabinB" parent="Rooms" instance=ExtResource("9_small")]
+position = Vector2(-1160, 1960)
+room_id = 12
+room_title = "KABINE B"
+intro_text = "KABINE B — Virus Beta. Noch leerer als A. Weiter rechts."
+door_in_target_room = 11
+door_in_spawn = Vector2(150, 0)
+door_out_target_room = 13
+door_out_spawn = Vector2(0, -100)
+
+[node name="CabinC" parent="Rooms" instance=ExtResource("9_small")]
+position = Vector2(-510, 1960)
+room_id = 13
+room_title = "KABINE C"
+intro_text = "KABINE C — Virus Gamma. Jemand hat hier Kaffee verschüttet. Kein Werkzeug. Weiter rechts."
+door_in_target_room = 12
+door_in_spawn = Vector2(150, 0)
+door_out_target_room = 14
+door_out_spawn = Vector2(0, -100)
+
+[node name="CabinD" parent="Rooms" instance=ExtResource("9_small")]
+position = Vector2(140, 1960)
+room_id = 14
+room_title = "KABINE D"
+intro_text = "KABINE D — Virus Delta. Da liegt was auf dem Boden."
+pickup_item = "rubber_hammer"
+pickup_label = "Hammer"
+pickup_text = "Ein Hammer. Fühlt sich komisch an, aber ein Hammer ist ein Hammer. Zurück zu den Kisten!"
+door_in_target_room = 13
+door_in_spawn = Vector2(150, 0)
+door_out_target_room = 11
+door_out_spawn = Vector2(0, -100)
+
+[node name="Storage" parent="Rooms" instance=ExtResource("9_small")]
+position = Vector2(-790, 1340)
+room_id = 15
+room_title = "LAGERRAUM"
+intro_text = "LAGERRAUM — Richtiges Werkzeug. Endlich."
+pickup_item = "crowbar"
+pickup_label = "Brechstange"
+pickup_text = "Eine Brechstange. Stahl. Damit geht alles kaputt. Zurück zu den Kisten!"
+door_in_target_room = 1
+door_in_spawn = Vector2(480, 0)
+door_out_enabled = false
 
 [node name="Player" parent="." instance=ExtResource("5_player")]
 position = Vector2(0, 150)

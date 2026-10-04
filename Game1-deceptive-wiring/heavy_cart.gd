@@ -10,7 +10,7 @@ extends CharacterBody2D
 
 signal boarded
 signal started_driving
-signal crashed_into_wall
+signal crashed_into_wall(collider: Node2D)
 signal crashed_into_obstacle(obstacle: Node2D)
 signal body_nearby(body: Node2D, is_near: bool)
 
@@ -80,21 +80,18 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 	if get_slide_collision_count() > 0:
 		var collider: Object = get_slide_collision(0).get_collider()
-		if collider is Node and collider.is_in_group("obstacle"):
-			_crash(collider)
-		else:
-			_crash(null)
+		_crash(collider as Node2D)
 
 
-func _crash(obstacle: Node2D) -> void:
+func _crash(collider: Node2D) -> void:
 	state = State.CRASHED
 	velocity = Vector2.ZERO
 	modulate = Color(0.6, 0.6, 0.6, 1.0)
-	if obstacle:
+	if collider and collider.is_in_group("obstacle"):
 		_dismount()
-		crashed_into_obstacle.emit(obstacle)
+		crashed_into_obstacle.emit(collider)
 	else:
-		crashed_into_wall.emit()
+		crashed_into_wall.emit(collider)
 
 
 # Put the cart back into a usable parked state at a position, facing up.

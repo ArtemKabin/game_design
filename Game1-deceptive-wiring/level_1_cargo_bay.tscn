@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://f4xd5dqnm30"]
+[gd_scene load_steps=11 format=3 uid="uid://f4xd5dqnm30"]
 
 [ext_resource type="Script" path="res://level_1_cargo_bay.gd" id="1_cargo"]
 [ext_resource type="PackedScene" path="res://heavy_cart.tscn" id="2_cart"]
@@ -15,17 +15,20 @@ fill = 1
 fill_from = Vector2(0.5, 0.5)
 fill_to = Vector2(1, 0.5)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_obstacle"]
-size = Vector2(60, 760)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_crates"]
+size = Vector2(60, 550)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_crates_front"]
+size = Vector2(80, 550)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_rail"]
+size = Vector2(130, 230)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_platform"]
+size = Vector2(200, 230)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_panel"]
-size = Vector2(120, 160)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_bypass"]
-size = Vector2(160, 760)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_quarantine"]
-size = Vector2(160, 70)
+size = Vector2(100, 140)
 
 [node name="Level1_CargoBay" type="Node2D"]
 script = ExtResource("1_cargo")
@@ -72,6 +75,13 @@ energy = 0.8
 texture = SubResource("GradientTexture2D_light")
 texture_scale = 3.0
 
+[node name="PlatformLight" type="PointLight2D" parent="."]
+position = Vector2(-500, 265)
+color = Color(0.6, 0.8, 1, 1)
+energy = 1.0
+texture = SubResource("GradientTexture2D_light")
+texture_scale = 1.4
+
 [node name="SpawnPoint" type="Marker2D" parent="."]
 position = Vector2(200, -240)
 
@@ -81,49 +91,129 @@ rotation = 1.5707964
 target_room_id = 10
 target_spawn = Vector2(-830, 760)
 
-[node name="ObstacleWall" type="StaticBody2D" parent="." groups=["obstacle"]]
-position = Vector2(-300, 0)
+[node name="QuarantineDoor" parent="." instance=ExtResource("3_door")]
+position = Vector2(-100, 345)
+rotation = 1.5707964
+target_room_id = 11
+target_spawn = Vector2(0, -100)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="ObstacleWall"]
-shape = SubResource("RectangleShape2D_obstacle")
+[node name="QuarantineLabel" type="Label" parent="."]
+offset_left = -200.0
+offset_top = 270.0
+offset_right = 0.0
+offset_bottom = 292.0
+theme_override_colors/font_color = Color(0.6, 1, 0.7, 1)
+theme_override_font_sizes/font_size = 12
+text = "QUARANTÄNE-KABINEN A–D"
+horizontal_alignment = 1
 
-[node name="CrateGraphic" type="ColorRect" parent="ObstacleWall"]
+[node name="StorageDoor" parent="." instance=ExtResource("3_door")]
+position = Vector2(560, 0)
+target_room_id = 15
+target_spawn = Vector2(-180, 0)
+
+[node name="Crates" type="StaticBody2D" parent="."]
+position = Vector2(-300, -125)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Crates"]
+shape = SubResource("RectangleShape2D_crates")
+
+[node name="CrateGraphic" type="ColorRect" parent="Crates"]
 offset_left = -30.0
-offset_top = -380.0
+offset_top = -275.0
 offset_right = 30.0
-offset_bottom = 380.0
+offset_bottom = 275.0
 color = Color(0.45, 0.3, 0.15, 1)
 
-[node name="Label" type="Label" parent="ObstacleWall"]
+[node name="Label" type="Label" parent="Crates"]
 offset_left = -80.0
-offset_top = -60.0
+offset_top = -30.0
 offset_right = 80.0
-offset_bottom = -30.0
+offset_bottom = 0.0
 theme_override_colors/font_color = Color(1, 0.85, 0.5, 1)
 theme_override_font_sizes/font_size = 13
 text = "▓ FRACHTGUT ▓"
 horizontal_alignment = 1
 
+[node name="CratesFront" type="Area2D" parent="."]
+position = Vector2(-230, -125)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CratesFront"]
+shape = SubResource("RectangleShape2D_crates_front")
+
+[node name="RailZone" type="Area2D" parent="."]
+position = Vector2(-335, 265)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RailZone"]
+shape = SubResource("RectangleShape2D_rail")
+
+[node name="FloorGraphic" type="ColorRect" parent="RailZone"]
+offset_left = -65.0
+offset_top = -115.0
+offset_right = 65.0
+offset_bottom = 115.0
+color = Color(0.1, 0.12, 0.16, 1)
+
+[node name="Rail" type="ColorRect" parent="RailZone"]
+offset_left = -65.0
+offset_top = -6.0
+offset_right = 65.0
+offset_bottom = 6.0
+color = Color(0.25, 0.3, 0.38, 1)
+
+[node name="Label" type="Label" parent="RailZone"]
+offset_left = -90.0
+offset_top = 92.0
+offset_right = 90.0
+offset_bottom = 112.0
+theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
+theme_override_font_sizes/font_size = 11
+text = "⚡ FRACHTSCHIENE ⚡"
+horizontal_alignment = 1
+
+[node name="GoalPlatform" type="Area2D" parent="."]
+position = Vector2(-500, 265)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="GoalPlatform"]
+shape = SubResource("RectangleShape2D_platform")
+
+[node name="Visual" type="ColorRect" parent="GoalPlatform"]
+offset_left = -100.0
+offset_top = -115.0
+offset_right = 100.0
+offset_bottom = 115.0
+color = Color(0.345, 0.8, 0.929, 0.18)
+
+[node name="Label" type="Label" parent="GoalPlatform"]
+offset_left = -100.0
+offset_top = -110.0
+offset_right = 100.0
+offset_bottom = -90.0
+theme_override_colors/font_color = Color(0.345, 0.8, 0.929, 1)
+theme_override_font_sizes/font_size = 12
+text = "PLATTFORM"
+horizontal_alignment = 1
+
 [node name="ControlPanel" type="Area2D" parent="."]
-position = Vector2(-530, 0)
+position = Vector2(-550, 230)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ControlPanel"]
 shape = SubResource("RectangleShape2D_panel")
 
 [node name="PanelGraphic" type="ColorRect" parent="ControlPanel"]
-offset_left = -40.0
-offset_top = -50.0
-offset_right = 10.0
-offset_bottom = 50.0
+offset_left = -28.0
+offset_top = -45.0
+offset_right = 12.0
+offset_bottom = 45.0
 color = Color(0.2, 0.45, 0.6, 1)
 
 [node name="Label" type="Label" parent="ControlPanel"]
-offset_left = -90.0
-offset_top = 56.0
+offset_left = -70.0
+offset_top = 50.0
 offset_right = 90.0
-offset_bottom = 80.0
+offset_bottom = 72.0
 theme_override_colors/font_color = Color(0.345, 0.8, 0.929, 1)
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 11
 text = "FRACHTSTEUERUNG"
 horizontal_alignment = 1
 
@@ -141,50 +231,4 @@ offset_bottom = 270.0
 theme_override_colors/font_color = Color(0.9, 0.9, 0.3, 1)
 theme_override_font_sizes/font_size = 12
 text = "SCHWERLASTWAGEN"
-horizontal_alignment = 1
-
-[node name="BypassRightZone" type="Area2D" parent="."]
-position = Vector2(500, 0)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="BypassRightZone"]
-shape = SubResource("RectangleShape2D_bypass")
-
-[node name="FloorGraphic" type="ColorRect" parent="BypassRightZone"]
-offset_left = -80.0
-offset_top = -380.0
-offset_right = 80.0
-offset_bottom = 380.0
-color = Color(0.16, 0.22, 0.3, 1)
-
-[node name="Label" type="Label" parent="BypassRightZone"]
-offset_left = -100.0
-offset_top = -375.0
-offset_right = 100.0
-offset_bottom = -350.0
-theme_override_colors/font_color = Color(1, 0.9, 0.3, 1)
-theme_override_font_sizes/font_size = 14
-text = "→ UMLEITUNG →"
-horizontal_alignment = 1
-
-[node name="QuarantineDoor" type="Area2D" parent="."]
-position = Vector2(-100, 345)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="QuarantineDoor"]
-shape = SubResource("RectangleShape2D_quarantine")
-
-[node name="DoorGraphic" type="ColorRect" parent="QuarantineDoor"]
-offset_left = -80.0
-offset_top = -35.0
-offset_right = 80.0
-offset_bottom = 35.0
-color = Color(0.2, 0.5, 0.3, 1)
-
-[node name="Label" type="Label" parent="QuarantineDoor"]
-offset_left = -100.0
-offset_top = -62.0
-offset_right = 100.0
-offset_bottom = -40.0
-theme_override_colors/font_color = Color(0.6, 1, 0.7, 1)
-theme_override_font_sizes/font_size = 12
-text = "QUARANTÄNE-KABINEN A–D"
 horizontal_alignment = 1

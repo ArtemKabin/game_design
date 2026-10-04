@@ -48,6 +48,7 @@ What follows from it? What do we give up?
 | [0012](0012-heavy-cart-snake-driving.md) | Heavy cart drives snake-style, transition minigame is a cart run | accepted, controls replaced by 0013 |
 | [0013](0013-cart-continuous-steering.md) | Cart steers continuously with A/D, always starts facing up, harder map | accepted |
 | [0014](0014-one-world-map-overlay.md) | The ship is one continuous world, the map is a Tab/M overlay, corridor is the minigame | accepted |
+| [0015](0015-level-1-tool-hunt.md) | Level 1 is a tool hunt (cabins loop, rubber hammer, crowbar); "umfahren" means drive around | accepted |
 
 ## Open questions (not yet decided)
 

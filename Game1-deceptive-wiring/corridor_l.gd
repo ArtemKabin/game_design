@@ -52,6 +52,7 @@ func _on_enter() -> void:
 
 func _on_leave() -> void:
 	player.interact_pressed.disconnect(_on_player_interact)
+	player.hide_interaction_hint()
 	is_near_cart = false
 
 
@@ -86,7 +87,7 @@ func _on_cart_started_driving() -> void:
 	set_status("Er rollt. Ziel: die leuchtende Plattform %s. Keine Wand berühren!" % where)
 
 
-func _on_cart_crashed_into_wall() -> void:
+func _on_cart_crashed_into_wall(_collider: Node2D) -> void:
 	GameManager.register_failure(room_id, "Frachtschiene: gegen die Wand gefahren.")
 	game_over.emit("💥 CRASH", "Der Schwerlastwagen kennt keine Bremse. Die Wand schon.")
 
