@@ -1,49 +1,54 @@
 extends Control
 
-# MapUI: Manages void background (#0a2041), Fog of War room unlocking, and Level transitions.
-@onready var void_bg: ColorRect = $BackgroundVoid
-@onready var room_nodes_container: Control = $RoomNodes
-@onready var level_0_button: Button = $RoomNodes/Level0_Bridge_Btn
-@onready var level_1_button: Button = $RoomNodes/Level1_CargoBay_Btn
-@onready var level_2_button: Button = $RoomNodes/Level2_EngineRoom_Btn
-@onready var level_3_button: Button = $RoomNodes/Level3_Security_Btn
-@onready var level_4_button: Button = $RoomNodes/Level4_Reactor_Btn
-@onready var level_5_button: Button = $RoomNodes/Level5_Finale_Btn
+# Ship map with Fog of War. Rooms light up as GameManager unlocks them.
+# Progress goes LEFT on purpose, see README "Left-to-Right Subversion".
+
+const ROOM_NAMES := {0: "Brücke", 1: "Frachtraum", 2: "Finale"}
+
+@onready var level_buttons: Dictionary = {
+	0: $RoomNodes/Level0_Bridge_Btn,
+	1: $RoomNodes/Level1_CargoBay_Btn,
+	2: $RoomNodes/Level2_Final_Btn,
+}
+@onready var path_0_to_1: Line2D = $Paths/Path0to1
+@onready var path_1_to_2: Line2D = $Paths/Path1to2
+@onready var hint_label: Label = $HintLabel
+@onready var back_button: Button = $BackButton
+
 
 func _ready() -> void:
-	var gm: Node = get_node_or_null("/root/GameManager")
-	if gm and gm.has_signal("level_completed"):
-		gm.connect("level_completed", _on_level_completed)
+	for level_id in level_buttons:
+		level_buttons[level_id].pressed.connect(_on_room_pressed.bind(level_id))
+	back_button.pressed.connect(GameManager.go_to_main_menu)
 	update_fog_of_war()
+
 
 func update_fog_of_war() -> void:
-	var gm: Node = get_node_or_null("/root/GameManager")
-	if not gm:
-		return
-		
-	var states: Dictionary = gm.level_states
-	# Level 0 is always visible in the center
-	_set_room_button_state(level_0_button, states.get(0, 1))
-	_set_room_button_state(level_1_button, states.get(1, 0))
-	_set_room_button_state(level_2_button, states.get(2, 0))
-	_set_room_button_state(level_3_button, states.get(3, 0))
-	_set_room_button_state(level_4_button, states.get(4, 0))
-	_set_room_button_state(level_5_button, states.get(5, 0))
+	for level_id in level_buttons:
+		_set_room_button_state(level_buttons[level_id], level_id, GameManager.get_level_state(level_id))
+	# Paths are only drawn once the room they lead to is out of the fog.
+	path_0_to_1.visible = GameManager.get_level_state(1) != GameManager.LevelState.LOCKED
+	path_1_to_2.visible = GameManager.get_level_state(2) != GameManager.LevelState.LOCKED
 
-func _set_room_button_state(btn: Button, state: int) -> void:
-	if not btn:
-		return
+
+func _set_room_button_state(btn: Button, level_id: int, state: GameManager.LevelState) -> void:
 	match state:
-		0: # LOCKED (Fog of War)
+		GameManager.LevelState.LOCKED:
 			btn.disabled = true
-			btn.modulate = Color(0.1, 0.1, 0.15, 0.4)
-			btn.text = "??? [VERBOUNGEN]"
-		1: # UNLOCKED
+			btn.modulate = Color(0.3, 0.3, 0.4, 0.5)
+			btn.text = "???\n[VERBORGEN]"
+		GameManager.LevelState.UNLOCKED:
 			btn.disabled = false
 			btn.modulate = Color(0.9, 0.9, 1.0, 1.0)
-		2: # COMPLETED
+			btn.text = "LEVEL %d\n%s" % [level_id, ROOM_NAMES[level_id]]
+		GameManager.LevelState.COMPLETED:
 			btn.disabled = false
 			btn.modulate = Color(0.4, 1.0, 0.5, 1.0)
+			btn.text = "LEVEL %d ✔\n%s" % [level_id, ROOM_NAMES[level_id]]
 
-func _on_level_completed(_level_id: int) -> void:
-	update_fog_of_war()
+
+func _on_room_pressed(level_id: int) -> void:
+	if not GameManager.has_level_scene(level_id):
+		hint_label.text = "Level %d ist noch nicht gebaut." % level_id
+		return
+	GameManager.start_level(level_id)

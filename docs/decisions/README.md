@@ -39,8 +39,11 @@ What follows from it? What do we give up?
 | [0003](0003-title-and-setting.md) | Title "Deceptive Wiring" and spaceship setting | accepted |
 | [0004](0004-perspective-map-camera.md) | 2.5D top-down, fog-of-war map with zoom, room-to-room camera | accepted |
 | [0005](0005-art-direction-and-assets.md) | Dark blue accent palette, assets made in Blender | accepted |
-| [0006](0006-scope-and-team-split.md) | Scope cut to 3 levels, team split Person A / Person B, KEEP IT SIMPLE | accepted |
+| [0006](0006-scope-and-team-split.md) | Scope cut to 3 levels, team split Person A / Person B, KEEP IT SIMPLE | accepted, role split replaced by 0009 |
+| [0007](0007-hosting-on-itch-io.md) | Web build is hosted on itch.io | accepted |
+| [0008](0008-2-5d-as-2d-scenes.md) | "2.5D" is implemented with 2D scenes, 3D scene stays a layout sketch | accepted |
+| [0009](0009-no-fixed-role-split.md) | No fixed role split, both continue from the current state | accepted |
 
 ## Open questions (not yet decided)
 
-* The repo currently holds a 2D implementation of Level 0 (`level_0_bridge.tscn`) and a 3D CSG prototype (`scene.tscn`) that the main menu starts. Decision 0004 says 2.5D top-down, but it is not yet recorded which Godot approach (2D nodes with lighting, or 3D nodes with a fixed camera) implements that. Needs an entry once agreed.
+* Concept and storyboard for Level 2 (final level). Nothing beyond the README exists yet.

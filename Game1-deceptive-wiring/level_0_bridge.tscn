@@ -1,8 +1,8 @@
-[gd_scene load_steps=7 format=3 uid="uid://c_level0_bridge_003"]
+[gd_scene format=3 uid="uid://yi5rww680bsc"]
 
-[ext_resource type="Script" path="res://level_0_bridge.gd" id="1_bridge"]
-[ext_resource type="Script" path="res://player.gd" id="2_player"]
-[ext_resource type="Script" path="res://dynamic_hint_popup.gd" id="3_hint"]
+[ext_resource type="Script" uid="uid://cnnbt2ud21jna" path="res://level_0_bridge.gd" id="1_bridge"]
+[ext_resource type="Script" uid="uid://c6p4trgukkfgu" path="res://player.gd" id="2_player"]
+[ext_resource type="Script" uid="uid://djpchckt2fdbj" path="res://dynamic_hint_popup.gd" id="3_hint"]
 
 [sub_resource type="Gradient" id="Gradient_light"]
 colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 0)
@@ -21,63 +21,63 @@ size = Vector2(200, 140)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_player"]
 size = Vector2(32, 32)
 
-[node name="Level0_Bridge" type="Node2D"]
+[node name="Level0_Bridge" type="Node2D" unique_id=808119582]
 script = ExtResource("1_bridge")
 
-[node name="CanvasModulate" type="CanvasModulate" parent="."]
+[node name="CanvasModulate" type="CanvasModulate" parent="." unique_id=1038418554]
 color = Color(0.04, 0.06, 0.12, 1)
 
-[node name="OxygenTimer" type="Timer" parent="."]
+[node name="OxygenTimer" type="Timer" parent="." unique_id=697931714]
 
-[node name="EmergencyFlashTimer" type="Timer" parent="."]
+[node name="EmergencyFlashTimer" type="Timer" parent="." unique_id=1116898495]
 
-[node name="RoomEnvironment" type="Node2D" parent="."]
+[node name="RoomEnvironment" type="Node2D" parent="." unique_id=41850454]
 
-[node name="Floor" type="ColorRect" parent="RoomEnvironment"]
+[node name="Floor" type="ColorRect" parent="RoomEnvironment" unique_id=436568562]
 offset_left = -600.0
 offset_top = -400.0
 offset_right = 600.0
 offset_bottom = 400.0
 color = Color(0.1, 0.15, 0.22, 1)
 
-[node name="WallTop" type="StaticBody2D" parent="RoomEnvironment"]
+[node name="WallTop" type="StaticBody2D" parent="RoomEnvironment" unique_id=629831712]
 position = Vector2(0, -400)
 
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="RoomEnvironment/WallTop"]
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="RoomEnvironment/WallTop" unique_id=173413142]
 polygon = PackedVector2Array(-600, -20, 600, -20, 600, 20, -600, 20)
 
-[node name="WallBottom" type="StaticBody2D" parent="RoomEnvironment"]
+[node name="WallBottom" type="StaticBody2D" parent="RoomEnvironment" unique_id=887150113]
 position = Vector2(0, 400)
 
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="RoomEnvironment/WallBottom"]
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="RoomEnvironment/WallBottom" unique_id=953895777]
 polygon = PackedVector2Array(-600, -20, 600, -20, 600, 20, -600, 20)
 
-[node name="WallLeft" type="StaticBody2D" parent="RoomEnvironment"]
+[node name="WallLeft" type="StaticBody2D" parent="RoomEnvironment" unique_id=973889497]
 position = Vector2(-600, 0)
 
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="RoomEnvironment/WallLeft"]
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="RoomEnvironment/WallLeft" unique_id=1559266002]
 polygon = PackedVector2Array(-20, -400, 20, -400, 20, 400, -20, 400)
 
-[node name="WallRight" type="StaticBody2D" parent="RoomEnvironment"]
+[node name="WallRight" type="StaticBody2D" parent="RoomEnvironment" unique_id=172581926]
 position = Vector2(600, 0)
 
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="RoomEnvironment/WallRight"]
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="RoomEnvironment/WallRight" unique_id=1936893249]
 polygon = PackedVector2Array(-20, -400, 20, -400, 20, 400, -20, 400)
 
-[node name="RoomEmergencyLight" type="PointLight2D" parent="."]
+[node name="RoomEmergencyLight" type="PointLight2D" parent="." unique_id=559988240]
 position = Vector2(0, -100)
 color = Color(1, 0.2, 0.2, 1)
 energy = 1.2
 texture = SubResource("GradientTexture2D_light")
 texture_scale = 2.5
 
-[node name="WallVent" type="Area2D" parent="."]
+[node name="WallVent" type="Area2D" parent="." unique_id=458517068]
 position = Vector2(0, -320)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="WallVent"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WallVent" unique_id=1240199801]
 shape = SubResource("RectangleShape2D_vent")
 
-[node name="VentPanel" type="PanelContainer" parent="WallVent"]
+[node name="VentPanel" type="PanelContainer" parent="WallVent" unique_id=1625011444]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -90,22 +90,23 @@ offset_bottom = 50.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Label" type="Label" parent="WallVent/VentPanel"]
+[node name="Label" type="Label" parent="WallVent/VentPanel" unique_id=986004175]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9, 0.9, 0.3, 1)
 theme_override_font_sizes/font_size = 14
-text = "🛠️ [ LÜFTUNGSVENTIL ]\n(Gehe heran & nutze E / F)"
+text = "🛠️ [ LÜFTUNGSVENTIL ]
+(Gehe heran & nutze E / F)"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Player" type="CharacterBody2D" parent="."]
+[node name="Player" type="CharacterBody2D" parent="." unique_id=90036318]
 position = Vector2(0, 150)
 script = ExtResource("2_player")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player" unique_id=1750523638]
 shape = SubResource("RectangleShape2D_player")
 
-[node name="AvatarGraphic" type="ColorRect" parent="Player"]
+[node name="AvatarGraphic" type="ColorRect" parent="Player" unique_id=907031721]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -119,16 +120,16 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.2, 0.7, 1, 1)
 
-[node name="PointLight2D" type="PointLight2D" parent="Player"]
+[node name="PointLight2D" type="PointLight2D" parent="Player" unique_id=662924147]
 color = Color(0.9, 0.95, 1, 1)
 energy = 2.0
 texture = SubResource("GradientTexture2D_light")
 texture_scale = 1.8
 
-[node name="Camera2D" type="Camera2D" parent="Player"]
+[node name="Camera2D" type="Camera2D" parent="Player" unique_id=1800684604]
 position_smoothing_enabled = true
 
-[node name="InteractHintLabel" type="Label" parent="Player"]
+[node name="InteractHintLabel" type="Label" parent="Player" unique_id=1307881871]
 visible = false
 anchors_preset = 7
 anchor_left = 0.5
@@ -146,9 +147,9 @@ theme_override_font_sizes/font_size = 14
 text = "[E] Kabel-Schaltkasten | [F] Schlag gegen Lüftung!"
 horizontal_alignment = 1
 
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1390983958]
 
-[node name="HUD" type="Control" parent="CanvasLayer"]
+[node name="HUD" type="Control" parent="CanvasLayer" unique_id=657978658]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -156,7 +157,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="HeaderLabel" type="Label" parent="CanvasLayer/HUD"]
+[node name="HeaderLabel" type="Label" parent="CanvasLayer/HUD" unique_id=820895631]
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
@@ -168,7 +169,7 @@ theme_override_font_sizes/font_size = 20
 text = "DECEPTIVE WIRING — LEVEL 0: BRÜCKE"
 horizontal_alignment = 1
 
-[node name="StatusLabel" type="Label" parent="CanvasLayer/HUD"]
+[node name="StatusLabel" type="Label" parent="CanvasLayer/HUD" unique_id=1875182088]
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
@@ -180,7 +181,7 @@ theme_override_font_sizes/font_size = 16
 text = "SYSTEMFEHLER: Sauerstoffzufuhr instabil. Gehe zur Lüftung!"
 horizontal_alignment = 1
 
-[node name="OxygenBar" type="ProgressBar" parent="CanvasLayer/HUD"]
+[node name="OxygenBar" type="ProgressBar" parent="CanvasLayer/HUD" unique_id=1767540537]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -192,7 +193,7 @@ offset_bottom = 125.0
 grow_horizontal = 2
 value = 100.0
 
-[node name="ControlsGuideLabel" type="Label" parent="CanvasLayer/HUD"]
+[node name="ControlsGuideLabel" type="Label" parent="CanvasLayer/HUD" unique_id=1095940771]
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5
@@ -209,7 +210,17 @@ theme_override_colors/font_color = Color(0.7, 0.8, 0.9, 1)
 text = "Steuerung: WASD = Bewegen | E = Kabel-Schaltkasten | F = Physischer Schlag"
 horizontal_alignment = 1
 
-[node name="WiringPanelUI" type="Control" parent="CanvasLayer"]
+[node name="ContinueButton" type="Button" parent="CanvasLayer/HUD" unique_id=450963371]
+visible = false
+layout_mode = 0
+offset_left = 396.0
+offset_top = 140.0
+offset_right = 756.0
+offset_bottom = 184.0
+theme_override_font_sizes/font_size = 18
+text = "▶ WEITER ZUR SCHIFFSKARTE"
+
+[node name="WiringPanelUI" type="Control" parent="CanvasLayer" unique_id=1331138192]
 visible = false
 layout_mode = 3
 anchors_preset = 15
@@ -218,7 +229,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/WiringPanelUI"]
+[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/WiringPanelUI" unique_id=938008752]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -232,52 +243,52 @@ offset_bottom = 180.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/WiringPanelUI/PanelContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/WiringPanelUI/PanelContainer" unique_id=380883598]
 layout_mode = 2
 theme_override_constants/separation = 14
 
-[node name="PanelTitle" type="Label" parent="CanvasLayer/WiringPanelUI/PanelContainer/VBoxContainer"]
+[node name="PanelTitle" type="Label" parent="CanvasLayer/WiringPanelUI/PanelContainer/VBoxContainer" unique_id=1066352409]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.7, 0.2, 1)
 theme_override_font_sizes/font_size = 18
 text = "=== LÜFTUNGS-SCHALTKASTEN (VERKABELUNG) ==="
 horizontal_alignment = 1
 
-[node name="InstructionLabel" type="Label" parent="CanvasLayer/WiringPanelUI/PanelContainer/VBoxContainer"]
+[node name="InstructionLabel" type="Label" parent="CanvasLayer/WiringPanelUI/PanelContainer/VBoxContainer" unique_id=319770365]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.8, 0.8, 0.9, 1)
 text = "Wähle das Kabel aus, das mit den 2 Anschlüssen verbunden werden soll:"
 horizontal_alignment = 1
 
-[node name="WireGrid" type="VBoxContainer" parent="CanvasLayer/WiringPanelUI/PanelContainer/VBoxContainer"]
+[node name="WireGrid" type="VBoxContainer" parent="CanvasLayer/WiringPanelUI/PanelContainer/VBoxContainer" unique_id=1361076102]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="WireGreenBtn" type="Button" parent="CanvasLayer/WiringPanelUI/PanelContainer/VBoxContainer/WireGrid"]
+[node name="WireGreenBtn" type="Button" parent="CanvasLayer/WiringPanelUI/PanelContainer/VBoxContainer/WireGrid" unique_id=776801075]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.3, 1, 0.4, 1)
 text = "🟢 [ GRÜNES KABEL ]   ●━━━━━━━● (Grüner Pol A -> Pol B)"
 
-[node name="WireRedBtn" type="Button" parent="CanvasLayer/WiringPanelUI/PanelContainer/VBoxContainer/WireGrid"]
+[node name="WireRedBtn" type="Button" parent="CanvasLayer/WiringPanelUI/PanelContainer/VBoxContainer/WireGrid" unique_id=1014199728]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.3, 0.3, 1)
 text = "🔴 [ ROTES KABEL ]     ●━━━━━━━● (Roter Pol A -> Pol B)"
 
-[node name="WireBlueBtn" type="Button" parent="CanvasLayer/WiringPanelUI/PanelContainer/VBoxContainer/WireGrid"]
+[node name="WireBlueBtn" type="Button" parent="CanvasLayer/WiringPanelUI/PanelContainer/VBoxContainer/WireGrid" unique_id=1295554185]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.3, 0.6, 1, 1)
 text = "🔵 [ BLAUES KABEL ]    ●━━━━━━━● (Blauer Pol A -> Pol B)"
 
-[node name="WireOrangeBtn" type="Button" parent="CanvasLayer/WiringPanelUI/PanelContainer/VBoxContainer/WireGrid"]
+[node name="WireOrangeBtn" type="Button" parent="CanvasLayer/WiringPanelUI/PanelContainer/VBoxContainer/WireGrid" unique_id=309239568]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.6, 0.1, 1)
 text = "🟠 [ ORANGEFARBENES KABEL ] ●━━━━━━━● (Oranger Pol A -> Pol B)"
 
-[node name="CloseWiringBtn" type="Button" parent="CanvasLayer/WiringPanelUI/PanelContainer/VBoxContainer"]
+[node name="CloseWiringBtn" type="Button" parent="CanvasLayer/WiringPanelUI/PanelContainer/VBoxContainer" unique_id=563528717]
 layout_mode = 2
 text = "Abbrechen / Schließen"
 
-[node name="DynamicHintPopup" type="Control" parent="CanvasLayer"]
+[node name="DynamicHintPopup" type="Control" parent="CanvasLayer" unique_id=1685383233]
 visible = false
 layout_mode = 3
 anchors_preset = 15
@@ -287,7 +298,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("3_hint")
 
-[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/DynamicHintPopup"]
+[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/DynamicHintPopup" unique_id=2131453836]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -301,30 +312,30 @@ offset_bottom = 120.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/DynamicHintPopup/PanelContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/DynamicHintPopup/PanelContainer" unique_id=1571966047]
 layout_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/DynamicHintPopup/PanelContainer/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/DynamicHintPopup/PanelContainer/MarginContainer" unique_id=820561419]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="TitleLabel" type="Label" parent="CanvasLayer/DynamicHintPopup/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="TitleLabel" type="Label" parent="CanvasLayer/DynamicHintPopup/PanelContainer/MarginContainer/VBoxContainer" unique_id=1798838401]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.2, 0.8, 1, 1)
 theme_override_font_sizes/font_size = 18
 text = "=== TERMINAL-HINWEIS ==="
 horizontal_alignment = 1
 
-[node name="HintTextLabel" type="Label" parent="CanvasLayer/DynamicHintPopup/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="HintTextLabel" type="Label" parent="CanvasLayer/DynamicHintPopup/PanelContainer/MarginContainer/VBoxContainer" unique_id=1523783852]
 layout_mode = 2
 text = "Hinweis wird geladen..."
 autowrap_mode = 2
 
-[node name="CloseButton" type="Button" parent="CanvasLayer/DynamicHintPopup/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="CloseButton" type="Button" parent="CanvasLayer/DynamicHintPopup/PanelContainer/MarginContainer/VBoxContainer" unique_id=924916002]
 layout_mode = 2
 text = "Verstanden"
 
-[node name="GameOverUI" type="Control" parent="CanvasLayer"]
+[node name="GameOverUI" type="Control" parent="CanvasLayer" unique_id=1385367663]
 visible = false
 layout_mode = 3
 anchors_preset = 15
@@ -333,7 +344,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="BackgroundDark" type="ColorRect" parent="CanvasLayer/GameOverUI"]
+[node name="BackgroundDark" type="ColorRect" parent="CanvasLayer/GameOverUI" unique_id=1389556706]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -342,7 +353,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.12, 0.02, 0.02, 0.85)
 
-[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/GameOverUI"]
+[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/GameOverUI" unique_id=1206934823]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -356,27 +367,27 @@ offset_bottom = 140.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/GameOverUI/PanelContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/GameOverUI/PanelContainer" unique_id=494831541]
 layout_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/GameOverUI/PanelContainer/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/GameOverUI/PanelContainer/MarginContainer" unique_id=1029639509]
 layout_mode = 2
 theme_override_constants/separation = 16
 
-[node name="GameOverTitle" type="Label" parent="CanvasLayer/GameOverUI/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="GameOverTitle" type="Label" parent="CanvasLayer/GameOverUI/PanelContainer/MarginContainer/VBoxContainer" unique_id=1667766629]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.25, 0.25, 1)
 theme_override_font_sizes/font_size = 22
 text = "💀 GAME OVER — SAUERSTOFFMANGEL"
 horizontal_alignment = 1
 
-[node name="GameOverSubtitle" type="Label" parent="CanvasLayer/GameOverUI/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="GameOverSubtitle" type="Label" parent="CanvasLayer/GameOverUI/PanelContainer/MarginContainer/VBoxContainer" unique_id=2064070177]
 layout_mode = 2
 text = "Die Notabschaltung wurde ausgelöst. Lebenserhaltung kollabiert."
 horizontal_alignment = 1
 autowrap_mode = 2
 
-[node name="RestartButton" type="Button" parent="CanvasLayer/GameOverUI/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="RestartButton" type="Button" parent="CanvasLayer/GameOverUI/PanelContainer/MarginContainer/VBoxContainer" unique_id=222806736]
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "🔄 LEVEL NEUSTARTEN (Oder R drücken)"

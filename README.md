@@ -12,8 +12,8 @@ Two-person university project, built in Godot 4.7 within roughly one week.
 | Topic | Decision |
 | :--- | :--- |
 | Engine | Godot 4.7.x (project lives in `Game1-deceptive-wiring/`) |
-| Perspective | 2.5D, top-down view |
-| Target platform | Web export, hosted via GitHub Actions or itch.io, not on the lecturer's server (see [decision log](docs/decisions/)) |
+| Perspective | 2.5D look, top-down view, built with Godot 2D scenes (lighting + dark `CanvasModulate`, later pre-rendered Blender sprites). `scene.tscn` is a 3D layout sketch only. |
+| Target platform | Web export, hosted on **itch.io** (tested), not on the lecturer's server (see [decision log](docs/decisions/)) |
 | Setting | Spaceship. "Among Us" is the visual and structural reference. |
 | Map | Fog of War map with zoom in/out and full-map view (Command & Conquer / Settlers style), combined with room-to-room camera (The Binding of Isaac style) |
 | Art direction | Dark, accent-rich blue palette (see section 5) |
@@ -22,13 +22,7 @@ Two-person university project, built in Godot 4.7 within roughly one week.
 
 ### Team & Workflow
 
-| | Person A | Person B |
-| :--- | :--- | :--- |
-| Focus | Foundation: camera, controls, physics, reusable functions | Extending base logic with level-specific logic |
-| Levels | Level 0 and Level 1 | Level 2 (final level): concept and implementation |
-| Also | Not the whole concept at once. Lay the ground first. | Assets, level storyboards (approved by Person A), decision log |
-
-Both developers: update this README, review each other's code, keep the Kanban board current.
+Two developers, no fixed role split: both pick the next item from the Kanban board (on this GitHub repo) and continue from the current state. Both update this README, review each other's pull requests, and add decision log entries when something is decided. Scene files (`.tscn`) get one owner per task to avoid merge conflicts.
 
 ### Development decisions
 Every non-trivial development decision is recorded in [`docs/decisions/`](docs/decisions/). One file per decision, see the folder README for the template and the index.
@@ -55,11 +49,11 @@ Every non-trivial development decision is recorded in [`docs/decisions/`](docs/d
 
 ### In scope (3 levels)
 
-| Level | Spaceship Area | Puzzle Mechanics & Linguistic Trap | Failure Hint ("Hinweis") | Status | Owner |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **Level 0** | **Bridge / Life Support** (Central Hub, Tutorial) | User instruction: *"Repariere das Lebenserhaltungssystem."*<br>Trap: Using proper tools (wrench/soldering iron) or the wiring panel triggers a lethal oxygen countdown. Hitting the air vent like an old TV fixes it instantly. | *"Kennst du den Trick mit dem alten Röhrenfernseher? Manchmal hilft rohe Gewalt mehr als Präzision!"* | **Working** (scene + script) | Person A |
-| **Level 1** | **Cargo Bay & Quarantine Maze** | User instruction: *"Fahre das Hindernis um."*<br>Trap: Trying to steer right toward the obvious crate path (*umgehen*) fails; you must crash straight through it or look left. Also features a side cart to smash obstacles and a snake quarantine maze (Cabins A-D) that loops you backward into Level 0. | *"Manchmal muss man Probleme direkt anfahren. Und lass die Finger von den nervigen Quarantäne-Kabinen – die führen dich nur im Kreis!"* | **Script done, scene missing** | Person A |
-| **Level 2** | **Final Level** | Combines all learned "obvious is wrong" mechanics to save the ship. Concept to be written as a storyboard by Person B and approved by Person A. May draw from the backlog concepts below. | *"Vergiss alles, was logisch erscheint. Der falsche Weg ist der einzige Ausweg."* | **Concept open** | Person B |
+| Level | Spaceship Area | Puzzle Mechanics & Linguistic Trap | Failure Hint ("Hinweis") | Status |
+| :--- | :--- | :--- | :--- | :--- |
+| **Level 0** | **Bridge / Life Support** (Central Hub, Tutorial) | User instruction: *"Repariere das Lebenserhaltungssystem."*<br>Trap: Using proper tools (wrench/soldering iron) or the wiring panel triggers a lethal oxygen countdown. Hitting the air vent like an old TV fixes it instantly. | *"Kennst du den Trick mit dem alten Röhrenfernseher? Manchmal hilft rohe Gewalt mehr als Präzision!"* | **Working** (scene + script) |
+| **Level 1** | **Cargo Bay & Quarantine Maze** | User instruction: *"Fahre das Hindernis um."*<br>Trap: Trying to steer right toward the obvious crate path (*umgehen*) fails; you must crash straight through it or look left. Also features a side cart to smash obstacles and a snake quarantine maze (Cabins A-D) that loops you backward into Level 0. | *"Manchmal muss man Probleme direkt anfahren. Und lass die Finger von den nervigen Quarantäne-Kabinen – die führen dich nur im Kreis!"* | **Script done, scene missing** |
+| **Level 2** | **Final Level** | Combines all learned "obvious is wrong" mechanics to save the ship. Storyboard still to be written. May draw from the backlog concepts below. | *"Vergiss alles, was logisch erscheint. Der falsche Weg ist der einzige Ausweg."* | **Concept open** |
 
 ### Backlog: further level concepts (not scheduled)
 
@@ -93,7 +87,7 @@ These four concepts were created after the first two levels were finished. They 
 * **The Twist:** There is also a snake-like sequence of 4 quarantine cabins (Cabins A-D) requiring users to clear "Virus Alpha, Beta, etc." Patiently clicking through these wastes time and routes the player backward through a maintenance hatch straight back into Level 0.
 
 ### Level 2: Final Level
-* Storyboard pending (Person B). Will be documented here once approved.
+* Storyboard pending. Will be documented here once written.
 
 ---
 

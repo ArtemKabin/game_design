@@ -9,6 +9,7 @@ extends Node2D
 @onready var flash_timer: Timer = $EmergencyFlashTimer
 @onready var status_label: Label = $CanvasLayer/HUD/StatusLabel
 @onready var oxygen_bar: ProgressBar = $CanvasLayer/HUD/OxygenBar
+@onready var continue_btn: Button = $CanvasLayer/HUD/ContinueButton
 @onready var vent_area: Area2D = $WallVent
 
 # Wiring Panel UI
@@ -62,7 +63,12 @@ func _ready() -> void:
 	# Restart button connection
 	if restart_btn:
 		restart_btn.pressed.connect(restart_level)
-		
+
+	# Back to the ship map after solving the level
+	if continue_btn:
+		continue_btn.visible = false
+		continue_btn.pressed.connect(GameManager.go_to_map)
+
 	status_label.text = "SYSTEMFEHLER: Sauerstoffzufuhr instabil. Gehe zur Lüftung!"
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -169,6 +175,8 @@ func perform_vent_hit() -> void:
 	player.hide_interaction_hint()
 	status_label.text = "ERFOLG: Schlag [F] gegen die Lüftung hat das Ventil gelöst! Level 0 gelöst!"
 	_get_game_manager().complete_level(0)
+	if continue_btn:
+		continue_btn.visible = true
 
 func _get_game_manager() -> Node:
 	return get_node_or_null("/root/GameManager")

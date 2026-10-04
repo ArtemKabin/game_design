@@ -1,0 +1,108 @@
+[gd_scene load_steps=2 format=3 uid="uid://c_map_ui_001"]
+
+[ext_resource type="Script" path="res://map_ui.gd" id="1_map"]
+
+[node name="MapUI" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_map")
+
+[node name="BackgroundVoid" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.039, 0.125, 0.255, 1)
+
+[node name="TitleLabel" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 24.0
+offset_bottom = 60.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.345, 0.8, 0.929, 1)
+theme_override_font_sizes/font_size = 26
+text = "SCHIFFSKARTE"
+horizontal_alignment = 1
+
+[node name="HintLabel" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 64.0
+offset_bottom = 90.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.8, 0.85, 0.95, 1)
+text = "Wähle einen freigeschalteten Raum."
+horizontal_alignment = 1
+
+[node name="Paths" type="Node2D" parent="."]
+
+[node name="Path0to1" type="Line2D" parent="Paths"]
+visible = false
+points = PackedVector2Array(476, 324, 396, 324)
+width = 4.0
+default_color = Color(0.345, 0.8, 0.929, 1)
+
+[node name="Path1to2" type="Line2D" parent="Paths"]
+visible = false
+points = PackedVector2Array(296, 284, 296, 184)
+width = 4.0
+default_color = Color(0.345, 0.8, 0.929, 1)
+
+[node name="RoomNodes" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Level0_Bridge_Btn" type="Button" parent="RoomNodes"]
+layout_mode = 0
+offset_left = 476.0
+offset_top = 284.0
+offset_right = 676.0
+offset_bottom = 364.0
+theme_override_font_sizes/font_size = 18
+text = "LEVEL 0
+Brücke"
+
+[node name="Level1_CargoBay_Btn" type="Button" parent="RoomNodes"]
+layout_mode = 0
+offset_left = 196.0
+offset_top = 284.0
+offset_right = 396.0
+offset_bottom = 364.0
+theme_override_font_sizes/font_size = 18
+text = "LEVEL 1
+Frachtraum"
+
+[node name="Level2_Final_Btn" type="Button" parent="RoomNodes"]
+layout_mode = 0
+offset_left = 196.0
+offset_top = 104.0
+offset_right = 396.0
+offset_bottom = 184.0
+theme_override_font_sizes/font_size = 18
+text = "LEVEL 2
+Finale"
+
+[node name="BackButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = -64.0
+offset_right = 224.0
+offset_bottom = -24.0
+grow_vertical = 0
+text = "Zurück zum Menü"
