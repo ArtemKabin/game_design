@@ -77,7 +77,7 @@ func complete_level(level_id: int) -> void:
 func get_hint_for_level(level_id: int) -> String:
 	match level_id:
 		0: return "Kennst du den Trick mit dem alten Röhrenfernseher? Manchmal hilft rohe Gewalt mehr als Präzision!"
-		1: return "Umfahren kann zweierlei heißen. Der Wagen hat keine Bremse, aber ein Lenkrad. Und die Kisten haben eine Lücke."
+		1: return "Manchmal muss man Probleme direkt anfahren. Der Wagen hat keine Bremse, und das ist hier gut so."
 		2: return "Vergiss alles, was logisch erscheint. Der falsche Weg ist der einzige Ausweg."
 		ROOM_CORRIDOR: return "Der Wagen bremst nicht. Lenk früher, nicht stärker. Und lass die Taste wieder los."
 		_: return "Denke anders herum."

@@ -4,13 +4,12 @@ extends Room
 # Crates are stacked around the goal door in the middle of the left wall; behind it sits
 # the cargo control room with the switch that opens the door to Level 2 on the bridge.
 # The game sends the player hunting for tools first: the quarantine cabins (a loop that
-# yields a rubber hammer), then a storage room with a crowbar. Nothing breaks the crates.
-# After enough hitting the narrator says "du musst das Hindernis UMFAHREN" and the player,
-# primed to destroy them, rams them with the cart: game over. "Umfahren" here means drive
-# AROUND: the crate wall has one small gap at its bottom right, big enough for the cart.
-# On foot a tarp blocks the gap until the level is solved.
+# yields a rubber hammer), then a storage room with a crowbar. Nothing breaks the crates
+# by hand. After enough hitting the narrator says "du musst das Hindernis UMFAHREN":
+# board the cart and plough straight through the crates. The tiny gap with the tarp
+# in the crate wall fits nobody, it is just there to tease.
 
-const GAP_RESET_POINT := Vector2(-200, 210)
+const GAP_RESET_POINT := Vector2(-200, 235)
 const CART_DISMOUNT_BESIDE := Vector2(60, 0)
 const HITS_UNTIL_REVEAL := 3
 
@@ -20,7 +19,6 @@ const HITS_UNTIL_REVEAL := 3
 @onready var crates: Node2D = $Crates
 @onready var crates_front: Area2D = $CratesFront
 @onready var gap_block: Area2D = $GapBlock
-@onready var goal_platform: Area2D = $GoalPlatform
 @onready var entrance_door: Area2D = $EntranceDoor
 @onready var quarantine_door: Area2D = $QuarantineDoor
 @onready var storage_door: Area2D = $StorageDoor
@@ -29,7 +27,7 @@ const HITS_UNTIL_REVEAL := 3
 var is_near_cart: bool = false
 var is_near_crates: bool = false
 var intro_shown: bool = false
-var cart_parked_at_platform: bool = false
+var crates_broken: bool = false
 var hits_bare: int = 0
 var hits_rubber: int = 0
 var hits_crowbar: int = 0
@@ -43,11 +41,11 @@ func _ready() -> void:
 	heavy_cart.body_nearby.connect(_on_cart_body_nearby)
 	heavy_cart.boarded.connect(_on_cart_boarded)
 	heavy_cart.started_driving.connect(_on_cart_started_driving)
+	heavy_cart.crashed_into_obstacle.connect(_on_cart_crashed_into_obstacle)
 	heavy_cart.crashed_into_wall.connect(_on_cart_crashed_into_wall)
 	crates_front.body_entered.connect(_on_crates_front_body_entered)
 	crates_front.body_exited.connect(_on_crates_front_body_exited)
 	gap_block.body_entered.connect(_on_gap_block_body_entered)
-	goal_platform.body_entered.connect(_on_goal_platform_body_entered)
 	register_doors([entrance_door, quarantine_door, storage_door, goal_door])
 	entrance_door.open(false)    # the player came in through it
 	quarantine_door.open(false)  # cabins are open from the start, that is the bait
@@ -61,9 +59,9 @@ func _on_enter(from_room_id: int = -1) -> void:
 		intro_shown = true
 		_play_intro()
 	elif is_solved():
-		set_status("FRACHTRAUM: erledigt. Zurück nach oben zur Frachtschiene. Die Plane an der Lücke ist jetzt offen.")
-	elif cart_parked_at_platform:
-		set_status("Der Wagen steht hinter den Kisten. Die Zieltür ist offen.")
+		set_status("FRACHTRAUM: erledigt. Zurück nach oben zur Frachtschiene.")
+	elif crates_broken:
+		set_status("Die Kisten liegen in Trümmern. Die Zieltür ist offen.")
 	elif from_room_id == storage_door.target_room_id:
 		set_status("Brechstange dabei. Dann mal ran an die Kisten.")
 	elif GameManager.has_item("rubber_hammer"):
@@ -90,13 +88,13 @@ func _on_leave() -> void:
 
 func _on_restart() -> void:
 	heavy_cart.park_at(cart_start.global_position, CART_DISMOUNT_BESIDE)
-	set_status("Noch einmal. Umfahren heißt hier: drum herum. Unten rechts an den Kisten ist eine Lücke.")
+	set_status("Noch einmal. Die Kisten sind das Ziel, nicht die Wand.")
 
 
-# --- Hitting the crates (never works, that is the joke) --------------------
+# --- Hitting the crates by hand (never works, that is the joke) ------------
 
 func _on_crates_front_body_entered(body: Node2D) -> void:
-	if body == player and not is_solved():
+	if body == player and not crates_broken:
 		is_near_crates = true
 		player.show_interaction_hint("[F] Auf die Kisten einschlagen")
 
@@ -108,7 +106,7 @@ func _on_crates_front_body_exited(body: Node2D) -> void:
 
 
 func _on_player_hit() -> void:
-	if is_solved() or is_game_over:
+	if crates_broken or is_game_over:
 		return
 	if not is_near_crates:
 		set_status("Du schlägst in die Luft.")
@@ -156,10 +154,10 @@ func _hit_with_crowbar() -> void:
 				player.set_movement_enabled(true)
 
 
-# --- Cart: the real solution is to drive AROUND the crates -----------------
+# --- Cart: the real solution is to plough THROUGH the crates ---------------
 
 func _on_cart_body_nearby(body: Node2D, is_near: bool) -> void:
-	if body != player or not is_active or cart_parked_at_platform:
+	if body != player or not is_active or crates_broken:
 		return
 	is_near_cart = is_near
 	if is_near and heavy_cart.state == heavy_cart.State.PARKED:
@@ -169,7 +167,7 @@ func _on_cart_body_nearby(body: Node2D, is_near: bool) -> void:
 
 
 func _on_player_interact() -> void:
-	if is_near_cart and heavy_cart.state == heavy_cart.State.PARKED and not cart_parked_at_platform:
+	if is_near_cart and heavy_cart.state == heavy_cart.State.PARKED and not crates_broken:
 		heavy_cart.board(player)
 
 
@@ -182,26 +180,33 @@ func _on_cart_started_driving() -> void:
 	set_status("Er rollt. Lenken mit A (links) und D (rechts).")
 
 
-func _on_cart_crashed_into_wall(collider: Node2D) -> void:
-	GameManager.register_failure(room_id, "Mit dem Schwerlastwagen gecrasht.")
-	if collider and collider.get_parent() == crates:
-		game_over.emit("💥 CRASH", "Umfahren heißt hier nicht überfahren. Fahr drum herum: unten rechts an den Kisten ist eine Lücke.")
-	else:
-		game_over.emit("💥 CRASH", "Der Schwerlastwagen kennt keine Bremse. Die Wand schon.")
-
-
-func _on_goal_platform_body_entered(body: Node2D) -> void:
-	if body != heavy_cart or heavy_cart.state != heavy_cart.State.DRIVING:
-		return
-	cart_parked_at_platform = true
-	heavy_cart.park_at(goal_platform.global_position, CART_DISMOUNT_BESIDE)
+func _on_cart_crashed_into_obstacle(obstacle: Node2D) -> void:
+	_break_crates(obstacle)
+	crates_broken = true
+	is_near_cart = false
+	is_near_crates = false
 	player.hide_interaction_hint()
 	goal_door.open()
-	set_status("Durch die Lücke! Drum herum, nicht durch. Die Zieltür öffnet sich: Frachtsteuerung.")
+	set_status("DURCHGEBRETTERT! Umfahren heißt hier überfahren. Die Zieltür ist frei: Frachtsteuerung.")
+
+
+func _break_crates(hit_piece: Node2D) -> void:
+	# The piece the cart hit flies apart; the rest of the stack stays as decoration.
+	for child in hit_piece.get_children():
+		if child is CollisionShape2D or child is CollisionPolygon2D:
+			child.set_deferred("disabled", true)
+	var tween: Tween = create_tween()
+	tween.tween_property(hit_piece, "modulate:a", 0.0, 0.5)
+	tween.tween_callback(hit_piece.queue_free)
+
+
+func _on_cart_crashed_into_wall(_collider: Node2D) -> void:
+	GameManager.register_failure(room_id, "Mit dem Schwerlastwagen gegen die Wand gefahren.")
+	game_over.emit("💥 CRASH", "Der Schwerlastwagen kennt keine Bremse. Die Wand schon. Die Kisten wären das Ziel gewesen.")
 
 
 func _on_gap_block_body_entered(body: Node2D) -> void:
-	if body != player or not is_active or heavy_cart.passenger != null or is_solved():
+	if body != player or not is_active or heavy_cart.passenger != null:
 		return
-	set_status("Eine Plane hängt in der Lücke und klemmt. Zu Fuß kommst du da nicht durch. Der Wagen schon.")
+	set_status("Ein Loch mit einem Stofffetzen davor. Da passt nicht mal der Hammer durch.")
 	player.global_position = to_global(GAP_RESET_POINT)

@@ -14,8 +14,10 @@ The crates block the way to the cargo control panel (the switch for the door to 
 2. The quarantine cabins A, B, C, D are real small rooms (`small_room.tscn`). D's exit leads back to A: a loop. D holds a **rubber hammer**.
 3. Hitting the crates with the hammer: after three tries the narrator admits it is rubber and a **storage room** opens on the right wall of Level 1. It holds a **crowbar**.
 4. Hitting with the crowbar: after three tries the narrator says "Wie ging das noch gleich? Du musst das Hindernis UMFAHREN. Der Wagen steht rechts."
-5. Primed to destroy the crates, the player rams them with the cart: **game over** ("Umfahren heißt hier nicht überfahren").
-6. The actual solution: the crates are stacked around the **goal door** in the middle of the left wall, with one small gap at the bottom right (later a tarp asset hangs there). On foot the tarp blocks it; the cart fits through. Drive **around** the crates, park behind them, the goal door opens into the **cargo control room**; flip the switch there.
+5. The solution: board the cart and **plough straight through the crates**. The hit stack flies apart, the **goal door** in the middle of the left wall opens into the **cargo control room**; flip the switch there. A wall crash with the cart is still game over.
+6. The crates are stacked around the goal door with one tiny hole at the bottom right (a tarp asset hangs there later). Nothing fits through it, not the player, not the cart; it is only there to tease.
+
+The joke is the tool hunt itself: hammer and crowbar are useless, the cart that stood there all along does it.
 
 The right-hand bypass trap from the first draft is gone; the level has enough misdirection. The storage room's door is on its left wall, next to Level 1.
 
