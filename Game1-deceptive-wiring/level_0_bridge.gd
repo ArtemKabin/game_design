@@ -98,7 +98,14 @@ func _input(event: InputEvent) -> void:
 	# ui_accept for menus, so without this a focused wire button would swallow
 	# the hit and connect a wire instead. Hitting the vent must always work,
 	# even while the wiring panel is open. That is the whole puzzle.
-	if not is_active or is_game_over or is_solved:
+	if not is_active or is_game_over:
+		return
+	# Escape closes the wiring panel instead of opening the pause menu.
+	if wiring_panel_ui.visible and event.is_action_pressed("ui_cancel"):
+		_on_close_wiring_pressed()
+		get_viewport().set_input_as_handled()
+		return
+	if is_solved:
 		return
 	if event.is_action_pressed("hit") and (is_near_vent or wiring_panel_ui.visible):
 		perform_vent_hit()
@@ -146,8 +153,11 @@ func _on_player_hit() -> void:
 		set_status("Du schlägst in die Luft... Gehe nah an die Lüftung heran!")
 
 
+# While the panel is open the player stands still (WASD moves the selection, not the
+# character). The oxygen countdown keeps running on purpose: that is the trap.
 func open_wiring_panel() -> void:
 	wiring_panel_ui.visible = true
+	player.set_movement_enabled(false)
 	wire_green_btn.grab_focus()
 
 
@@ -194,6 +204,7 @@ func perform_vent_hit() -> void:
 	oxygen_timer.stop()
 	flash_timer.stop()
 	wiring_panel_ui.visible = false
+	player.set_movement_enabled(true)
 	current_oxygen = max_oxygen
 	oxygen_bar.value = current_oxygen
 
@@ -224,3 +235,5 @@ func _on_level_completed(level_id: int) -> void:
 
 func _on_close_wiring_pressed() -> void:
 	wiring_panel_ui.visible = false
+	if not is_game_over and not is_solved:
+		player.set_movement_enabled(true)
