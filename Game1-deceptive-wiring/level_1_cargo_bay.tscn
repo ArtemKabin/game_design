@@ -15,20 +15,20 @@ fill = 1
 fill_from = Vector2(0.5, 0.5)
 fill_to = Vector2(1, 0.5)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_crates"]
-size = Vector2(60, 550)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_crates_vertical"]
+size = Vector2(60, 430)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_crates_horizontal"]
+size = Vector2(310, 60)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_crates_front"]
-size = Vector2(80, 550)
+size = Vector2(80, 440)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_rail"]
-size = Vector2(130, 230)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_gap"]
+size = Vector2(60, 100)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_platform"]
-size = Vector2(200, 230)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_panel"]
-size = Vector2(100, 140)
+size = Vector2(240, 200)
 
 [node name="Level1_CargoBay" type="Node2D"]
 script = ExtResource("1_cargo")
@@ -75,8 +75,8 @@ energy = 0.8
 texture = SubResource("GradientTexture2D_light")
 texture_scale = 3.0
 
-[node name="PlatformLight" type="PointLight2D" parent="."]
-position = Vector2(-500, 265)
+[node name="PocketLight" type="PointLight2D" parent="."]
+position = Vector2(-450, 0)
 color = Color(0.6, 0.8, 1, 1)
 energy = 1.0
 texture = SubResource("GradientTexture2D_light")
@@ -112,122 +112,107 @@ position = Vector2(560, 0)
 target_room_id = 15
 target_spawn = Vector2(-180, 0)
 
-[node name="Crates" type="StaticBody2D" parent="."]
-position = Vector2(-300, -125)
+[node name="GoalDoor" parent="." instance=ExtResource("3_door")]
+position = Vector2(-560, 0)
+target_room_id = 16
+target_spawn = Vector2(180, 0)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Crates"]
-shape = SubResource("RectangleShape2D_crates")
+[node name="Crates" type="Node2D" parent="."]
 
-[node name="CrateGraphic" type="ColorRect" parent="Crates"]
+[node name="CratesVertical" type="StaticBody2D" parent="Crates"]
+position = Vector2(-300, -55)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Crates/CratesVertical"]
+shape = SubResource("RectangleShape2D_crates_vertical")
+
+[node name="Graphic" type="ColorRect" parent="Crates/CratesVertical"]
 offset_left = -30.0
-offset_top = -275.0
+offset_top = -215.0
 offset_right = 30.0
-offset_bottom = 275.0
+offset_bottom = 215.0
 color = Color(0.45, 0.3, 0.15, 1)
 
-[node name="Label" type="Label" parent="Crates"]
+[node name="Label" type="Label" parent="Crates/CratesVertical"]
 offset_left = -80.0
-offset_top = -30.0
+offset_top = -245.0
 offset_right = 80.0
-offset_bottom = 0.0
+offset_bottom = -221.0
 theme_override_colors/font_color = Color(1, 0.85, 0.5, 1)
 theme_override_font_sizes/font_size = 13
 text = "▓ FRACHTGUT ▓"
 horizontal_alignment = 1
 
+[node name="CratesTop" type="StaticBody2D" parent="Crates"]
+position = Vector2(-425, -270)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Crates/CratesTop"]
+shape = SubResource("RectangleShape2D_crates_horizontal")
+
+[node name="Graphic" type="ColorRect" parent="Crates/CratesTop"]
+offset_left = -155.0
+offset_top = -30.0
+offset_right = 155.0
+offset_bottom = 30.0
+color = Color(0.45, 0.3, 0.15, 1)
+
+[node name="CratesBottom" type="StaticBody2D" parent="Crates"]
+position = Vector2(-425, 290)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Crates/CratesBottom"]
+shape = SubResource("RectangleShape2D_crates_horizontal")
+
+[node name="Graphic" type="ColorRect" parent="Crates/CratesBottom"]
+offset_left = -155.0
+offset_top = -30.0
+offset_right = 155.0
+offset_bottom = 30.0
+color = Color(0.45, 0.3, 0.15, 1)
+
+[node name="TarpGraphic" type="ColorRect" parent="Crates"]
+offset_left = -328.0
+offset_top = 162.0
+offset_right = -272.0
+offset_bottom = 258.0
+color = Color(0.35, 0.33, 0.28, 0.7)
+
+[node name="TarpLabel" type="Label" parent="Crates"]
+offset_left = -270.0
+offset_top = 198.0
+offset_right = -190.0
+offset_bottom = 220.0
+theme_override_colors/font_color = Color(0.8, 0.75, 0.6, 1)
+theme_override_font_sizes/font_size = 11
+text = "Plane"
+
 [node name="CratesFront" type="Area2D" parent="."]
-position = Vector2(-230, -125)
+position = Vector2(-230, -50)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CratesFront"]
 shape = SubResource("RectangleShape2D_crates_front")
 
-[node name="RailZone" type="Area2D" parent="."]
-position = Vector2(-335, 265)
+[node name="GapBlock" type="Area2D" parent="."]
+position = Vector2(-300, 210)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="RailZone"]
-shape = SubResource("RectangleShape2D_rail")
-
-[node name="FloorGraphic" type="ColorRect" parent="RailZone"]
-offset_left = -65.0
-offset_top = -115.0
-offset_right = 65.0
-offset_bottom = 115.0
-color = Color(0.1, 0.12, 0.16, 1)
-
-[node name="Rail" type="ColorRect" parent="RailZone"]
-offset_left = -65.0
-offset_top = -6.0
-offset_right = 65.0
-offset_bottom = 6.0
-color = Color(0.25, 0.3, 0.38, 1)
-
-[node name="Label" type="Label" parent="RailZone"]
-offset_left = -90.0
-offset_top = 92.0
-offset_right = 90.0
-offset_bottom = 112.0
-theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
-theme_override_font_sizes/font_size = 11
-text = "⚡ FRACHTSCHIENE ⚡"
-horizontal_alignment = 1
+[node name="CollisionShape2D" type="CollisionShape2D" parent="GapBlock"]
+shape = SubResource("RectangleShape2D_gap")
 
 [node name="GoalPlatform" type="Area2D" parent="."]
-position = Vector2(-500, 265)
+position = Vector2(-450, 120)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="GoalPlatform"]
 shape = SubResource("RectangleShape2D_platform")
 
-[node name="Visual" type="ColorRect" parent="GoalPlatform"]
-offset_left = -100.0
-offset_top = -115.0
-offset_right = 100.0
-offset_bottom = 115.0
-color = Color(0.345, 0.8, 0.929, 0.18)
-
-[node name="Label" type="Label" parent="GoalPlatform"]
-offset_left = -100.0
-offset_top = -110.0
-offset_right = 100.0
-offset_bottom = -90.0
-theme_override_colors/font_color = Color(0.345, 0.8, 0.929, 1)
-theme_override_font_sizes/font_size = 12
-text = "PLATTFORM"
-horizontal_alignment = 1
-
-[node name="ControlPanel" type="Area2D" parent="."]
-position = Vector2(-550, 230)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="ControlPanel"]
-shape = SubResource("RectangleShape2D_panel")
-
-[node name="PanelGraphic" type="ColorRect" parent="ControlPanel"]
-offset_left = -28.0
-offset_top = -45.0
-offset_right = 12.0
-offset_bottom = 45.0
-color = Color(0.2, 0.45, 0.6, 1)
-
-[node name="Label" type="Label" parent="ControlPanel"]
-offset_left = -70.0
-offset_top = 50.0
-offset_right = 90.0
-offset_bottom = 72.0
-theme_override_colors/font_color = Color(0.345, 0.8, 0.929, 1)
-theme_override_font_sizes/font_size = 11
-text = "FRACHTSTEUERUNG"
-horizontal_alignment = 1
-
 [node name="CartStart" type="Marker2D" parent="."]
-position = Vector2(300, 320)
+position = Vector2(300, 330)
 
 [node name="HeavyCart" parent="." instance=ExtResource("2_cart")]
-position = Vector2(300, 320)
+position = Vector2(300, 330)
 
 [node name="CartLabel" type="Label" parent="."]
 offset_left = 210.0
-offset_top = 245.0
+offset_top = 255.0
 offset_right = 390.0
-offset_bottom = 270.0
+offset_bottom = 280.0
 theme_override_colors/font_color = Color(0.9, 0.9, 0.3, 1)
 theme_override_font_sizes/font_size = 12
 text = "SCHWERLASTWAGEN"

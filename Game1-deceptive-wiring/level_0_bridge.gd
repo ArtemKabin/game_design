@@ -54,7 +54,7 @@ func _ready() -> void:
 	_reset_state()
 
 
-func _on_enter() -> void:
+func _on_enter(_from_room_id: int = -1) -> void:
 	room_ui_layer.visible = true
 	player.interact_pressed.connect(_on_player_interact)
 	player.hit_pressed.connect(_on_player_hit)

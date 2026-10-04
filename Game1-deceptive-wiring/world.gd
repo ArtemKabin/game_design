@@ -42,12 +42,14 @@ func _room_by_id(room_id: int) -> Room:
 
 
 func _enter_room(room: Room, local_spawn: Vector2) -> void:
+	var from_room_id: int = -1
 	if current_room:
+		from_room_id = current_room.room_id
 		current_room.leave()
 	current_room = room
 	player.global_position = room.to_global(local_spawn)
 	player.set_movement_enabled(true)
-	room.enter(player)
+	room.enter(player, from_room_id)
 	header_label.text = "DECEPTIVE WIRING — " + room.room_title
 	GameManager.current_level = room.room_id
 	map_overlay.set_current(room)

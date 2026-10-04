@@ -15,9 +15,9 @@ The crates block the way to the cargo control panel (the switch for the door to 
 3. Hitting the crates with the hammer: after three tries the narrator admits it is rubber and a **storage room** opens on the right wall of Level 1. It holds a **crowbar**.
 4. Hitting with the crowbar: after three tries the narrator says "Wie ging das noch gleich? Du musst das Hindernis UMFAHREN. Der Wagen steht rechts."
 5. Primed to destroy the crates, the player rams them with the cart: **game over** ("Umfahren heißt hier nicht überfahren").
-6. The actual solution: under the crates is a gap on the cargo rail. Only the cart may use it (on foot the rail zaps you back). Drive **around** the crates, park on the platform, use the panel.
+6. The actual solution: the crates are stacked around the **goal door** in the middle of the left wall, with one small gap at the bottom right (later a tarp asset hangs there). On foot the tarp blocks it; the cart fits through. Drive **around** the crates, park behind them, the goal door opens into the **cargo control room**; flip the switch there.
 
-The right-hand bypass trap from the first draft is gone; the level has enough misdirection.
+The right-hand bypass trap from the first draft is gone; the level has enough misdirection. The storage room's door is on its left wall, next to Level 1.
 
 ## Consequences
-`small_room.tscn` is a generic side room with two doors and an optional pickup; cabins and storage are instances configured in `world.tscn`. The player has an inventory (`GameManager.add_item / has_item`). The cart reports what it crashed into, so Level 1 can tell the crates apart from a wall. Nothing in Level 1 breaks the crates; a player who skips the tool hunt and drives around immediately still wins, which is fine.
+`small_room.tscn` is a generic side room with two doors (side configurable) and an optional pickup that can act as a switch (`completes_level`); cabins, storage and the cargo control room are instances configured in `world.tscn`. The player has an inventory (`GameManager.add_item / has_item`). The cart reports what it crashed into, so Level 1 can tell the crates apart from a wall. Nothing in Level 1 breaks the crates; a player who skips the tool hunt and drives around immediately still wins, which is fine.

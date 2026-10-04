@@ -39,14 +39,15 @@ func apply_camera_limits(cam: Camera2D) -> void:
 	cam.limit_bottom = int(b.end.y + CAMERA_MARGIN_SIDE)
 
 
-func enter(new_player: CharacterBody2D) -> void:
+# from_room_id: the room the player comes from (-1 at game start).
+func enter(new_player: CharacterBody2D, from_room_id: int = -1) -> void:
 	player = new_player
 	is_active = true
 	was_visited = true
 	visible = true
 	modulate = Color.WHITE
 	apply_camera_limits(player.camera)
-	_on_enter()
+	_on_enter(from_room_id)
 
 
 func leave() -> void:
@@ -69,7 +70,7 @@ func register_doors(doors: Array) -> void:
 		door.player_entered.connect(func() -> void: door_entered.emit(door))
 
 
-func _on_enter() -> void:
+func _on_enter(_from_room_id: int = -1) -> void:
 	pass
 
 

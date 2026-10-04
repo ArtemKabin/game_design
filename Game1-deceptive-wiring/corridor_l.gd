@@ -38,7 +38,7 @@ func _ready() -> void:
 	destination = goal_bottom
 
 
-func _on_enter() -> void:
+func _on_enter(_from_room_id: int = -1) -> void:
 	player.interact_pressed.connect(_on_player_interact)
 	# Coming from Level 1 means the cart waits at the bottom and the goal is the top.
 	var from_bottom: bool = player.global_position.distance_to(goal_bottom.global_position) \

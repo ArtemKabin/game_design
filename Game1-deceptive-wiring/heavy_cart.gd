@@ -65,13 +65,13 @@ func start_key_name() -> String:
 
 # --- Driving ----------------------------------------------------------------
 
-func _unhandled_input(event: InputEvent) -> void:
-	if state == State.BOARDED and event.is_action_pressed(START_ACTION):
+func _physics_process(delta: float) -> void:
+	# Polled rather than via _unhandled_input so the start also works when the
+	# action is pressed programmatically (e.g. automated tests).
+	if state == State.BOARDED and Input.is_action_just_pressed(START_ACTION):
 		state = State.DRIVING
 		started_driving.emit()
-
-
-func _physics_process(delta: float) -> void:
+		return
 	if state != State.DRIVING:
 		return
 	var steer: float = Input.get_axis("move_left", "move_right")  # -1 = left (A), +1 = right (D)
