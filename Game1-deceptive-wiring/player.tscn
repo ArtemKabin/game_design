@@ -43,10 +43,10 @@ texture = SubResource("GradientTexture2D_light")
 texture_scale = 1.8
 
 [node name="Camera2D" type="Camera2D" parent="."]
-limit_left = -600
+limit_left = -680
 limit_top = -560
-limit_right = 600
-limit_bottom = 400
+limit_right = 680
+limit_bottom = 480
 position_smoothing_enabled = true
 
 [node name="InteractHintLabel" type="Label" parent="."]

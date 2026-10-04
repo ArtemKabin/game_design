@@ -24,6 +24,7 @@ extends Node2D
 # Game Over UI
 @onready var game_over_ui: Control = $CanvasLayer/GameOverUI
 @onready var restart_btn: Button = $CanvasLayer/GameOverUI/PanelContainer/MarginContainer/VBoxContainer/RestartButton
+@onready var hint_popup: Control = $CanvasLayer/DynamicHintPopup
 
 var is_near_vent: bool = false
 var is_trap_active: bool = false
@@ -66,17 +67,28 @@ func _ready() -> void:
 		restart_btn.pressed.connect(restart_level)
 
 	# Back to the ship map after solving the level
-	if continue_btn:
-		continue_btn.visible = false
-		continue_btn.pressed.connect(GameManager.go_to_map)
+	continue_btn.visible = false
+	continue_btn.pressed.connect(GameManager.go_to_map)
+	hint_popup.visibility_changed.connect(_on_hint_popup_visibility_changed)
 
 	status_label.text = "SYSTEMFEHLER: Sauerstoffzufuhr instabil. Gehe zur Lüftung!"
 	controls_label.text = GameManager.CONTROLS_TEXT
 
+func _input(event: InputEvent) -> void:
+	# F (hit) is checked before the GUI gets the event. F is also bound to
+	# ui_accept for menus, so without this a focused wire button would swallow
+	# the hit and connect a wire instead. Hitting the vent must always work,
+	# even while the wiring panel is open. That is the whole puzzle.
+	if event.is_action_pressed("hit") and not is_solved and not game_over_ui.visible:
+		if is_near_vent or wiring_panel_ui.visible:
+			perform_vent_hit()
+			get_viewport().set_input_as_handled()
+
+
 func _unhandled_input(event: InputEvent) -> void:
-	if game_over_ui and game_over_ui.visible:
-		if event.is_action_pressed("ui_accept") or (event is InputEventKey and event.pressed and event.keycode == KEY_R):
-			restart_level()
+	# Enter/Space/E/F restart through the focused restart button; R is an extra shortcut.
+	if game_over_ui.visible and event is InputEventKey and event.pressed and event.keycode == KEY_R:
+		restart_level()
 
 func _on_room_flash_tick() -> void:
 	if is_solved:
@@ -118,6 +130,7 @@ func open_wiring_panel() -> void:
 	if is_solved:
 		return
 	wiring_panel_ui.visible = true
+	wire_green_btn.grab_focus()
 
 func _on_wire_clicked(wire_name: String) -> void:
 	if is_solved:
@@ -152,8 +165,11 @@ func trigger_game_over() -> void:
 		player.hide_interaction_hint()
 		
 	wiring_panel_ui.visible = false
-	if game_over_ui:
-		game_over_ui.visible = true
+	game_over_ui.visible = true
+	# The hint popup may have opened during register_failure and holds focus then.
+	# It hands focus back to the restart button when closed (see _on_hint_popup_visibility_changed).
+	if not hint_popup.visible:
+		restart_btn.grab_focus()
 
 func restart_level() -> void:
 	get_tree().reload_current_scene()
@@ -178,8 +194,13 @@ func perform_vent_hit() -> void:
 	player.hide_interaction_hint()
 	status_label.text = "ERFOLG: Schlag [F] gegen die Lüftung hat das Ventil gelöst! Level 0 gelöst!"
 	_get_game_manager().complete_level(0)
-	if continue_btn:
-		continue_btn.visible = true
+	continue_btn.visible = true
+	continue_btn.grab_focus()
+
+
+func _on_hint_popup_visibility_changed() -> void:
+	if not hint_popup.visible and game_over_ui.visible:
+		restart_btn.grab_focus()
 
 func _get_game_manager() -> Node:
 	return get_node_or_null("/root/GameManager")

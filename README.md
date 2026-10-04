@@ -133,5 +133,6 @@ Since the game is localized in German, UI elements and buttons must accommodate 
 2. Clone the repo, open Godot, choose **Import** and select `Game1-deceptive-wiring/project.godot`.
 3. Press F5 to run. The main scene is the main menu, which opens the ship map (`map_ui.tscn`), which loads the levels.
    The player is a shared scene (`player.tscn`); every level instances it. Keys are defined in the Input Map (Project Settings > Input Map): `move_*`, `interact` (E), `hit` (F).
+   Everything is playable without a mouse: W/S/A/D or arrows move the selection in menus, Enter/Space/E/F accept (see decision 0010). New buttons must `grab_focus()` when they appear.
 4. Work on a feature branch and open a pull request against `main`. Scene files (`.tscn`) merge badly, so agree on who touches which scene.
 5. The `.godot/` folder is generated locally and ignored by git. The `.uid` files next to scripts **must** be committed.

@@ -17,6 +17,8 @@ func _ready() -> void:
 func _on_hint_triggered(hint_text: String) -> void:
 	hint_text_label.text = hint_text
 	visible = true
+	# Keyboard-only players close the popup with Enter/Space/E/F.
+	close_button.grab_focus()
 	popup_panel.pivot_offset = popup_panel.size / 2.0
 	popup_panel.scale = Vector2(0.8, 0.8)
 	var tween: Tween = create_tween()

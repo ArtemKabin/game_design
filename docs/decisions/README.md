@@ -43,6 +43,7 @@ What follows from it? What do we give up?
 | [0007](0007-hosting-on-itch-io.md) | Web build is hosted on itch.io | accepted |
 | [0008](0008-2-5d-as-2d-scenes.md) | "2.5D" is implemented with 2D scenes, 3D scene stays a layout sketch | accepted |
 | [0009](0009-no-fixed-role-split.md) | No fixed role split, both continue from the current state | accepted |
+| [0010](0010-keyboard-first-ui.md) | Everything is playable without a mouse, one key set everywhere | accepted |
 
 ## Open questions (not yet decided)
 

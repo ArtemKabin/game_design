@@ -21,6 +21,17 @@ func _ready() -> void:
 		level_buttons[level_id].pressed.connect(_on_room_pressed.bind(level_id))
 	back_button.pressed.connect(GameManager.go_to_main_menu)
 	update_fog_of_war()
+	_focus_next_level_button()
+
+
+# Keyboard navigation: focus the room the player should go to next
+# (first unlocked, not yet completed), otherwise Level 0.
+func _focus_next_level_button() -> void:
+	for level_id in level_buttons:
+		if GameManager.get_level_state(level_id) == GameManager.LevelState.UNLOCKED:
+			level_buttons[level_id].grab_focus()
+			return
+	level_buttons[0].grab_focus()
 
 
 func update_fog_of_war() -> void:

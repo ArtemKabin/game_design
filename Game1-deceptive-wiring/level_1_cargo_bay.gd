@@ -88,6 +88,7 @@ func _on_level_solved() -> void:
 	status_label.text = "ERFOLG: Umfahren heißt hier durchfahren! Der Weg nach links ist frei."
 	GameManager.complete_level(1)
 	continue_btn.visible = true
+	continue_btn.grab_focus()
 
 
 # --- Traps ------------------------------------------------------------------
