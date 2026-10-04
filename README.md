@@ -15,7 +15,7 @@ Two-person university project, built in Godot 4.7 within roughly one week.
 | Perspective | 2.5D look, top-down view, built with Godot 2D scenes (lighting + dark `CanvasModulate`, later pre-rendered Blender sprites). `scene.tscn` is a 3D layout sketch only. |
 | Target platform | Web export, hosted on **itch.io** (tested), not on the lecturer's server (see [decision log](docs/decisions/)) |
 | Setting | Spaceship. "Among Us" is the visual and structural reference. |
-| Map | Fog of War map with zoom in/out and full-map view (Command & Conquer / Settlers style), combined with room-to-room camera (The Binding of Isaac style) |
+| Map | The ship is one continuous scene (`world.tscn`), rooms placed as in the deck layout below. Room-to-room camera (The Binding of Isaac style), fog of war: unvisited rooms are invisible, left rooms are greyed out. Tab or M opens a map overlay and pauses the game. See decision 0014. |
 | Art direction | Dark, accent-rich blue palette (see section 5) |
 | Assets | Created in Blender |
 | Scope | **3 levels**: Level 0 (tutorial), Level 1 (first real level), Level 2 (final level). Everything else is backlog. |
@@ -52,7 +52,7 @@ Every non-trivial development decision is recorded in [`docs/decisions/`](docs/d
 | Level | Spaceship Area | Puzzle Mechanics & Linguistic Trap | Failure Hint ("Hinweis") | Status |
 | :--- | :--- | :--- | :--- | :--- |
 | **Level 0** | **Bridge / Life Support** (Central Hub, Tutorial) | User instruction: *"Repariere das Lebenserhaltungssystem."*<br>Trap: Using proper tools (wrench/soldering iron) or the wiring panel triggers a lethal oxygen countdown. Hitting the air vent like an old TV fixes it instantly. | *"Kennst du den Trick mit dem alten Röhrenfernseher? Manchmal hilft rohe Gewalt mehr als Präzision!"* | **Working** (scene + script) |
-| **Level 1** | **Cargo Bay & Quarantine Maze** | User instruction: *"Fahre das Hindernis um."*<br>Trap: Trying to steer right toward the obvious crate path (*umgehen*) fails; you must crash straight through it or look left. Also features a side cart to smash obstacles and a snake quarantine maze (Cabins A-D) that loops you backward into Level 0. | *"Manchmal muss man Probleme direkt anfahren. Und lass die Finger von den nervigen Quarantäne-Kabinen – die führen dich nur im Kreis!"* | **Playable** (walkable room, both traps reset to room start, drive the snake-style cart into the crates; a wall crash is game over) |
+| **Level 1** | **Cargo Bay & Quarantine Maze** | User instruction: *"Fahre das Hindernis um."*<br>Trap: Trying to steer right toward the obvious crate path (*umgehen*) fails; you must crash straight through it or look left. Also features a side cart to smash obstacles and a snake quarantine maze (Cabins A-D) that loops you backward into Level 0. | *"Manchmal muss man Probleme direkt anfahren. Und lass die Finger von den nervigen Quarantäne-Kabinen – die führen dich nur im Kreis!"* | **Playable** (entered from the cargo rail through the top door; both traps reset to the entrance; drive the brakeless cart in a curve into the crates, then use the cargo control panel behind them, which opens the right door on the bridge; a wall crash is game over) |
 | **Level 2** | **Final Level** | Combines all learned "obvious is wrong" mechanics to save the ship. Storyboard still to be written. May draw from the backlog concepts below. | *"Vergiss alles, was logisch erscheint. Der falsche Weg ist der einzige Ausweg."* | **Concept open** |
 
 ### Backlog: further level concepts (not scheduled)
@@ -131,7 +131,8 @@ Since the game is localized in German, UI elements and buttons must accommodate 
 
 1. Install Godot 4.7.x (standard build).
 2. Clone the repo, open Godot, choose **Import** and select `Game1-deceptive-wiring/project.godot`.
-3. Press F5 to run. The main scene is the main menu, which opens the ship map (`map_ui.tscn`), which loads the levels. Solving a level opens an exit door on the left; walking through it leads to the transition minigame "Frachtlauf" (`transition_minigame.tscn`: drive the heavy cart through a serpentine without touching a wall, see decision 0012) and then into the next level.
+3. Press F5 to run. The main scene is the main menu; Start loads the ship (`world.tscn`) and you begin on the bridge (Level 0). Solving Level 0 opens the door on the left into the cargo rail corridor (`corridor_l.tscn`): board the brakeless heavy cart (E, then W), steer with A/D along the L-shaped rail to the platform at the bottom without touching a wall, and the door into Level 1 opens. After Level 1 you drive the rail back up to the bridge, where the right door is now open (Level 2, not built yet). See decisions 0012 to 0014.
+   To add a room: make a scene whose root script extends `Room` (`room.gd`), set `room_id`, `room_title` and `bounds`, place `ExitDoor` instances with `target_room_id` and `target_spawn`, instance it under `World/Rooms` at its deck position.
    The player is a shared scene (`player.tscn`); every level instances it. Keys are defined in the Input Map (Project Settings > Input Map): `move_*`, `interact` (E), `hit` (F).
    Everything is playable without a mouse: W/S/A/D or arrows move the selection in menus, Enter/Space/E/F accept (see decision 0010). New buttons must `grab_focus()` when they appear.
 4. Work on a feature branch and open a pull request against `main`. Scene files (`.tscn`) merge badly, so agree on who touches which scene.

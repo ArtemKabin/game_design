@@ -1,6 +1,6 @@
 extends Node2D
 
-# Main menu. Start opens the ship map, which then loads the levels.
+# Main menu. Start loads the ship (world.tscn); the player begins on the bridge (Level 0).
 # Button signals are connected in main_menu.tscn. Keyboard navigation comes
 # from Godot's focus system: W/S (ui_up/ui_down) move, Enter/Space/E/F accept.
 
@@ -12,7 +12,7 @@ func _ready() -> void:
 
 
 func _on_start_button_pressed() -> void:
-	GameManager.go_to_map()
+	GameManager.go_to_world()
 
 
 func _on_exit_button_pressed() -> void:

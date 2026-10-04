@@ -1,0 +1,132 @@
+[gd_scene load_steps=9 format=3 uid="uid://c_world_001"]
+
+[ext_resource type="Script" path="res://world.gd" id="1_world"]
+[ext_resource type="PackedScene" path="res://level_0_bridge.tscn" id="2_level0"]
+[ext_resource type="PackedScene" path="res://corridor_l.tscn" id="3_corridor"]
+[ext_resource type="PackedScene" path="res://level_1_cargo_bay.tscn" id="4_level1"]
+[ext_resource type="PackedScene" path="res://player.tscn" id="5_player"]
+[ext_resource type="PackedScene" path="res://game_over_ui.tscn" id="6_gameover"]
+[ext_resource type="Script" path="res://dynamic_hint_popup.gd" id="7_hint"]
+[ext_resource type="PackedScene" path="res://map_overlay.tscn" id="8_map"]
+
+[node name="World" type="Node2D"]
+script = ExtResource("1_world")
+
+[node name="CanvasModulate" type="CanvasModulate" parent="."]
+color = Color(0.04, 0.06, 0.12, 1)
+
+[node name="Rooms" type="Node2D" parent="."]
+
+[node name="Level0" parent="Rooms" instance=ExtResource("2_level0")]
+
+[node name="CorridorL" parent="Rooms" instance=ExtResource("3_corridor")]
+position = Vector2(-620, 0)
+
+[node name="Level1" parent="Rooms" instance=ExtResource("4_level1")]
+position = Vector2(-1710, 1340)
+
+[node name="Player" parent="." instance=ExtResource("5_player")]
+position = Vector2(0, 150)
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="HUD" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="HeaderLabel" type="Label" parent="CanvasLayer/HUD"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 20.0
+offset_bottom = 50.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.4, 0.8, 1, 1)
+theme_override_font_sizes/font_size = 20
+text = "DECEPTIVE WIRING"
+horizontal_alignment = 1
+
+[node name="StatusLabel" type="Label" parent="CanvasLayer/HUD"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 60.0
+offset_bottom = 90.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(1, 0.8, 0.2, 1)
+theme_override_font_sizes/font_size = 16
+text = "..."
+horizontal_alignment = 1
+
+[node name="ControlsGuideLabel" type="Label" parent="CanvasLayer/HUD"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -450.0
+offset_top = -45.0
+offset_right = 450.0
+offset_bottom = -15.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.7, 0.8, 0.9, 1)
+text = "Steuerung"
+horizontal_alignment = 1
+
+[node name="GameOverUI" parent="CanvasLayer" instance=ExtResource("6_gameover")]
+
+[node name="DynamicHintPopup" type="Control" parent="CanvasLayer"]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("7_hint")
+
+[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/DynamicHintPopup"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -240.0
+offset_top = -120.0
+offset_right = 240.0
+offset_bottom = 120.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/DynamicHintPopup/PanelContainer"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/DynamicHintPopup/PanelContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="TitleLabel" type="Label" parent="CanvasLayer/DynamicHintPopup/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2, 0.8, 1, 1)
+theme_override_font_sizes/font_size = 18
+text = "=== TERMINAL-HINWEIS ==="
+horizontal_alignment = 1
+
+[node name="HintTextLabel" type="Label" parent="CanvasLayer/DynamicHintPopup/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Hinweis wird geladen..."
+autowrap_mode = 2
+
+[node name="CloseButton" type="Button" parent="CanvasLayer/DynamicHintPopup/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Verstanden"
+
+[node name="MapOverlay" parent="CanvasLayer" instance=ExtResource("8_map")]

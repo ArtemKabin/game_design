@@ -45,9 +45,11 @@ What follows from it? What do we give up?
 | [0009](0009-no-fixed-role-split.md) | No fixed role split, both continue from the current state | accepted |
 | [0010](0010-keyboard-first-ui.md) | Everything is playable without a mouse, one key set everywhere | accepted |
 | [0011](0011-exit-door-and-transition-minigame.md) | Levels end with an exit door, a minigame sits between levels | accepted |
-| [0012](0012-heavy-cart-snake-driving.md) | Heavy cart drives snake-style, transition minigame is a cart run | accepted |
+| [0012](0012-heavy-cart-snake-driving.md) | Heavy cart drives snake-style, transition minigame is a cart run | accepted, controls replaced by 0013 |
+| [0013](0013-cart-continuous-steering.md) | Cart steers continuously with A/D, always starts facing up, harder map | accepted |
+| [0014](0014-one-world-map-overlay.md) | The ship is one continuous world, the map is a Tab/M overlay, corridor is the minigame | accepted |
 
 ## Open questions (not yet decided)
 
 * Concept and storyboard for Level 2 (final level). Nothing beyond the README exists yet.
-* More map variants for the transition minigame (one serpentine map exists, see 0012).
+* Further corridors between later levels (the rail to Level 1 exists, see 0014).

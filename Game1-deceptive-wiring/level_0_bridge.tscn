@@ -2,8 +2,6 @@
 
 [ext_resource type="Script" uid="uid://cnnbt2ud21jna" path="res://level_0_bridge.gd" id="1_bridge"]
 [ext_resource type="PackedScene" path="res://exit_door.tscn" id="2_a8ygq"]
-[ext_resource type="PackedScene" path="res://player.tscn" id="2_cl5dv"]
-[ext_resource type="Script" uid="uid://djpchckt2fdbj" path="res://dynamic_hint_popup.gd" id="3_hint"]
 
 [sub_resource type="Gradient" id="Gradient_light"]
 colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 0)
@@ -21,9 +19,7 @@ size = Vector2(200, 140)
 
 [node name="Level0_Bridge" type="Node2D" unique_id=808119582]
 script = ExtResource("1_bridge")
-
-[node name="CanvasModulate" type="CanvasModulate" parent="." unique_id=1038418554]
-color = Color(0.04, 0.06, 0.12, 1)
+room_title = "LEVEL 0: BRÜCKE"
 
 [node name="OxygenTimer" type="Timer" parent="." unique_id=697931714]
 
@@ -99,9 +95,8 @@ vertical_alignment = 1
 
 [node name="ExitDoor" parent="." unique_id=431118664 instance=ExtResource("2_a8ygq")]
 position = Vector2(-560, 0)
-
-[node name="Player" parent="." unique_id=1480328098 instance=ExtResource("2_cl5dv")]
-position = Vector2(0, 150)
+target_room_id = 10
+target_spawn = Vector2(-100, 50)
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1390983958]
 
@@ -112,30 +107,6 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-
-[node name="HeaderLabel" type="Label" parent="CanvasLayer/HUD" unique_id=820895631]
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_top = 20.0
-offset_bottom = 50.0
-grow_horizontal = 2
-theme_override_colors/font_color = Color(0.4, 0.8, 1, 1)
-theme_override_font_sizes/font_size = 20
-text = "DECEPTIVE WIRING — LEVEL 0: BRÜCKE"
-horizontal_alignment = 1
-
-[node name="StatusLabel" type="Label" parent="CanvasLayer/HUD" unique_id=1875182088]
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_top = 60.0
-offset_bottom = 90.0
-grow_horizontal = 2
-theme_override_colors/font_color = Color(1, 0.8, 0.2, 1)
-theme_override_font_sizes/font_size = 16
-text = "SYSTEMFEHLER: Sauerstoffzufuhr instabil. Gehe zur Lüftung!"
-horizontal_alignment = 1
 
 [node name="OxygenBar" type="ProgressBar" parent="CanvasLayer/HUD" unique_id=1767540537]
 layout_mode = 1
@@ -148,23 +119,6 @@ offset_right = 180.0
 offset_bottom = 125.0
 grow_horizontal = 2
 value = 100.0
-
-[node name="ControlsGuideLabel" type="Label" parent="CanvasLayer/HUD" unique_id=1095940771]
-layout_mode = 1
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -400.0
-offset_top = -45.0
-offset_right = 400.0
-offset_bottom = -15.0
-grow_horizontal = 2
-grow_vertical = 0
-theme_override_colors/font_color = Color(0.7, 0.8, 0.9, 1)
-text = "Steuerung: WASD oder ← ↑ ↓ → = Bewegen  |  E = Interaktion  |  F = Schlagen"
-horizontal_alignment = 1
 
 [node name="WiringPanelUI" type="Control" parent="CanvasLayer" unique_id=1331138192]
 visible = false
@@ -234,106 +188,6 @@ text = "🟠 [ ORANGEFARBENES KABEL ] ●━━━━━━━● (Oranger Pol A
 layout_mode = 2
 text = "Abbrechen / Schließen"
 
-[node name="DynamicHintPopup" type="Control" parent="CanvasLayer" unique_id=1685383233]
-visible = false
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-script = ExtResource("3_hint")
-
-[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/DynamicHintPopup" unique_id=2131453836]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -240.0
-offset_top = -120.0
-offset_right = 240.0
-offset_bottom = 120.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/DynamicHintPopup/PanelContainer" unique_id=1571966047]
-layout_mode = 2
-
-[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/DynamicHintPopup/PanelContainer/MarginContainer" unique_id=820561419]
-layout_mode = 2
-theme_override_constants/separation = 12
-
-[node name="TitleLabel" type="Label" parent="CanvasLayer/DynamicHintPopup/PanelContainer/MarginContainer/VBoxContainer" unique_id=1798838401]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.2, 0.8, 1, 1)
-theme_override_font_sizes/font_size = 18
-text = "=== TERMINAL-HINWEIS ==="
-horizontal_alignment = 1
-
-[node name="HintTextLabel" type="Label" parent="CanvasLayer/DynamicHintPopup/PanelContainer/MarginContainer/VBoxContainer" unique_id=1523783852]
-layout_mode = 2
-text = "Hinweis wird geladen..."
-autowrap_mode = 2
-
-[node name="CloseButton" type="Button" parent="CanvasLayer/DynamicHintPopup/PanelContainer/MarginContainer/VBoxContainer" unique_id=924916002]
-layout_mode = 2
-text = "Verstanden"
-
-[node name="GameOverUI" type="Control" parent="CanvasLayer" unique_id=1385367663]
-visible = false
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="BackgroundDark" type="ColorRect" parent="CanvasLayer/GameOverUI" unique_id=1389556706]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0.12, 0.02, 0.02, 0.85)
-
-[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/GameOverUI" unique_id=1206934823]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -270.0
-offset_top = -140.0
-offset_right = 270.0
-offset_bottom = 140.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/GameOverUI/PanelContainer" unique_id=494831541]
-layout_mode = 2
-
-[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/GameOverUI/PanelContainer/MarginContainer" unique_id=1029639509]
-layout_mode = 2
-theme_override_constants/separation = 16
-
-[node name="GameOverTitle" type="Label" parent="CanvasLayer/GameOverUI/PanelContainer/MarginContainer/VBoxContainer" unique_id=1667766629]
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.25, 0.25, 1)
-theme_override_font_sizes/font_size = 22
-text = "💀 GAME OVER — SAUERSTOFFMANGEL"
-horizontal_alignment = 1
-
-[node name="GameOverSubtitle" type="Label" parent="CanvasLayer/GameOverUI/PanelContainer/MarginContainer/VBoxContainer" unique_id=2064070177]
-layout_mode = 2
-text = "Die Notabschaltung wurde ausgelöst. Lebenserhaltung kollabiert."
-horizontal_alignment = 1
-autowrap_mode = 2
-
-[node name="RestartButton" type="Button" parent="CanvasLayer/GameOverUI/PanelContainer/MarginContainer/VBoxContainer" unique_id=222806736]
-layout_mode = 2
-theme_override_font_sizes/font_size = 18
-text = "🔄 LEVEL NEUSTARTEN (Oder R drücken)"
+[node name="ExitDoorRight" parent="." unique_id=901364 instance=ExtResource("2_a8ygq")]
+position = Vector2(560, 0)
+blocked_message = "Level 2 ist noch nicht gebaut. Hier geht es später weiter."

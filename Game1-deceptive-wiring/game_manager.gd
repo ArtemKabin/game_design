@@ -3,21 +3,17 @@ extends Node
 # Global game state (autoload "GameManager").
 # Scope is 3 levels, see docs/decisions/0006. Progress lives in memory only
 # and resets when the game is closed. Good enough for a browser build.
+# The ship is one scene (world.tscn, see decision 0014); rooms report progress here.
 
 enum LevelState { LOCKED, UNLOCKED, COMPLETED }
 
 const MAIN_MENU_SCENE := "res://main_menu.tscn"
-const MAP_SCENE := "res://map_ui.tscn"
-const TRANSITION_SCENE := "res://transition_minigame.tscn"
-# Empty string = level has no scene yet. The map shows it but cannot start it.
-const LEVEL_SCENES := {
-	0: "res://level_0_bridge.tscn",
-	1: "res://level_1_cargo_bay.tscn",
-	2: "",
-}
+const WORLD_SCENE := "res://world.tscn"
 const HINT_AFTER_FAILURES := 3
-# Shown at the bottom of every level. Levels read it in _ready so the wording stays identical.
-const CONTROLS_TEXT := "Steuerung: WASD oder ← ↑ ↓ → = Bewegen  |  E = Interaktion  |  F = Schlagen"
+# Shown at the bottom of every room. Rooms never write their own version.
+const CONTROLS_TEXT := "Steuerung: WASD oder ← ↑ ↓ → = Bewegen  |  E = Interaktion  |  F = Schlagen  |  Tab/M = Karte"
+# Room id of the cargo rail corridor between Level 0 and Level 1 (not a level, but it has hints).
+const ROOM_CORRIDOR := 10
 
 signal hint_triggered(hint_text: String)
 signal level_completed(level_id: int)
@@ -29,9 +25,7 @@ var level_states: Dictionary = {
 	1: LevelState.LOCKED,
 	2: LevelState.LOCKED,
 }
-var level_failures: Dictionary = {0: 0, 1: 0, 2: 0}
-# Level that follows the transition minigame currently being played.
-var pending_level: int = -1
+var level_failures: Dictionary = {}
 
 
 # --- Scene flow -------------------------------------------------------------
@@ -40,43 +34,15 @@ func get_level_state(level_id: int) -> LevelState:
 	return level_states.get(level_id, LevelState.LOCKED)
 
 
-func has_level_scene(level_id: int) -> bool:
-	var path: String = LEVEL_SCENES.get(level_id, "")
-	return path != "" and ResourceLoader.exists(path)
-
-
-func start_level(level_id: int) -> void:
-	if not has_level_scene(level_id):
-		push_warning("GameManager: level %d has no scene yet." % level_id)
-		return
-	current_level = level_id
-	_change_scene(LEVEL_SCENES[level_id])
-
-
-func go_to_map() -> void:
-	_change_scene(MAP_SCENE)
-
-
-# Called when the player walks through a level's exit door.
-# Flow: level -> transition minigame -> next level (or the map if it has no scene yet).
-func go_to_transition(from_level: int) -> void:
-	pending_level = from_level + 1
-	_change_scene(TRANSITION_SCENE)
-
-
-func continue_after_transition() -> void:
-	if has_level_scene(pending_level):
-		start_level(pending_level)
-	else:
-		go_to_map()
+func go_to_world() -> void:
+	_change_scene(WORLD_SCENE)
 
 
 func go_to_main_menu() -> void:
 	_change_scene(MAIN_MENU_SCENE)
 
 
-# Deferred so scene changes are safe from inside physics callbacks
-# (e.g. an Area2D body_entered signal from an exit door).
+# Deferred so scene changes are safe from inside physics callbacks.
 func _change_scene(path: String) -> void:
 	get_tree().change_scene_to_file.call_deferred(path)
 
@@ -103,4 +69,5 @@ func get_hint_for_level(level_id: int) -> String:
 		0: return "Kennst du den Trick mit dem alten Röhrenfernseher? Manchmal hilft rohe Gewalt mehr als Präzision!"
 		1: return "Manchmal muss man Probleme direkt anfahren. Und lass die Finger von den nervigen Quarantäne-Kabinen!"
 		2: return "Vergiss alles, was logisch erscheint. Der falsche Weg ist der einzige Ausweg."
+		ROOM_CORRIDOR: return "Der Wagen bremst nicht. Lenk früher, nicht stärker. Und lass die Taste wieder los."
 		_: return "Denke anders herum."
