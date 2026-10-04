@@ -1,0 +1,44 @@
+[gd_scene format=3 uid="uid://capkkpj6j0qmk"]
+
+[ext_resource type="Texture2D" uid="uid://275u6q86suoo" path="res://background1.jpg" id="1_06t4h"]
+[ext_resource type="Script" uid="uid://bqostsk7nf6vy" path="res://main_menu.gd" id="1_7vrkn"]
+
+[node name="MainMenu" type="Node2D" unique_id=2075886555]
+script = ExtResource("1_7vrkn")
+
+[node name="GraphFrame" type="GraphFrame" parent="." unique_id=2000398334]
+offset_left = 360.0
+offset_top = 208.0
+offset_right = 763.0
+offset_bottom = 404.0
+tint_color = Color(0.23165578, 0.32795283, 0.27679515, 0.7490196)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="GraphFrame" unique_id=1268829026]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="Title" type="Label" parent="GraphFrame/VBoxContainer" unique_id=1383780489]
+layout_mode = 2
+theme_override_font_sizes/font_size = 45
+text = "Deceptive Wiring"
+
+[node name="StartButton" type="Button" parent="GraphFrame/VBoxContainer" unique_id=1849056756]
+layout_mode = 2
+theme_override_colors/font_outline_color = Color(0.47034276, 0.64001155, 1, 1)
+theme_override_font_sizes/font_size = 25
+text = "Spiel Starten"
+
+[node name="ExitButton" type="Button" parent="GraphFrame/VBoxContainer" unique_id=878990693]
+layout_mode = 2
+theme_override_font_sizes/font_size = 25
+text = "Exit"
+
+[node name="Background1" type="Sprite2D" parent="." unique_id=1967428901]
+show_behind_parent = true
+position = Vector2(576.00006, 328)
+scale = Vector2(0.21415429, 0.22646241)
+texture = ExtResource("1_06t4h")
+
+[connection signal="pressed" from="GraphFrame/VBoxContainer/StartButton" to="." method="_on_start_button_pressed"]
+[connection signal="pressed" from="GraphFrame/VBoxContainer/ExitButton" to="." method="_on_exit_button_pressed"]
