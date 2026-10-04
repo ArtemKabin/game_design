@@ -49,6 +49,8 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func toggle() -> void:
+	if not visible and get_tree().paused:
+		return  # the pause menu is open
 	visible = not visible
 	get_tree().paused = visible
 	if visible:

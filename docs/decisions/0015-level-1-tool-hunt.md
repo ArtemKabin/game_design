@@ -15,7 +15,7 @@ The crates block the way to the cargo control panel (the switch for the door to 
 3. Hitting the crates with the hammer: after three tries the narrator admits it is rubber and a **storage room** opens on the right wall of Level 1. It holds a **crowbar**.
 4. Hitting with the crowbar: after three tries the narrator says "Wie ging das noch gleich? Du musst das Hindernis UMFAHREN. Der Wagen steht rechts."
 5. The solution: board the cart and **plough straight through the crates**. The hit stack flies apart, the **goal door** in the middle of the left wall opens into the **cargo control room**; flip the switch there. A wall crash with the cart is still game over.
-6. The crates are stacked around the goal door with one tiny hole at the bottom right (a tarp asset hangs there later). Nothing fits through it, not the player, not the cart; it is only there to tease.
+6. The crates are stacked around the goal door with one gap at the bottom right, a little wider than the cart (a tarp asset hangs there later). On foot the tarp jams. The cart fits, but that is the **dead end**: the tarp tangles in the cart, the cart is dead, the goal door stays shut, and on foot nobody gets back through the tarp. No game over; the narrator says the player should have found another way to the switch. The only way out is the **Escape menu** ("Neu starten", back to the bridge with fresh progress).
 
 The joke is the tool hunt itself: hammer and crowbar are useless, the cart that stood there all along does it.
 

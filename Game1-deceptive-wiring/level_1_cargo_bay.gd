@@ -6,10 +6,14 @@ extends Room
 # The game sends the player hunting for tools first: the quarantine cabins (a loop that
 # yields a rubber hammer), then a storage room with a crowbar. Nothing breaks the crates
 # by hand. After enough hitting the narrator says "du musst das Hindernis UMFAHREN":
-# board the cart and plough straight through the crates. The tiny gap with the tarp
-# in the crate wall fits nobody, it is just there to tease.
+# board the cart and plough straight through the crates. The gap with the tarp at the
+# bottom right is wide enough for the cart, but it is a trap: the tarp tangles in the
+# cart, the cart is dead, the goal door stays shut and on foot nobody gets through the
+# tarp. The player is soft-locked behind the crates and has to restart via Escape.
 
-const GAP_RESET_POINT := Vector2(-200, 235)
+const GAP_RESET_OUTSIDE := Vector2(-200, 215)
+const GAP_RESET_INSIDE := Vector2(-400, 215)
+const GAP_X := -300.0
 const CART_DISMOUNT_BESIDE := Vector2(60, 0)
 const HITS_UNTIL_REVEAL := 3
 
@@ -19,6 +23,7 @@ const HITS_UNTIL_REVEAL := 3
 @onready var crates: Node2D = $Crates
 @onready var crates_front: Area2D = $CratesFront
 @onready var gap_block: Area2D = $GapBlock
+@onready var goal_platform: Area2D = $GoalPlatform
 @onready var entrance_door: Area2D = $EntranceDoor
 @onready var quarantine_door: Area2D = $QuarantineDoor
 @onready var storage_door: Area2D = $StorageDoor
@@ -28,6 +33,7 @@ var is_near_cart: bool = false
 var is_near_crates: bool = false
 var intro_shown: bool = false
 var crates_broken: bool = false
+var cart_stuck_in_gap: bool = false
 var hits_bare: int = 0
 var hits_rubber: int = 0
 var hits_crowbar: int = 0
@@ -46,6 +52,7 @@ func _ready() -> void:
 	crates_front.body_entered.connect(_on_crates_front_body_entered)
 	crates_front.body_exited.connect(_on_crates_front_body_exited)
 	gap_block.body_entered.connect(_on_gap_block_body_entered)
+	goal_platform.body_entered.connect(_on_goal_platform_body_entered)
 	register_doors([entrance_door, quarantine_door, storage_door, goal_door])
 	entrance_door.open(false)    # the player came in through it
 	quarantine_door.open(false)  # cabins are open from the start, that is the bait
@@ -62,6 +69,8 @@ func _on_enter(from_room_id: int = -1) -> void:
 		set_status("FRACHTRAUM: erledigt. Zurück nach oben zur Frachtschiene.")
 	elif crates_broken:
 		set_status("Die Kisten liegen in Trümmern. Die Zieltür ist offen.")
+	elif cart_stuck_in_gap:
+		set_status("Der Wagen hängt in der Plane. Hier geht nichts mehr. Esc: Neu starten.")
 	elif from_room_id == storage_door.target_room_id:
 		set_status("Brechstange dabei. Dann mal ran an die Kisten.")
 	elif GameManager.has_item("rubber_hammer"):
@@ -161,14 +170,21 @@ func _on_cart_body_nearby(body: Node2D, is_near: bool) -> void:
 		return
 	is_near_cart = is_near
 	if is_near and heavy_cart.state == heavy_cart.State.PARKED:
-		player.show_interaction_hint("[E] In den Schwerlastwagen steigen")
+		if cart_stuck_in_gap:
+			player.show_interaction_hint("[E] Wagen")
+		else:
+			player.show_interaction_hint("[E] In den Schwerlastwagen steigen")
 	else:
 		player.hide_interaction_hint()
 
 
 func _on_player_interact() -> void:
-	if is_near_cart and heavy_cart.state == heavy_cart.State.PARKED and not crates_broken:
-		heavy_cart.board(player)
+	if not is_near_cart or heavy_cart.state != heavy_cart.State.PARKED or crates_broken:
+		return
+	if cart_stuck_in_gap:
+		set_status("Der Wagen hängt in der Plane fest. Nichts geht mehr. Du hättest anders an den Schalter kommen sollen. Esc: Neu starten.")
+		return
+	heavy_cart.board(player)
 
 
 func _on_cart_boarded() -> void:
@@ -200,6 +216,18 @@ func _break_crates(hit_piece: Node2D) -> void:
 	tween.tween_callback(hit_piece.queue_free)
 
 
+# Driving through the tarp gap is the dead end: the tarp tangles in the cart.
+func _on_goal_platform_body_entered(body: Node2D) -> void:
+	if body != heavy_cart or heavy_cart.state != heavy_cart.State.DRIVING:
+		return
+	cart_stuck_in_gap = true
+	is_near_cart = false
+	heavy_cart.park_at(goal_platform.global_position, CART_DISMOUNT_BESIDE)
+	heavy_cart.modulate = Color(0.6, 0.6, 0.6, 1.0)
+	player.hide_interaction_hint()
+	set_status("Durch die Lücke ... und die Plane hat sich im Wagen verfangen. Der Wagen steht. Die Zieltür bleibt zu.")
+
+
 func _on_cart_crashed_into_wall(_collider: Node2D) -> void:
 	GameManager.register_failure(room_id, "Mit dem Schwerlastwagen gegen die Wand gefahren.")
 	game_over.emit("💥 CRASH", "Der Schwerlastwagen kennt keine Bremse. Die Wand schon. Die Kisten wären das Ziel gewesen.")
@@ -208,5 +236,10 @@ func _on_cart_crashed_into_wall(_collider: Node2D) -> void:
 func _on_gap_block_body_entered(body: Node2D) -> void:
 	if body != player or not is_active or heavy_cart.passenger != null:
 		return
-	set_status("Ein Loch mit einem Stofffetzen davor. Da passt nicht mal der Hammer durch.")
-	player.global_position = to_global(GAP_RESET_POINT)
+	var inside: bool = to_local(player.global_position).x < GAP_X
+	if inside:
+		set_status("Die Plane klemmt. Zu Fuß kommst du hier nicht mehr raus. Du hättest anders an den Schalter kommen sollen. Esc: Neu starten.")
+		player.global_position = to_global(GAP_RESET_INSIDE)
+	else:
+		set_status("Eine Plane hängt in der Lücke und klemmt. Zu Fuß kommst du nicht durch.")
+		player.global_position = to_global(GAP_RESET_OUTSIDE)

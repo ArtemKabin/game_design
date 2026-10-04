@@ -11,7 +11,7 @@ const MAIN_MENU_SCENE := "res://main_menu.tscn"
 const WORLD_SCENE := "res://world.tscn"
 const HINT_AFTER_FAILURES := 3
 # Shown at the bottom of every room. Rooms never write their own version.
-const CONTROLS_TEXT := "Steuerung: WASD oder ← ↑ ↓ → = Bewegen  |  E = Interaktion  |  F = Schlagen  |  Tab/M = Karte"
+const CONTROLS_TEXT := "Steuerung: WASD oder ← ↑ ↓ → = Bewegen  |  E = Interaktion  |  F = Schlagen  |  Tab/M = Karte  |  Esc = Menü"
 # Room id of the cargo rail corridor between Level 0 and Level 1 (not a level, but it has hints).
 const ROOM_CORRIDOR := 10
 
@@ -46,6 +46,15 @@ func get_level_state(level_id: int) -> LevelState:
 
 func go_to_world() -> void:
 	_change_scene(WORLD_SCENE)
+
+
+# Fresh game from the bridge. Used by the pause menu to escape dead ends.
+func restart_game() -> void:
+	current_level = 0
+	level_states = {0: LevelState.UNLOCKED, 1: LevelState.LOCKED, 2: LevelState.LOCKED}
+	level_failures = {}
+	inventory = {}
+	go_to_world()
 
 
 func go_to_main_menu() -> void:
