@@ -15,8 +15,8 @@ const FAIL_RESET_DELAY := 1.2
 @onready var bypass_zone: Area2D = $BypassRightZone
 @onready var quarantine_door: Area2D = $QuarantineDoor
 @onready var status_label: Label = $CanvasLayer/HUD/StatusLabel
-@onready var continue_btn: Button = $CanvasLayer/HUD/ContinueButton
 @onready var controls_label: Label = $CanvasLayer/HUD/ControlsGuideLabel
+@onready var exit_door: Area2D = $ExitDoor
 
 var is_near_cart: bool = false
 var is_solved: bool = false
@@ -24,8 +24,7 @@ var is_resetting: bool = false
 
 
 func _ready() -> void:
-	continue_btn.visible = false
-	continue_btn.pressed.connect(GameManager.go_to_map)
+	exit_door.player_entered.connect(_on_exit_door_entered)
 
 	heavy_cart.body_entered.connect(_on_cart_body_entered)
 	heavy_cart.body_exited.connect(_on_cart_body_exited)
@@ -87,8 +86,19 @@ func _on_level_solved() -> void:
 	player.set_physics_process(true)
 	status_label.text = "ERFOLG: Umfahren heißt hier durchfahren! Der Weg nach links ist frei."
 	GameManager.complete_level(1)
-	continue_btn.visible = true
-	continue_btn.grab_focus()
+	_open_exit()
+
+
+func _open_exit() -> void:
+	player.set_movement_enabled(false)
+	exit_door.open()
+	await player.pan_camera_to(exit_door.global_position)
+	status_label.text = "Eine Tür hat sich geöffnet. Links, hinter dem Frachtgut."
+	player.set_movement_enabled(true)
+
+
+func _on_exit_door_entered() -> void:
+	GameManager.go_to_transition(1)
 
 
 # --- Traps ------------------------------------------------------------------

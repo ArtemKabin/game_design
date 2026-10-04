@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://yi5rww680bsc"]
 
 [ext_resource type="Script" uid="uid://cnnbt2ud21jna" path="res://level_0_bridge.gd" id="1_bridge"]
+[ext_resource type="PackedScene" path="res://exit_door.tscn" id="2_a8ygq"]
 [ext_resource type="PackedScene" path="res://player.tscn" id="2_cl5dv"]
 [ext_resource type="Script" uid="uid://djpchckt2fdbj" path="res://dynamic_hint_popup.gd" id="3_hint"]
 
@@ -96,6 +97,9 @@ text = "🛠️ [ LÜFTUNGSVENTIL ]
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="ExitDoor" parent="." unique_id=431118664 instance=ExtResource("2_a8ygq")]
+position = Vector2(-560, 0)
+
 [node name="Player" parent="." unique_id=1480328098 instance=ExtResource("2_cl5dv")]
 position = Vector2(0, 150)
 
@@ -161,16 +165,6 @@ grow_vertical = 0
 theme_override_colors/font_color = Color(0.7, 0.8, 0.9, 1)
 text = "Steuerung: WASD oder ← ↑ ↓ → = Bewegen  |  E = Interaktion  |  F = Schlagen"
 horizontal_alignment = 1
-
-[node name="ContinueButton" type="Button" parent="CanvasLayer/HUD" unique_id=450963371]
-visible = false
-layout_mode = 0
-offset_left = 396.0
-offset_top = 140.0
-offset_right = 756.0
-offset_bottom = 184.0
-theme_override_font_sizes/font_size = 18
-text = "▶ WEITER ZUR SCHIFFSKARTE"
 
 [node name="WiringPanelUI" type="Control" parent="CanvasLayer" unique_id=1331138192]
 visible = false

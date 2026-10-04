@@ -8,6 +8,7 @@ enum LevelState { LOCKED, UNLOCKED, COMPLETED }
 
 const MAIN_MENU_SCENE := "res://main_menu.tscn"
 const MAP_SCENE := "res://map_ui.tscn"
+const TRANSITION_SCENE := "res://transition_minigame.tscn"
 # Empty string = level has no scene yet. The map shows it but cannot start it.
 const LEVEL_SCENES := {
 	0: "res://level_0_bridge.tscn",
@@ -29,6 +30,8 @@ var level_states: Dictionary = {
 	2: LevelState.LOCKED,
 }
 var level_failures: Dictionary = {0: 0, 1: 0, 2: 0}
+# Level that follows the transition minigame currently being played.
+var pending_level: int = -1
 
 
 # --- Scene flow -------------------------------------------------------------
@@ -47,15 +50,35 @@ func start_level(level_id: int) -> void:
 		push_warning("GameManager: level %d has no scene yet." % level_id)
 		return
 	current_level = level_id
-	get_tree().change_scene_to_file(LEVEL_SCENES[level_id])
+	_change_scene(LEVEL_SCENES[level_id])
 
 
 func go_to_map() -> void:
-	get_tree().change_scene_to_file(MAP_SCENE)
+	_change_scene(MAP_SCENE)
+
+
+# Called when the player walks through a level's exit door.
+# Flow: level -> transition minigame -> next level (or the map if it has no scene yet).
+func go_to_transition(from_level: int) -> void:
+	pending_level = from_level + 1
+	_change_scene(TRANSITION_SCENE)
+
+
+func continue_after_transition() -> void:
+	if has_level_scene(pending_level):
+		start_level(pending_level)
+	else:
+		go_to_map()
 
 
 func go_to_main_menu() -> void:
-	get_tree().change_scene_to_file(MAIN_MENU_SCENE)
+	_change_scene(MAIN_MENU_SCENE)
+
+
+# Deferred so scene changes are safe from inside physics callbacks
+# (e.g. an Area2D body_entered signal from an exit door).
+func _change_scene(path: String) -> void:
+	get_tree().change_scene_to_file.call_deferred(path)
 
 
 # --- Progress ---------------------------------------------------------------

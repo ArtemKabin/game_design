@@ -9,9 +9,9 @@ extends Node2D
 @onready var flash_timer: Timer = $EmergencyFlashTimer
 @onready var status_label: Label = $CanvasLayer/HUD/StatusLabel
 @onready var oxygen_bar: ProgressBar = $CanvasLayer/HUD/OxygenBar
-@onready var continue_btn: Button = $CanvasLayer/HUD/ContinueButton
 @onready var controls_label: Label = $CanvasLayer/HUD/ControlsGuideLabel
 @onready var vent_area: Area2D = $WallVent
+@onready var exit_door: Area2D = $ExitDoor
 
 # Wiring Panel UI
 @onready var wiring_panel_ui: Control = $CanvasLayer/WiringPanelUI
@@ -66,9 +66,8 @@ func _ready() -> void:
 	if restart_btn:
 		restart_btn.pressed.connect(restart_level)
 
-	# Back to the ship map after solving the level
-	continue_btn.visible = false
-	continue_btn.pressed.connect(GameManager.go_to_map)
+	# The exit door opens once the level is solved; walking through it leaves the level.
+	exit_door.player_entered.connect(_on_exit_door_entered)
 	hint_popup.visibility_changed.connect(_on_hint_popup_visibility_changed)
 
 	status_label.text = "SYSTEMFEHLER: Sauerstoffzufuhr instabil. Gehe zur Lüftung!"
@@ -194,8 +193,19 @@ func perform_vent_hit() -> void:
 	player.hide_interaction_hint()
 	status_label.text = "ERFOLG: Schlag [F] gegen die Lüftung hat das Ventil gelöst! Level 0 gelöst!"
 	_get_game_manager().complete_level(0)
-	continue_btn.visible = true
-	continue_btn.grab_focus()
+	_open_exit()
+
+
+func _open_exit() -> void:
+	player.set_movement_enabled(false)
+	exit_door.open()
+	await player.pan_camera_to(exit_door.global_position)
+	status_label.text = "Eine Tür hat sich geöffnet. Links, am Rand des Raums."
+	player.set_movement_enabled(true)
+
+
+func _on_exit_door_entered() -> void:
+	GameManager.go_to_transition(0)
 
 
 func _on_hint_popup_visibility_changed() -> void:

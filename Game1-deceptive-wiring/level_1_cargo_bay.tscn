@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://f4xd5dqnm30"]
 
 [ext_resource type="Script" uid="uid://bs0vp4tpo1dqx" path="res://level_1_cargo_bay.gd" id="1_cargo"]
+[ext_resource type="PackedScene" path="res://exit_door.tscn" id="2_m8wp8"]
 [ext_resource type="PackedScene" path="res://player.tscn" id="2_player"]
 [ext_resource type="Script" uid="uid://djpchckt2fdbj" path="res://dynamic_hint_popup.gd" id="3_hint"]
 
@@ -73,16 +74,8 @@ energy = 0.8
 texture = SubResource("GradientTexture2D_light")
 texture_scale = 3.0
 
-[node name="ExitLabel" type="Label" parent="." unique_id=424082210]
-offset_left = -580.0
-offset_top = -20.0
-offset_right = -340.0
-offset_bottom = 20.0
-theme_override_colors/font_color = Color(0.345, 0.8, 0.929, 1)
-theme_override_font_sizes/font_size = 18
-text = "← AUSGANG"
-horizontal_alignment = 1
-vertical_alignment = 1
+[node name="ExitDoor" parent="." unique_id=883034539 instance=ExtResource("2_m8wp8")]
+position = Vector2(-560, 0)
 
 [node name="ObstacleWall" type="StaticBody2D" parent="." unique_id=444040806]
 position = Vector2(-300, 0)
@@ -234,16 +227,6 @@ grow_vertical = 0
 theme_override_colors/font_color = Color(0.7, 0.8, 0.9, 1)
 text = "Steuerung: WASD oder ← ↑ ↓ → = Bewegen  |  E = Interaktion  |  F = Schlagen"
 horizontal_alignment = 1
-
-[node name="ContinueButton" type="Button" parent="CanvasLayer/HUD" unique_id=666318552]
-visible = false
-layout_mode = 0
-offset_left = 396.0
-offset_top = 100.0
-offset_right = 756.0
-offset_bottom = 144.0
-theme_override_font_sizes/font_size = 18
-text = "▶ WEITER ZUR SCHIFFSKARTE"
 
 [node name="DynamicHintPopup" type="Control" parent="CanvasLayer" unique_id=1624218511]
 visible = false
