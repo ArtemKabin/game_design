@@ -1,0 +1,60 @@
+[gd_scene load_steps=6 format=3 uid="uid://c_heavy_cart_001"]
+
+[ext_resource type="Script" path="res://heavy_cart.gd" id="1_cart"]
+
+[sub_resource type="Gradient" id="Gradient_light"]
+colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_light"]
+gradient = SubResource("Gradient_light")
+width = 512
+height = 512
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
+size = Vector2(80, 50)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_board"]
+size = Vector2(140, 110)
+
+[node name="HeavyCart" type="CharacterBody2D"]
+motion_mode = 1
+script = ExtResource("1_cart")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_body")
+
+[node name="Body" type="ColorRect" parent="."]
+offset_left = -40.0
+offset_top = -25.0
+offset_right = 40.0
+offset_bottom = 25.0
+color = Color(0.85, 0.55, 0.15, 1)
+
+[node name="Nose" type="ColorRect" parent="."]
+offset_left = 26.0
+offset_top = -16.0
+offset_right = 40.0
+offset_bottom = 16.0
+color = Color(0.35, 0.2, 0.05, 1)
+
+[node name="Headlight" type="PointLight2D" parent="."]
+color = Color(1, 0.9, 0.7, 1)
+energy = 1.8
+texture = SubResource("GradientTexture2D_light")
+texture_scale = 2.0
+
+[node name="BoardArea" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BoardArea"]
+shape = SubResource("RectangleShape2D_board")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+enabled = false
+limit_left = -680
+limit_top = -560
+limit_right = 680
+limit_bottom = 480
+position_smoothing_enabled = true

@@ -44,9 +44,10 @@ What follows from it? What do we give up?
 | [0008](0008-2-5d-as-2d-scenes.md) | "2.5D" is implemented with 2D scenes, 3D scene stays a layout sketch | accepted |
 | [0009](0009-no-fixed-role-split.md) | No fixed role split, both continue from the current state | accepted |
 | [0010](0010-keyboard-first-ui.md) | Everything is playable without a mouse, one key set everywhere | accepted |
-| [0011](0011-exit-door-and-transition-minigame.md) | Levels end with an exit door, a minigame sits between levels | accepted, minigame design open |
+| [0011](0011-exit-door-and-transition-minigame.md) | Levels end with an exit door, a minigame sits between levels | accepted |
+| [0012](0012-heavy-cart-snake-driving.md) | Heavy cart drives snake-style, transition minigame is a cart run | accepted |
 
 ## Open questions (not yet decided)
 
 * Concept and storyboard for Level 2 (final level). Nothing beyond the README exists yet.
-* Design of the transition minigame between levels (see 0011). Placeholder scene exists.
+* More map variants for the transition minigame (one serpentine map exists, see 0012).

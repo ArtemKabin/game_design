@@ -3,7 +3,9 @@
 [ext_resource type="Script" uid="uid://bs0vp4tpo1dqx" path="res://level_1_cargo_bay.gd" id="1_cargo"]
 [ext_resource type="PackedScene" path="res://exit_door.tscn" id="2_m8wp8"]
 [ext_resource type="PackedScene" path="res://player.tscn" id="2_player"]
+[ext_resource type="PackedScene" path="res://heavy_cart.tscn" id="3_8gghk"]
 [ext_resource type="Script" uid="uid://djpchckt2fdbj" path="res://dynamic_hint_popup.gd" id="3_hint"]
+[ext_resource type="PackedScene" path="res://game_over_ui.tscn" id="6_vtq1f"]
 
 [sub_resource type="Gradient" id="Gradient_light"]
 colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 0)
@@ -18,9 +20,6 @@ fill_to = Vector2(1, 0.5)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_obstacle"]
 size = Vector2(60, 760)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_cart"]
-size = Vector2(130, 100)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_uppqy"]
 size = Vector2(160, 760)
@@ -77,7 +76,7 @@ texture_scale = 3.0
 [node name="ExitDoor" parent="." unique_id=883034539 instance=ExtResource("2_m8wp8")]
 position = Vector2(-560, 0)
 
-[node name="ObstacleWall" type="StaticBody2D" parent="." unique_id=444040806]
+[node name="ObstacleWall" type="StaticBody2D" parent="." unique_id=444040806 groups=["obstacle"]]
 position = Vector2(-300, 0)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ObstacleWall" unique_id=33466100]
@@ -100,28 +99,8 @@ theme_override_font_sizes/font_size = 13
 text = "▓ FRACHTGUT ▓"
 horizontal_alignment = 1
 
-[node name="HeavyCart" type="Area2D" parent="." unique_id=1922119035]
+[node name="HeavyCart" parent="." unique_id=1639230522 instance=ExtResource("3_8gghk")]
 position = Vector2(-200, 320)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="HeavyCart" unique_id=1584426119]
-shape = SubResource("RectangleShape2D_cart")
-
-[node name="CartGraphic" type="ColorRect" parent="HeavyCart" unique_id=294030808]
-offset_left = -40.0
-offset_top = -25.0
-offset_right = 40.0
-offset_bottom = 25.0
-color = Color(0.85, 0.55, 0.15, 1)
-
-[node name="Label" type="Label" parent="HeavyCart" unique_id=679495482]
-offset_left = -90.0
-offset_top = -60.0
-offset_right = 90.0
-offset_bottom = -35.0
-theme_override_colors/font_color = Color(0.9, 0.9, 0.3, 1)
-theme_override_font_sizes/font_size = 12
-text = "SCHWERLASTWAGEN"
-horizontal_alignment = 1
 
 [node name="BypassRightZone" type="Area2D" parent="." unique_id=1092686072]
 position = Vector2(500, 0)
@@ -274,3 +253,15 @@ autowrap_mode = 2
 [node name="CloseButton" type="Button" parent="CanvasLayer/DynamicHintPopup/PanelContainer/MarginContainer/VBoxContainer" unique_id=110474266]
 layout_mode = 2
 text = "Verstanden"
+
+[node name="GameOverUI" parent="CanvasLayer" unique_id=479569470 instance=ExtResource("6_vtq1f")]
+
+[node name="CartLabel" type="Label" parent="." unique_id=1861268295]
+offset_left = -290.0
+offset_top = 258.0
+offset_right = -110.0
+offset_bottom = 283.0
+theme_override_colors/font_color = Color(0.9, 0.9, 0.3, 1)
+theme_override_font_sizes/font_size = 12
+text = "SCHWERLASTWAGEN"
+horizontal_alignment = 1
