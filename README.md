@@ -1,7 +1,41 @@
 # Project Overview: Sci-Fi Puzzle Game ("Deceptive Wiring")
 
+A spaceship circuit puzzle game where the most intuitively obvious path is a trap.
+Two-person university project, built in Godot 4.7 within roughly one week.
+
+**Most important rule: KEEP IT SIMPLE.** There are many small features (level-transition minigames, fog of war, map, camera, tools/vehicles, character, dialogue, UI). None of them may be over-engineered. Ground first, polish later.
+
+---
+
+## 0. Project Facts
+
+| Topic | Decision |
+| :--- | :--- |
+| Engine | Godot 4.7.x (project lives in `Game1-deceptive-wiring/`) |
+| Perspective | 2.5D, top-down view |
+| Target platform | Web export, hosted via GitHub Actions or itch.io, not on the lecturer's server (see [decision log](docs/decisions/)) |
+| Setting | Spaceship. "Among Us" is the visual and structural reference. |
+| Map | Fog of War map with zoom in/out and full-map view (Command & Conquer / Settlers style), combined with room-to-room camera (The Binding of Isaac style) |
+| Art direction | Dark, accent-rich blue palette (see section 5) |
+| Assets | Created in Blender |
+| Scope | **3 levels**: Level 0 (tutorial), Level 1 (first real level), Level 2 (final level). Everything else is backlog. |
+
+### Team & Workflow
+
+| | Person A | Person B |
+| :--- | :--- | :--- |
+| Focus | Foundation: camera, controls, physics, reusable functions | Extending base logic with level-specific logic |
+| Levels | Level 0 and Level 1 | Level 2 (final level): concept and implementation |
+| Also | Not the whole concept at once. Lay the ground first. | Assets, level storyboards (approved by Person A), decision log |
+
+Both developers: update this README, review each other's code, keep the Kanban board current.
+
+### Development decisions
+Every non-trivial development decision is recorded in [`docs/decisions/`](docs/decisions/). One file per decision, see the folder README for the template and the index.
+
+---
+
 ## 1. Concept & Game Name
-A spaceship circuit puzzle game where the most intuitively obvious path is a trap. 
 
 ### Visuals & Room Design (Fog of War)
 * Everything is pitch black at the start.
@@ -13,20 +47,30 @@ A spaceship circuit puzzle game where the most intuitively obvious path is a tra
 * If a player dies or fails multiple times on a specific level, a dynamic hint pop-up (**Hinweis**) appears to nudge them toward the "obvious is wrong" logic.
 
 ### Official Name
-* **Deceptive Wiring**
+* **Deceptive Wiring** (chosen out of 8 candidates)
 
 ---
 
-## 2. Level Overview (6 Planned Spaceship Levels, Status & Hints)
+## 2. Level Overview
 
-| Level | Spaceship Area | Puzzle Mechanics & Linguistic Trap | Failure Hint ("Hinweis") | Status | Visibility Status |
+### In scope (3 levels)
+
+| Level | Spaceship Area | Puzzle Mechanics & Linguistic Trap | Failure Hint ("Hinweis") | Status | Owner |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Level 0** | **Bridge / Life Support** (Central Hub) | User instruction: *"Repariere das Lebenserhaltungssystem."*<br>Trap: Using proper tools (wrench/soldering iron) triggers a lethal oxygen countdown and death within seconds. Hitting the air vent like an old TV fixes it instantly. | *"Kennst du den Trick mit dem alten Röhrenfernseher? Manchmal hilft rohe Gewalt mehr als Präzision!"* | **Working** | Visible from the start (fully lit, center of map). |
-| **Level 1** | **Cargo Bay & Quarantine Maze** | User instruction: *"Fahre das Hindernis um."*<br>Trap: Trying to steer right toward the obvious crate path (*umgehen*) fails; you must crash straight through it or look left. Also features a side cart to smash obstacles and a snake quarantine maze (Cabins A-D) that loops you backward into Level 0. | *"Manchmal muss man Probleme direkt anfahren. Und lass die Finger von den nervigen Quarantäne-Kabinen – die führen dich nur im Kreis!"* | **Thought Through** | Unlocked and revealed after completing Level 0. |
-| **Level 2** | **Engine Room** | User instruction: *"Folge der Leitung."*<br>Trap: Following the optical power line to the right leads to a dead end; players must look left and take over system command (*Leitung*). | *"Wer steuert hier eigentlich das Schiff? Hör auf die Kabel und übernimm das Kommando!"* | **Concept** | Revealed after completing Level 1. |
-| **Level 3** | **Security Sector** | User instruction: *"Betätige die Schaltung."*<br>Trap: Digital buttons on the right side distract the player; the solution requires operating a mechanical gearshift on the left. | *"Elektronik ist nicht alles. Manchmal braucht es handfestes Getriebe statt Digital-Schnickschnack."* | **Concept** | Adjacent to Level 2, accessible after its completion. |
-| **Level 4** | **Reactor Core** | Complex language traps where technical vocabulary terms (*Leistung*, *Spannung*) must be interpreted in reverse, subverting the rightward flow. | *"Glaub nicht alles, was das Handbuch dir sagt. Die Definition von Leistung ist hier verdreht."* | **Concept** | Hidden in the fog, revealed after Level 3. |
-| **Level 5** | **Evacuation Zone** (Finale) | The final room combining all learned "obvious is wrong" mechanics to save the ship. | *"Vergiss alles, was logisch erscheint. Der falsche Weg ist der einzige Ausweg."* | **Concept** | The ultimate goal, unlocked only after Level 4. |
+| **Level 0** | **Bridge / Life Support** (Central Hub, Tutorial) | User instruction: *"Repariere das Lebenserhaltungssystem."*<br>Trap: Using proper tools (wrench/soldering iron) or the wiring panel triggers a lethal oxygen countdown. Hitting the air vent like an old TV fixes it instantly. | *"Kennst du den Trick mit dem alten Röhrenfernseher? Manchmal hilft rohe Gewalt mehr als Präzision!"* | **Working** (scene + script) | Person A |
+| **Level 1** | **Cargo Bay & Quarantine Maze** | User instruction: *"Fahre das Hindernis um."*<br>Trap: Trying to steer right toward the obvious crate path (*umgehen*) fails; you must crash straight through it or look left. Also features a side cart to smash obstacles and a snake quarantine maze (Cabins A-D) that loops you backward into Level 0. | *"Manchmal muss man Probleme direkt anfahren. Und lass die Finger von den nervigen Quarantäne-Kabinen – die führen dich nur im Kreis!"* | **Script done, scene missing** | Person A |
+| **Level 2** | **Final Level** | Combines all learned "obvious is wrong" mechanics to save the ship. Concept to be written as a storyboard by Person B and approved by Person A. May draw from the backlog concepts below. | *"Vergiss alles, was logisch erscheint. Der falsche Weg ist der einzige Ausweg."* | **Concept open** | Person B |
+
+### Backlog: further level concepts (not scheduled)
+
+These four concepts were created after the first two levels were finished. They are **out of scope** for the current build and serve as a pool of ideas for the final level or a later extension.
+
+| Concept | Instruction | Puzzle Mechanics & Linguistic Trap | Failure Hint ("Hinweis") |
+| :--- | :--- | :--- | :--- |
+| Engine Room | *"Folge der Leitung."* | Following the optical power line to the right leads to a dead end; players must look left and take over system command (*Leitung*). | *"Wer steuert hier eigentlich das Schiff? Hör auf die Kabel und übernimm das Kommando!"* |
+| Security Sector | *"Betätige die Schaltung."* | Digital buttons on the right side distract the player; the solution requires operating a mechanical gearshift on the left. | *"Elektronik ist nicht alles. Manchmal braucht es handfestes Getriebe statt Digital-Schnickschnack."* |
+| Reactor Core | Technical vocabulary (*Leistung*, *Spannung*) | Terms must be interpreted in reverse, subverting the rightward flow. | *"Glaub nicht alles, was das Handbuch dir sagt. Die Definition von Leistung ist hier verdreht."* |
+| Evacuation Zone | Finale combining all mechanics | Original 6-level finale concept, now merged into Level 2. | *"Vergiss alles, was logisch erscheint. Der falsche Weg ist der einzige Ausweg."* |
 
 ---
 ![alt text](First_spaceshop.jpg)
@@ -39,7 +83,7 @@ A spaceship circuit puzzle game where the most intuitively obvious path is a tra
 * **The Puzzle Design:** Interacting with the life support system opens a tool drawer displaying standard precision repair items—such as a Wrench (*Schraubenschlüssel*), a Soldering Iron (*Lötkolben*), and an instruction manual. Clicking any of them starts a fatal oxygen countdown.
 * **The Non-UI Interaction:** To win, the player must ignore the UI panel entirely, close the menu, and press a button or use a basic input to physically punch or hit the wall vent.
 
-#### Level 0 — Idea 2: The Deceptive Wiring UI Trap
+#### Level 0 — Idea 2: The Deceptive Wiring UI Trap (currently implemented)
 * **The Puzzle Design:** Interacting with the air vent opens a full-screen **Wiring UI popup** featuring a complex circuit board with loose cables that need to be connected. Simultaneously, a brutal **30-second countdown timer** starts.
 * **The Twist:** The wiring puzzle is a complete red herring designed to exploit the game's title (*Deceptive Wiring*). The timer is too short to finish it legitimately, leading to an inevitable oxygen-depletion death. To win, the player must ignore the wiring UI entirely, close the menu, and hit the physical air vent with a non-UI action (like the old TV punch trick).
 
@@ -48,6 +92,8 @@ A spaceship circuit puzzle game where the most intuitively obvious path is a tra
 * **The Puzzle Design:** The main path to the right features a large obstacle with the instruction *"Fahre das Hindernis um."* Players naturally attempt to navigate around it to the right (*umgehen*), which leads to dead ends. Alternatively, they can use a small corner cart to smash straight through it or look left.
 * **The Twist:** There is also a snake-like sequence of 4 quarantine cabins (Cabins A-D) requiring users to clear "Virus Alpha, Beta, etc." Patiently clicking through these wastes time and routes the player backward through a maintenance hatch straight back into Level 0.
 
+### Level 2: Final Level
+* Storyboard pending (Person B). Will be documented here once approved.
 
 ---
 
@@ -61,8 +107,8 @@ Depending on how the player reads or interprets an instruction, the seemingly lo
 | :--- | :--- | :--- |
 | **"Schlage auf den Lüftungsschacht."** *(Level 0)* | Gently tap or punch the air vent like an old television set to fix the rattling fan. | Trying to use technical repair tools (wrench/soldering iron) which triggers a countdown failure. |
 | **"Fahre das Hindernis um."** *(Level 1)* | Steer around the obstacle to the right (*umgehen*). | Use the corner cart to ram and destroy the obstacle to the left (*umfahren*), or ignore the snake quarantine cabins that loop you back. |
-| **"Folge der Leitung."** *(Level 2)* | Follow a data or power line to the right through the room. | Look left and take over the leadership / system command (*Leitung*). |
-| **"Betätige die Schaltung."** *(Level 3)* | Activate an electrical switch or circuit on the right. | Operate a mechanical gearshift transmission on the left. |
+| **"Folge der Leitung."** *(Backlog)* | Follow a data or power line to the right through the room. | Look left and take over the leadership / system command (*Leitung*). |
+| **"Betätige die Schaltung."** *(Backlog)* | Activate an electrical switch or circuit on the right. | Operate a mechanical gearshift transmission on the left. |
 
 ---
 
@@ -77,9 +123,20 @@ Since the game is localized in German, UI elements and buttons must accommodate 
 
 1. **The Center Hub (Level 0):** Enclosed by steel-blue hull walls (`#2e4a6b`) over a deep navy background (`#0a2041`), pulsing with a warning red frame (`#FF3333`) every few seconds.
 
-3. **Fog of War:** Everything outside of Level 0 starts completely black (`#0a2041` with zero alpha or solid black tiles), lighting up and glowing cyan (`#58CCED`) only as rooms/doors are unlocked.
+2. **Fog of War:** Everything outside of Level 0 starts completely black (`#0a2041` with zero alpha or solid black tiles), lighting up and glowing cyan (`#58CCED`) only as rooms/doors are unlocked.
+
 ### Key Visual & Color Cues for the Map UI:
 
 * **The Background Void:** A dark, moody deep space navy (`#0a2041`) completely surrounding the rooms with a Fog of War fade.
 * **The Center Hub (Level 0):** Framed in steel blue (`#2e4a6b`) with a pulsing warning border that shifts to emergency red (`#FF3333`) every few seconds to draw the player's eye right to the start.
 * **The Paths:** Connected by thin, glowing cyan interface lines (`#58CCED`) that light up only when adjacent rooms are unlocked via puzzle completion.
+
+---
+
+## 6. Getting Started (Development)
+
+1. Install Godot 4.7.x (standard build).
+2. Clone the repo, open Godot, choose **Import** and select `Game1-deceptive-wiring/project.godot`.
+3. Press F5 to run. The main scene is currently `level_0_bridge.tscn`.
+4. Work on a feature branch and open a pull request against `main`. Scene files (`.tscn`) merge badly, so agree on who touches which scene.
+5. The `.godot/` folder is generated locally and ignored by git. The `.uid` files next to scripts **must** be committed.
