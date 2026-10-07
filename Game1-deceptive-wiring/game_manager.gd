@@ -12,8 +12,9 @@ const WORLD_SCENE := "res://world.tscn"
 const HINT_AFTER_FAILURES := 3
 # Shown at the bottom of every room. Rooms never write their own version.
 const CONTROLS_TEXT := "Steuerung: WASD oder ← ↑ ↓ → = Bewegen  |  E = Interaktion  |  F = Schlagen  |  Esc = Menü"
-# Room id of the cargo rail corridor between Level 0 and Level 1 (not a level, but it has hints).
-const ROOM_CORRIDOR := 10
+# Room ids of the cargo rail corridors (not levels, but they have hints).
+const ROOM_CORRIDOR_WEST := 10  # bridge to cargo bay
+const ROOM_CORRIDOR_EAST := 20  # bridge to hangar
 
 signal hint_triggered(hint_text: String)
 signal level_completed(level_id: int)
@@ -76,6 +77,6 @@ func get_hint_for_level(level_id: int) -> String:
 	match level_id:
 		0: return "Kennst du den Trick mit dem alten Röhrenfernseher? Manchmal hilft rohe Gewalt mehr als Präzision!"
 		1: return "Manchmal muss man Probleme direkt anfahren. Der Wagen hat keine Bremse, und das ist hier gut so."
-		2: return "Vergiss alles, was logisch erscheint. Der falsche Weg ist der einzige Ausweg."
-		ROOM_CORRIDOR: return "Der Wagen bremst nicht. Lenk früher, nicht stärker. Und lass die Taste wieder los."
+		2: return "Abheben, einstellen, aufgeben: Jedes Wort hat zwei Bedeutungen. Die Bodenkontrolle meint immer die andere."
+		ROOM_CORRIDOR_WEST, ROOM_CORRIDOR_EAST: return "Der Wagen bremst nicht. Lenk früher, nicht stärker. Und lass die Taste wieder los."
 		_: return "Denke anders herum."

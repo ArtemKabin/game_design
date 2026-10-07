@@ -1,6 +1,6 @@
 [gd_scene load_steps=23 format=3 uid="uid://c_corridor_l_001"]
 
-[ext_resource type="Script" path="res://corridor_l.gd" id="1_corridor"]
+[ext_resource type="Script" path="res://rail_corridor.gd" id="1_corridor"]
 [ext_resource type="PackedScene" path="res://heavy_cart.tscn" id="2_cart"]
 [ext_resource type="PackedScene" path="res://exit_door.tscn" id="3_door"]
 
@@ -69,10 +69,18 @@ size = Vector2(300, 340)
 [sub_resource type="RectangleShape2D" id="Shape_goal_bottom"]
 size = Vector2(260, 340)
 
-[node name="CorridorL" type="Node2D"]
+[node name="CorridorWest" type="Node2D"]
 script = ExtResource("1_corridor")
 room_id = 10
-room_title = "FRACHTSCHIENE"
+room_title = "FRACHTSCHIENE WEST"
+dismount_start = Vector2(60, 0)
+dismount_end = Vector2(-70, 0)
+status_forward = "FRACHTSCHIENE WEST: Zu Fuß geht hier nichts. [E] in den Wagen, [W] losfahren, A/D lenken."
+status_back = "Zurück zur Brücke: [E] einsteigen, [W] losfahren, A/D lenken. Rechts, hoch, und wieder rechts."
+route_forward = "links, runter, wieder links"
+route_back = "rechts, hoch, wieder rechts"
+arrived_end = "Plattform erreicht. Die Tür links öffnet sich: Level 1, Frachtraum."
+arrived_start = "Plattform erreicht. Rechts geht es zurück auf die Brücke."
 bounds = Rect2(-1940, -210, 1980, 1000)
 
 [node name="Floor" type="Node2D" parent="."]
@@ -382,20 +390,20 @@ offset_right = 30.0
 offset_bottom = 45.0
 color = Color(0.18, 0.29, 0.42, 1)
 
-[node name="GoalTop" type="Area2D" parent="."]
+[node name="GoalStart" type="Area2D" parent="."]
 position = Vector2(-150, 0)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="GoalTop"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="GoalStart"]
 shape = SubResource("Shape_goal_top")
 
-[node name="Visual" type="ColorRect" parent="GoalTop"]
+[node name="Visual" type="ColorRect" parent="GoalStart"]
 offset_left = -150.0
 offset_top = -170.0
 offset_right = 150.0
 offset_bottom = 170.0
 color = Color(0.345, 0.8, 0.929, 0.18)
 
-[node name="Label" type="Label" parent="GoalTop"]
+[node name="Label" type="Label" parent="GoalStart"]
 offset_left = -150.0
 offset_top = -164.0
 offset_right = 150.0
@@ -405,20 +413,20 @@ theme_override_font_sizes/font_size = 12
 text = "PLATTFORM BRÜCKE"
 horizontal_alignment = 1
 
-[node name="GoalBottom" type="Area2D" parent="."]
+[node name="GoalEnd" type="Area2D" parent="."]
 position = Vector2(-1720, 600)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="GoalBottom"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="GoalEnd"]
 shape = SubResource("Shape_goal_bottom")
 
-[node name="Visual" type="ColorRect" parent="GoalBottom"]
+[node name="Visual" type="ColorRect" parent="GoalEnd"]
 offset_left = -130.0
 offset_top = -170.0
 offset_right = 130.0
 offset_bottom = 170.0
 color = Color(0.345, 0.8, 0.929, 0.18)
 
-[node name="Label" type="Label" parent="GoalBottom"]
+[node name="Label" type="Label" parent="GoalEnd"]
 offset_left = -130.0
 offset_top = -164.0
 offset_right = 130.0
@@ -496,12 +504,12 @@ energy = 1.2
 texture = SubResource("GradientTexture2D_light")
 texture_scale = 1.8
 
-[node name="DoorToLevel0" parent="." instance=ExtResource("3_door")]
+[node name="DoorToStart" parent="." instance=ExtResource("3_door")]
 position = Vector2(-30, 0)
 target_room_id = 0
 target_spawn = Vector2(-500, 0)
 
-[node name="DoorToLevel1" parent="." instance=ExtResource("3_door")]
+[node name="DoorToEnd" parent="." instance=ExtResource("3_door")]
 position = Vector2(-1870, 600)
 target_room_id = 1
 target_spawn = Vector2(480, 0)

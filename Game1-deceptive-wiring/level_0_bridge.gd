@@ -2,8 +2,8 @@ extends Room
 
 # Level 0: Bridge / Central Hub. Tutorial room, start of the game.
 # WASD: Walk | E: Open the cable wiring panel (the trap) | F: Hit the vent (the solution)
-# Left door -> cargo rail corridor (room 10) -> Level 1. The right door opens once
-# Level 1 is solved and will lead to Level 2 (not built yet). The bottom door is the
+# Left door -> west rail corridor (room 10) -> Level 1. The right door opens once
+# Level 1 is solved: east rail corridor (room 20) -> Level 2, the hangar. The bottom door is the
 # one-way exit of the quarantine loop: cabin D drops the player back here (decision 0017).
 
 const START_SPAWN := Vector2(0, 150)

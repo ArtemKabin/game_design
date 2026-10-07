@@ -2,9 +2,11 @@
 
 [ext_resource type="Script" path="res://world.gd" id="1_world"]
 [ext_resource type="PackedScene" path="res://level_0_bridge.tscn" id="2_level0"]
-[ext_resource type="PackedScene" path="res://corridor_l.tscn" id="3_corridor"]
+[ext_resource type="PackedScene" path="res://corridor_west.tscn" id="3_corridor"]
 [ext_resource type="PackedScene" path="res://level_1_cargo_bay.tscn" id="4_level1"]
 [ext_resource type="PackedScene" path="res://quarantine_cabin.tscn" id="11_cabin"]
+[ext_resource type="PackedScene" path="res://level_2_hangar.tscn" id="12_level2"]
+[ext_resource type="PackedScene" path="res://corridor_east.tscn" id="13_corridor_east"]
 [ext_resource type="PackedScene" path="res://pause_menu.tscn" id="10_pause"]
 [ext_resource type="PackedScene" path="res://player.tscn" id="5_player"]
 [ext_resource type="PackedScene" path="res://game_over_ui.tscn" id="6_gameover"]
@@ -21,11 +23,17 @@ color = Color(0.04, 0.06, 0.12, 1)
 
 [node name="Level0" parent="Rooms" instance=ExtResource("2_level0")]
 
-[node name="CorridorL" parent="Rooms" instance=ExtResource("3_corridor")]
+[node name="CorridorWest" parent="Rooms" instance=ExtResource("3_corridor")]
 position = Vector2(-620, 0)
 
 [node name="Level1" parent="Rooms" instance=ExtResource("4_level1")]
 position = Vector2(-3140, 600)
+
+[node name="Level2" parent="Rooms" instance=ExtResource("12_level2")]
+position = Vector2(2800, 0)
+
+[node name="CorridorEast" parent="Rooms" instance=ExtResource("13_corridor_east")]
+position = Vector2(600, 0)
 
 [node name="CabinA" parent="Rooms" instance=ExtResource("11_cabin")]
 position = Vector2(-2860, 1220)

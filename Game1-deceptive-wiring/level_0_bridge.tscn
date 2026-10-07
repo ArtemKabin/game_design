@@ -98,6 +98,7 @@ target_room_id = 10
 target_spawn = Vector2(-90, 0)
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1390983958]
+layer = 0
 
 [node name="HUD" type="Control" parent="CanvasLayer" unique_id=657978658]
 layout_mode = 3
@@ -189,7 +190,8 @@ text = "Abbrechen / Schließen"
 
 [node name="ExitDoorRight" parent="." unique_id=901364 instance=ExtResource("2_a8ygq")]
 position = Vector2(560, 0)
-blocked_message = "Level 2 ist noch nicht gebaut. Hier geht es später weiter."
+target_room_id = 20
+target_spawn = Vector2(90, 0)
 
 [node name="ExitDoorBottom" parent="." instance=ExtResource("2_a8ygq")]
 position = Vector2(370, 345)

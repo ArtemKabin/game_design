@@ -53,8 +53,10 @@ What follows from it? What do we give up?
 | [0017](0017-quarantine-queues-loop-to-bridge.md) | Quarantine cabins are airport queues with a mandatory station and locked doors; D exits onto the bridge; no tool hunt | accepted |
 | [0018](0018-crate-wall-no-tarp-gap.md) | The crates are space junk: shove them into the airlock with the cart, a lever jettisons them; cargo control room gone | accepted |
 | [0019](0019-hud-and-text-polish.md) | HUD shows only the room title, status text types in and waits to be read, no emojis, bigger rail stubs | accepted |
+| [0020](0020-level-2-launch-clearance.md) | Level 2 is the hangar: launch clearance by real double meanings (abheben, einstellen, aufgeben), launch-window countdown, then escape and end screen | accepted |
+| [0021](0021-east-rail-shared-corridor-script.md) | A second cart rail (east, slalom) between bridge and hangar; both rails share rail_corridor.gd | accepted |
 
 ## Open questions (not yet decided)
 
-* Concept and storyboard for Level 2 (final level). Nothing beyond the README exists yet.
-* Further corridors between later levels (the rail to Level 1 exists, see 0014).
+* Polish of Level 2 (final level): wording of the three clearance steps, look of the shuttle, end screen text. The level itself is built (0020).
+* Difficulty of the two rails and the junk shove in Level 1: needs playtesting with a keyboard.
