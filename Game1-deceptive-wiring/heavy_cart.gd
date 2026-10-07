@@ -7,11 +7,14 @@ extends CharacterBody2D
 #    (continuous rotation, turn_speed_deg per second), so the player has to drive curves
 #  - hits a wall: crashed_into_wall (showing game over is the level's job)
 #  - hits a StaticBody2D in group "obstacle": passenger gets out, crashed_into_obstacle(obstacle)
+#  - hits a body in group "pushable" (junk_crate.gd): shoves it along until it is blocked,
+#    then stops in place and emits push_blocked(crate); the level decides what happens next
 
 signal boarded
 signal started_driving
 signal crashed_into_wall(collider: Node2D)
 signal crashed_into_obstacle(obstacle: Node2D)
+signal push_blocked(crate: Node2D)
 signal body_nearby(body: Node2D, is_near: bool)
 
 enum State { PARKED, BOARDED, DRIVING, CRASHED }
@@ -77,10 +80,30 @@ func _physics_process(delta: float) -> void:
 	var steer: float = Input.get_axis("move_left", "move_right")  # -1 = left (A), +1 = right (D)
 	rotation += steer * deg_to_rad(turn_speed_deg) * delta
 	velocity = direction() * speed
+	var motion: Vector2 = velocity * delta
+	# Junk in the way is shoved ahead of the cart instead of crashed into.
+	var ahead: KinematicCollision2D = move_and_collide(motion, true)
+	if ahead and _is_pushable(ahead.get_collider()):
+		if not ahead.get_collider().push(motion):
+			_stop_pushing(ahead.get_collider())
+			return
 	move_and_slide()
-	if get_slide_collision_count() > 0:
-		var collider: Object = get_slide_collision(0).get_collider()
+	for i in get_slide_collision_count():
+		var collider: Object = get_slide_collision(i).get_collider()
+		if _is_pushable(collider):
+			continue  # touching the crate we are pushing is fine
 		_crash(collider as Node2D)
+		return
+
+
+func _is_pushable(body: Object) -> bool:
+	return body is Node and (body as Node).is_in_group("pushable")
+
+
+func _stop_pushing(crate: Node2D) -> void:
+	state = State.CRASHED  # stopped; the level parks it again
+	velocity = Vector2.ZERO
+	push_blocked.emit(crate)
 
 
 func _crash(collider: Node2D) -> void:

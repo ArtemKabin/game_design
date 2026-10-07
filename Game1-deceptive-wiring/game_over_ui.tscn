@@ -62,4 +62,4 @@ autowrap_mode = 2
 [node name="RestartButton" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
-text = "🔄 NEUSTART (oder R drücken)"
+text = "NEUSTART (oder R drücken)"

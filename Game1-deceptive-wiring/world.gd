@@ -8,6 +8,11 @@ extends Node2D
 
 const START_ROOM_ID := 0
 const START_SPAWN := Vector2(0, 150)
+# Status texts type in letter by letter and then stay long enough to be read before the
+# next one replaces them. Only the newest waiting text is kept.
+const STATUS_CHARS_PER_SECOND := 45.0
+const STATUS_READ_SECONDS_MIN := 2.0
+const STATUS_READ_SECONDS_PER_CHAR := 0.03
 
 @onready var player: CharacterBody2D = $Player
 @onready var rooms_node: Node2D = $Rooms
@@ -19,6 +24,9 @@ const START_SPAWN := Vector2(0, 150)
 @onready var map_overlay: Control = $CanvasLayer/MapOverlay
 
 var current_room: Room = null
+var status_pending: String = ""
+var status_busy: bool = false
+var status_generation: int = 0  # bumped by an instant text to cut a running type-in short
 
 
 func _ready() -> void:
@@ -50,14 +58,14 @@ func _enter_room(room: Room, local_spawn: Vector2) -> void:
 	player.global_position = room.to_global(local_spawn)
 	player.set_movement_enabled(true)
 	room.enter(player, from_room_id)
-	header_label.text = "DECEPTIVE WIRING — " + room.room_title
+	header_label.text = room.room_title
 	GameManager.current_level = room.room_id
 	map_overlay.set_current(room)
 
 
 func _on_room_door_entered(door: Area2D) -> void:
 	if door.target_room_id < 0:
-		status_label.text = door.blocked_message
+		_on_room_status_changed(door.blocked_message)
 		return
 	var target: Room = _room_by_id(door.target_room_id)
 	if target == null:
@@ -66,8 +74,37 @@ func _on_room_door_entered(door: Area2D) -> void:
 	_enter_room(target, door.target_spawn)
 
 
-func _on_room_status_changed(text: String) -> void:
-	status_label.text = text
+func _on_room_status_changed(text: String, instant: bool = false) -> void:
+	if instant:
+		status_pending = ""
+		status_generation += 1
+		status_label.text = text
+		status_label.visible_characters = -1
+		return
+	if text == status_label.text and not status_busy:
+		return
+	status_pending = text
+	if not status_busy:
+		_play_status_queue()
+
+
+func _play_status_queue() -> void:
+	status_busy = true
+	while status_pending != "":
+		var text: String = status_pending
+		var generation: int = status_generation
+		status_pending = ""
+		status_label.text = text
+		status_label.visible_characters = 0
+		while status_label.visible_characters < text.length():
+			await get_tree().create_timer(1.0 / STATUS_CHARS_PER_SECOND).timeout
+			if status_generation != generation:
+				break  # an instant text took over
+			status_label.visible_characters += 1
+		if status_generation != generation:
+			continue
+		await get_tree().create_timer(STATUS_READ_SECONDS_MIN + text.length() * STATUS_READ_SECONDS_PER_CHAR).timeout
+	status_busy = false
 
 
 func _on_room_game_over(title: String, subtitle: String) -> void:

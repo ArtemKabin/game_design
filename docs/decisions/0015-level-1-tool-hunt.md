@@ -1,7 +1,7 @@
 # 0015: Level 1 is a tool hunt that ends with "umfahren" meaning drive around
 
 * Date: 2026-10-04
-* Status: accepted
+* Status: superseded by 0016 to 0018 (the cart through the crates stays, tool hunt and tarp gap are gone)
 * Participants: both developers
 
 ## Context

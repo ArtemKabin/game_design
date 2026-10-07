@@ -1,8 +1,7 @@
 extends Control
 
 # Pause menu, toggled with Escape (ui_cancel). Pauses the game while open.
-# "Neu starten" restarts the whole ship from the bridge: the way out of a dead end
-# (Level 1's tarp gap is one on purpose, see docs/decisions/0015).
+# "Neu starten" restarts the whole ship from the bridge, fresh progress included.
 
 @onready var resume_button: Button = $PanelContainer/MarginContainer/VBoxContainer/ResumeButton
 @onready var restart_button: Button = $PanelContainer/MarginContainer/VBoxContainer/RestartButton

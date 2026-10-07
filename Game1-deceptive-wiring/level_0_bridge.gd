@@ -3,9 +3,11 @@ extends Room
 # Level 0: Bridge / Central Hub. Tutorial room, start of the game.
 # WASD: Walk | E: Open the cable wiring panel (the trap) | F: Hit the vent (the solution)
 # Left door -> cargo rail corridor (room 10) -> Level 1. The right door opens once
-# Level 1 is solved and will lead to Level 2 (not built yet).
+# Level 1 is solved and will lead to Level 2 (not built yet). The bottom door is the
+# one-way exit of the quarantine loop: cabin D drops the player back here (decision 0017).
 
 const START_SPAWN := Vector2(0, 150)
+const CABIN_D_ROOM_ID := 14
 
 @onready var room_emergency_light: PointLight2D = $RoomEmergencyLight
 @onready var oxygen_timer: Timer = $OxygenTimer
@@ -13,6 +15,7 @@ const START_SPAWN := Vector2(0, 150)
 @onready var vent_area: Area2D = $WallVent
 @onready var exit_door_left: Area2D = $ExitDoor
 @onready var exit_door_right: Area2D = $ExitDoorRight
+@onready var exit_door_bottom: Area2D = $ExitDoorBottom
 @onready var oxygen_bar: ProgressBar = $CanvasLayer/HUD/OxygenBar
 # Room-specific UI (oxygen bar, wiring panel). CanvasLayers ignore the room's visibility,
 # so it is shown and hidden by hand when the player enters or leaves.
@@ -48,17 +51,20 @@ func _ready() -> void:
 	wire_orange_btn.pressed.connect(func() -> void: _on_wire_clicked("Orangefarbenes Kabel"))
 	close_wiring_btn.pressed.connect(_on_close_wiring_pressed)
 
-	register_doors([exit_door_left, exit_door_right])
+	register_doors([exit_door_left, exit_door_right, exit_door_bottom])
 	GameManager.level_completed.connect(_on_level_completed)
 	room_ui_layer.visible = false
 	_reset_state()
 
 
-func _on_enter(_from_room_id: int = -1) -> void:
+func _on_enter(from_room_id: int = -1) -> void:
 	room_ui_layer.visible = true
 	player.interact_pressed.connect(_on_player_interact)
 	player.hit_pressed.connect(_on_player_hit)
-	if not is_solved:
+	if from_room_id == CABIN_D_ROOM_ID:
+		exit_door_bottom.open(false)  # stays open, but leads nowhere: one-way airlock
+		set_status("Zurück auf der Brücke?! Die Quarantäne entlässt dich am Anfang. Links wartet die Frachtschiene. Noch mal.")
+	elif not is_solved:
 		set_status("SYSTEMFEHLER: Sauerstoffzufuhr instabil. Gehe zur Lüftung!")
 	elif exit_door_right.is_open:
 		set_status("Brücke. Die Tür rechts ist offen.")
@@ -187,12 +193,12 @@ func _on_oxygen_tick() -> void:
 
 
 func trigger_game_over() -> void:
-	set_status("💀 KRITISCHER SAUERSTOFFVERLUST: GAME OVER.")
+	set_status("KRITISCHER SAUERSTOFFVERLUST: GAME OVER.")
 	GameManager.register_failure(room_id, "Sauerstoffmangel durch Präzisionsverkabelung.")
 	player.set_movement_enabled(false)
 	player.hide_interaction_hint()
 	wiring_panel_ui.visible = false
-	game_over.emit("💀 GAME OVER — SAUERSTOFFMANGEL",
+	game_over.emit("GAME OVER — SAUERSTOFFMANGEL",
 		"Die Notabschaltung wurde ausgelöst. Lebenserhaltung kollabiert.")
 
 

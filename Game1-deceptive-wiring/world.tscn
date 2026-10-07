@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" path="res://level_0_bridge.tscn" id="2_level0"]
 [ext_resource type="PackedScene" path="res://corridor_l.tscn" id="3_corridor"]
 [ext_resource type="PackedScene" path="res://level_1_cargo_bay.tscn" id="4_level1"]
-[ext_resource type="PackedScene" path="res://small_room.tscn" id="9_small"]
+[ext_resource type="PackedScene" path="res://quarantine_cabin.tscn" id="11_cabin"]
 [ext_resource type="PackedScene" path="res://pause_menu.tscn" id="10_pause"]
 [ext_resource type="PackedScene" path="res://player.tscn" id="5_player"]
 [ext_resource type="PackedScene" path="res://game_over_ui.tscn" id="6_gameover"]
@@ -25,83 +25,57 @@ color = Color(0.04, 0.06, 0.12, 1)
 position = Vector2(-620, 0)
 
 [node name="Level1" parent="Rooms" instance=ExtResource("4_level1")]
-position = Vector2(-1710, 1340)
+position = Vector2(-3140, 600)
 
-[node name="CabinA" parent="Rooms" instance=ExtResource("9_small")]
-position = Vector2(-1810, 1960)
+[node name="CabinA" parent="Rooms" instance=ExtResource("11_cabin")]
+position = Vector2(-2860, 1220)
 room_id = 11
 room_title = "KABINE A"
-intro_text = "KABINE A — Virus Alpha. Desinfiziert. Leer. Die nächste Kabine ist rechts."
-loop_text = "KABINE A. Schon wieder. Die Kabinen führen im Kreis. Nach oben geht es zurück in den Frachtraum."
-loop_from_room = 14
+intro_text = "KABINE A — Quarantäne. Bitte der Absperrung folgen und die Hände desinfizieren."
+station_label = "Hände desinfizieren"
+station_text = "Hände desinfiziert. Es brennt ein bisschen. Der Ausgang rechts ist offen."
+door_in_side = "top_left"
 door_in_target_room = 1
 door_in_spawn = Vector2(-100, 285)
 door_out_target_room = 12
-door_out_spawn = Vector2(-180, 0)
+door_out_spawn = Vector2(-350, 0)
 
-[node name="CabinB" parent="Rooms" instance=ExtResource("9_small")]
-position = Vector2(-1160, 1960)
+[node name="CabinB" parent="Rooms" instance=ExtResource("11_cabin")]
+position = Vector2(-1910, 1220)
 room_id = 12
 room_title = "KABINE B"
-intro_text = "KABINE B — Virus Beta. Noch leerer als A. Weiter rechts."
-door_in_side = "left"
+intro_text = "KABINE B — Noch eine Schlange. Fieber messen, bitte."
+station_label = "Fieber messen"
+station_text = "36,8 Grad. Gesund. Der Ausgang rechts ist offen."
 door_in_target_room = 11
-door_in_spawn = Vector2(150, 0)
+door_in_spawn = Vector2(350, 0)
 door_out_target_room = 13
-door_out_spawn = Vector2(-180, 0)
+door_out_spawn = Vector2(-350, 0)
 
-[node name="CabinC" parent="Rooms" instance=ExtResource("9_small")]
-position = Vector2(-510, 1960)
+[node name="CabinC" parent="Rooms" instance=ExtResource("11_cabin")]
+position = Vector2(-960, 1220)
 room_id = 13
 room_title = "KABINE C"
-intro_text = "KABINE C — Virus Gamma. Jemand hat hier Kaffee verschüttet. Kein Werkzeug. Weiter rechts."
-door_in_side = "left"
+intro_text = "KABINE C — Immer noch Schlange. Fragebogen ausfüllen, bitte."
+station_label = "Fragebogen ausfüllen"
+station_text = "Frage 7: Kontakt zu Frachtgut? Ja. Abgegeben. Der Ausgang rechts ist offen."
 door_in_target_room = 12
-door_in_spawn = Vector2(150, 0)
+door_in_spawn = Vector2(350, 0)
 door_out_target_room = 14
-door_out_spawn = Vector2(-180, 0)
+door_out_spawn = Vector2(-350, 0)
 
-[node name="CabinD" parent="Rooms" instance=ExtResource("9_small")]
-position = Vector2(140, 1960)
+[node name="CabinD" parent="Rooms" instance=ExtResource("11_cabin")]
+position = Vector2(-10, 1220)
 room_id = 14
 room_title = "KABINE D"
-intro_text = "KABINE D — Virus Delta. Da liegt was auf dem Boden."
-pickup_item = "rubber_hammer"
-pickup_label = "Hammer"
-pickup_text = "Ein Hammer. Fühlt sich komisch an, aber ein Hammer ist ein Hammer. Zurück zu den Kisten!"
-door_in_side = "left"
+intro_text = "KABINE D — Letzte Station: Abstrich."
+station_label = "Abstrich nehmen"
+station_text = "Abstrich negativ. Entlassen. Der Ausgang ist oben rechts."
 door_in_target_room = 13
-door_in_spawn = Vector2(150, 0)
-door_out_target_room = 11
-door_out_spawn = Vector2(0, -100)
-
-[node name="Storage" parent="Rooms" instance=ExtResource("9_small")]
-position = Vector2(-790, 1340)
-room_id = 15
-room_title = "LAGERRAUM"
-intro_text = "LAGERRAUM — Richtiges Werkzeug. Endlich."
-pickup_item = "crowbar"
-pickup_label = "Brechstange"
-pickup_text = "Eine Brechstange. Stahl. Damit geht alles kaputt. Zurück zu den Kisten!"
-door_in_side = "left"
-door_in_target_room = 1
-door_in_spawn = Vector2(480, 0)
-door_out_enabled = false
-
-[node name="CargoControl" parent="Rooms" instance=ExtResource("9_small")]
-position = Vector2(-2630, 1340)
-room_id = 16
-room_title = "FRACHTSTEUERUNG"
-intro_text = "FRACHTSTEUERUNG — Ein Hebel. Endlich etwas, das nicht aus Gummi ist."
-pickup_item = "cargo_switch"
-pickup_label = "Frachtsteuerung"
-pickup_verb = "umlegen"
-pickup_text = "ERFOLG: Frachtsteuerung umgelegt. Umfahren = drum herum fahren. Auf der Brücke ist rechts eine Tür offen. Zurück durch die Frachtschiene!"
-completes_level = 1
-door_in_side = "right"
-door_in_target_room = 1
-door_in_spawn = Vector2(-500, 0)
-door_out_enabled = false
+door_in_spawn = Vector2(350, 0)
+door_out_side = "top_right"
+door_out_target_room = 0
+door_out_spawn = Vector2(370, 270)
 
 [node name="Player" parent="." instance=ExtResource("5_player")]
 position = Vector2(0, 150)
@@ -126,7 +100,7 @@ offset_bottom = 50.0
 grow_horizontal = 2
 theme_override_colors/font_color = Color(0.4, 0.8, 1, 1)
 theme_override_font_sizes/font_size = 20
-text = "DECEPTIVE WIRING"
+text = ""
 horizontal_alignment = 1
 
 [node name="StatusLabel" type="Label" parent="CanvasLayer/HUD"]

@@ -48,7 +48,11 @@ What follows from it? What do we give up?
 | [0012](0012-heavy-cart-snake-driving.md) | Heavy cart drives snake-style, transition minigame is a cart run | accepted, controls replaced by 0013 |
 | [0013](0013-cart-continuous-steering.md) | Cart steers continuously with A/D, always starts facing up, harder map | accepted |
 | [0014](0014-one-world-map-overlay.md) | The ship is one continuous world, the map is a Tab/M overlay, corridor is the minigame | accepted |
-| [0015](0015-level-1-tool-hunt.md) | Level 1 is a tool hunt (cabins loop, rubber hammer, crowbar); "umfahren" means drive around | accepted |
+| [0015](0015-level-1-tool-hunt.md) | Level 1 is a tool hunt (cabins loop, rubber hammer, crowbar); "umfahren" means drive around | superseded by 0016 to 0018 |
+| [0016](0016-rail-s-shape-no-storage-room.md) | Cargo rail runs left, down, left and enters Level 1 from the right; storage room and crowbar removed | accepted |
+| [0017](0017-quarantine-queues-loop-to-bridge.md) | Quarantine cabins are airport queues with a mandatory station and locked doors; D exits onto the bridge; no tool hunt | accepted |
+| [0018](0018-crate-wall-no-tarp-gap.md) | The crates are space junk: shove them into the airlock with the cart, a lever jettisons them; cargo control room gone | accepted |
+| [0019](0019-hud-and-text-polish.md) | HUD shows only the room title, status text types in and waits to be read, no emojis, bigger rail stubs | accepted |
 
 ## Open questions (not yet decided)
 

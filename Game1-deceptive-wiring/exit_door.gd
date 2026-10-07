@@ -14,14 +14,12 @@ signal player_entered
 
 @onready var door_leaf: ColorRect = $DoorLeaf
 @onready var glow: PointLight2D = $Glow
-@onready var label: Label = $Label
 
 var is_open: bool = false
 
 
 func _ready() -> void:
 	monitoring = false
-	label.visible = false
 	glow.energy = 0.0
 	body_entered.connect(_on_body_entered)
 
@@ -30,7 +28,6 @@ func open(animated: bool = true) -> void:
 	if is_open:
 		return
 	is_open = true
-	label.visible = true
 	if not animated:
 		door_leaf.position.y -= 128.0
 		glow.energy = 1.6

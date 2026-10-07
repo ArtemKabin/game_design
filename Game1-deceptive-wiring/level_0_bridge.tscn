@@ -88,15 +88,14 @@ grow_vertical = 2
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9, 0.9, 0.3, 1)
 theme_override_font_sizes/font_size = 14
-text = "🛠️ [ LÜFTUNGSVENTIL ]
-(Gehe heran & drücke E)"
+text = "LÜFTUNGSVENTIL"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="ExitDoor" parent="." unique_id=431118664 instance=ExtResource("2_a8ygq")]
 position = Vector2(-560, 0)
 target_room_id = 10
-target_spawn = Vector2(-100, 50)
+target_spawn = Vector2(-90, 0)
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1390983958]
 
@@ -167,22 +166,22 @@ theme_override_constants/separation = 10
 [node name="WireGreenBtn" type="Button" parent="CanvasLayer/WiringPanelUI/PanelContainer/VBoxContainer/WireGrid" unique_id=776801075]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.3, 1, 0.4, 1)
-text = "🟢 [ GRÜNES KABEL ]   ●━━━━━━━● (Grüner Pol A -> Pol B)"
+text = "GRÜNES KABEL (Grüner Pol A -> Pol B)"
 
 [node name="WireRedBtn" type="Button" parent="CanvasLayer/WiringPanelUI/PanelContainer/VBoxContainer/WireGrid" unique_id=1014199728]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.3, 0.3, 1)
-text = "🔴 [ ROTES KABEL ]     ●━━━━━━━● (Roter Pol A -> Pol B)"
+text = "ROTES KABEL (Roter Pol A -> Pol B)"
 
 [node name="WireBlueBtn" type="Button" parent="CanvasLayer/WiringPanelUI/PanelContainer/VBoxContainer/WireGrid" unique_id=1295554185]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.3, 0.6, 1, 1)
-text = "🔵 [ BLAUES KABEL ]    ●━━━━━━━● (Blauer Pol A -> Pol B)"
+text = "BLAUES KABEL (Blauer Pol A -> Pol B)"
 
 [node name="WireOrangeBtn" type="Button" parent="CanvasLayer/WiringPanelUI/PanelContainer/VBoxContainer/WireGrid" unique_id=309239568]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.6, 0.1, 1)
-text = "🟠 [ ORANGEFARBENES KABEL ] ●━━━━━━━● (Oranger Pol A -> Pol B)"
+text = "ORANGEFARBENES KABEL (Oranger Pol A -> Pol B)"
 
 [node name="CloseWiringBtn" type="Button" parent="CanvasLayer/WiringPanelUI/PanelContainer/VBoxContainer" unique_id=563528717]
 layout_mode = 2
@@ -191,3 +190,8 @@ text = "Abbrechen / Schließen"
 [node name="ExitDoorRight" parent="." unique_id=901364 instance=ExtResource("2_a8ygq")]
 position = Vector2(560, 0)
 blocked_message = "Level 2 ist noch nicht gebaut. Hier geht es später weiter."
+
+[node name="ExitDoorBottom" parent="." instance=ExtResource("2_a8ygq")]
+position = Vector2(370, 345)
+rotation = 1.5707964
+blocked_message = "Quarantäne-Schleuse: Einbahnstraße. Zurück in den Frachtraum geht es nur über die Frachtschiene."

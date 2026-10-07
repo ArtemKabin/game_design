@@ -33,10 +33,18 @@ func set_movement_enabled(enabled: bool) -> void:
 
 
 # Short camera trip to a point of interest (e.g. a door that just opened) and back.
-# The camera is detached from the player for the duration; its limits still apply.
+# The camera is detached from the player for the duration; its limits still apply unless
+# ignore_limits is set (for a look into another room, see Room.peek_room).
 # Usage: await player.pan_camera_to(door.global_position)
-func pan_camera_to(target: Vector2, hold_seconds: float = 0.8, travel_seconds: float = 0.6) -> void:
+func pan_camera_to(target: Vector2, hold_seconds: float = 0.8, travel_seconds: float = 0.6,
+		ignore_limits: bool = false) -> void:
 	var home: Vector2 = global_position
+	var limits: Array[int] = [camera.limit_left, camera.limit_top, camera.limit_right, camera.limit_bottom]
+	if ignore_limits:
+		camera.limit_left = -10000000
+		camera.limit_top = -10000000
+		camera.limit_right = 10000000
+		camera.limit_bottom = 10000000
 	camera.top_level = true
 	camera.global_position = home
 	var tween: Tween = create_tween()
@@ -48,6 +56,10 @@ func pan_camera_to(target: Vector2, hold_seconds: float = 0.8, travel_seconds: f
 	await tween.finished
 	camera.top_level = false
 	camera.position = Vector2.ZERO
+	camera.limit_left = limits[0]
+	camera.limit_top = limits[1]
+	camera.limit_right = limits[2]
+	camera.limit_bottom = limits[3]
 
 
 func _unhandled_input(event: InputEvent) -> void:

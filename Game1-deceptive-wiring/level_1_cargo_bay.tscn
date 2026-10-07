@@ -1,8 +1,9 @@
-[gd_scene load_steps=11 format=3 uid="uid://f4xd5dqnm30"]
+[gd_scene load_steps=8 format=3 uid="uid://f4xd5dqnm30"]
 
 [ext_resource type="Script" path="res://level_1_cargo_bay.gd" id="1_cargo"]
 [ext_resource type="PackedScene" path="res://heavy_cart.tscn" id="2_cart"]
 [ext_resource type="PackedScene" path="res://exit_door.tscn" id="3_door"]
+[ext_resource type="PackedScene" path="res://junk_crate.tscn" id="4_crate"]
 
 [sub_resource type="Gradient" id="Gradient_light"]
 colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 0)
@@ -15,20 +16,8 @@ fill = 1
 fill_from = Vector2(0.5, 0.5)
 fill_to = Vector2(1, 0.5)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_crates_vertical"]
-size = Vector2(60, 440)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_crates_horizontal"]
-size = Vector2(310, 60)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_crates_front"]
-size = Vector2(80, 440)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_gap"]
-size = Vector2(60, 86)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_platform"]
-size = Vector2(240, 260)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_lever"]
+size = Vector2(100, 100)
 
 [node name="Level1_CargoBay" type="Node2D"]
 script = ExtResource("1_cargo")
@@ -43,6 +32,37 @@ offset_top = -400.0
 offset_right = 600.0
 offset_bottom = 400.0
 color = Color(0.11, 0.13, 0.17, 1)
+
+[node name="AirlockFloor" type="ColorRect" parent="RoomEnvironment"]
+offset_left = -580.0
+offset_top = -380.0
+offset_right = -400.0
+offset_bottom = 380.0
+color = Color(0.17, 0.11, 0.13, 1)
+
+[node name="AirlockField" type="ColorRect" parent="RoomEnvironment"]
+offset_left = -580.0
+offset_top = -380.0
+offset_right = -510.0
+offset_bottom = 380.0
+color = Color(0.3, 0.12, 0.14, 1)
+
+[node name="AirlockEdge" type="ColorRect" parent="RoomEnvironment"]
+offset_left = -403.0
+offset_top = -380.0
+offset_right = -400.0
+offset_bottom = 380.0
+color = Color(0.9, 0.3, 0.3, 0.8)
+
+[node name="AirlockLabel" type="Label" parent="RoomEnvironment"]
+offset_left = -580.0
+offset_top = 352.0
+offset_right = -400.0
+offset_bottom = 374.0
+theme_override_colors/font_color = Color(0.9, 0.4, 0.4, 1)
+theme_override_font_sizes/font_size = 12
+text = "MÜLLSCHLEUSE"
+horizontal_alignment = 1
 
 [node name="WallTop" type="StaticBody2D" parent="RoomEnvironment"]
 position = Vector2(0, -400)
@@ -69,33 +89,32 @@ position = Vector2(600, 0)
 polygon = PackedVector2Array(-20, -400, 20, -400, 20, 400, -20, 400)
 
 [node name="CargoLight" type="PointLight2D" parent="."]
-position = Vector2(0, -60)
+position = Vector2(150, -60)
 color = Color(0.6, 0.75, 1, 1)
 energy = 0.8
 texture = SubResource("GradientTexture2D_light")
 texture_scale = 3.0
 
-[node name="PocketLight" type="PointLight2D" parent="."]
-position = Vector2(-450, 0)
-color = Color(0.6, 0.8, 1, 1)
-energy = 1.0
+[node name="AirlockLight" type="PointLight2D" parent="."]
+position = Vector2(-490, 0)
+color = Color(1, 0.6, 0.6, 1)
+energy = 0.9
 texture = SubResource("GradientTexture2D_light")
-texture_scale = 1.4
+texture_scale = 1.6
 
 [node name="SpawnPoint" type="Marker2D" parent="."]
-position = Vector2(200, -240)
+position = Vector2(480, 0)
 
 [node name="EntranceDoor" parent="." instance=ExtResource("3_door")]
-position = Vector2(200, -340)
-rotation = 1.5707964
+position = Vector2(560, 0)
 target_room_id = 10
-target_spawn = Vector2(-830, 760)
+target_spawn = Vector2(-1790, 600)
 
 [node name="QuarantineDoor" parent="." instance=ExtResource("3_door")]
 position = Vector2(-100, 345)
 rotation = 1.5707964
 target_room_id = 11
-target_spawn = Vector2(0, -100)
+target_spawn = Vector2(-380, -90)
 
 [node name="QuarantineLabel" type="Label" parent="."]
 offset_left = -200.0
@@ -107,100 +126,38 @@ theme_override_font_sizes/font_size = 12
 text = "QUARANTÄNE-KABINEN A–D"
 horizontal_alignment = 1
 
-[node name="StorageDoor" parent="." instance=ExtResource("3_door")]
-position = Vector2(560, 0)
-target_room_id = 15
-target_spawn = Vector2(-180, 0)
+[node name="Junk" parent="." instance=ExtResource("4_crate")]
+position = Vector2(-300, 0)
 
-[node name="GoalDoor" parent="." instance=ExtResource("3_door")]
-position = Vector2(-560, 0)
-target_room_id = 16
-target_spawn = Vector2(180, 0)
+[node name="Lever" type="Area2D" parent="."]
+position = Vector2(-455, -330)
 
-[node name="Crates" type="Node2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Lever"]
+shape = SubResource("RectangleShape2D_lever")
 
-[node name="CratesVertical" type="StaticBody2D" parent="Crates" groups=["obstacle"]]
-position = Vector2(-300, -50)
+[node name="Base" type="ColorRect" parent="Lever"]
+offset_left = -16.0
+offset_top = -10.0
+offset_right = 16.0
+offset_bottom = 10.0
+color = Color(0.5, 0.5, 0.55, 1)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Crates/CratesVertical"]
-shape = SubResource("RectangleShape2D_crates_vertical")
+[node name="Handle" type="ColorRect" parent="Lever"]
+offset_left = -3.0
+offset_top = -34.0
+offset_right = 3.0
+offset_bottom = -8.0
+color = Color(0.9, 0.3, 0.3, 1)
 
-[node name="Graphic" type="ColorRect" parent="Crates/CratesVertical"]
-offset_left = -30.0
-offset_top = -220.0
-offset_right = 30.0
-offset_bottom = 220.0
-color = Color(0.45, 0.3, 0.15, 1)
-
-[node name="Label" type="Label" parent="Crates/CratesVertical"]
-offset_left = -80.0
-offset_top = -250.0
-offset_right = 80.0
-offset_bottom = -226.0
-theme_override_colors/font_color = Color(1, 0.85, 0.5, 1)
-theme_override_font_sizes/font_size = 13
-text = "▓ FRACHTGUT ▓"
-horizontal_alignment = 1
-
-[node name="CratesTop" type="StaticBody2D" parent="Crates" groups=["obstacle"]]
-position = Vector2(-425, -270)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Crates/CratesTop"]
-shape = SubResource("RectangleShape2D_crates_horizontal")
-
-[node name="Graphic" type="ColorRect" parent="Crates/CratesTop"]
-offset_left = -155.0
-offset_top = -30.0
-offset_right = 155.0
-offset_bottom = 30.0
-color = Color(0.45, 0.3, 0.15, 1)
-
-[node name="CratesBottom" type="StaticBody2D" parent="Crates" groups=["obstacle"]]
-position = Vector2(-425, 290)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Crates/CratesBottom"]
-shape = SubResource("RectangleShape2D_crates_horizontal")
-
-[node name="Graphic" type="ColorRect" parent="Crates/CratesBottom"]
-offset_left = -155.0
-offset_top = -30.0
-offset_right = 155.0
-offset_bottom = 30.0
-color = Color(0.45, 0.3, 0.15, 1)
-
-[node name="TarpGraphic" type="ColorRect" parent="Crates"]
-offset_left = -328.0
-offset_top = 172.0
-offset_right = -272.0
-offset_bottom = 258.0
-color = Color(0.35, 0.33, 0.28, 0.85)
-
-[node name="TarpLabel" type="Label" parent="Crates"]
-offset_left = -270.0
-offset_top = 204.0
-offset_right = -190.0
-offset_bottom = 226.0
-theme_override_colors/font_color = Color(0.8, 0.75, 0.6, 1)
+[node name="Label" type="Label" parent="Lever"]
+offset_left = -70.0
+offset_top = 14.0
+offset_right = 70.0
+offset_bottom = 36.0
+theme_override_colors/font_color = Color(0.9, 0.5, 0.5, 1)
 theme_override_font_sizes/font_size = 11
-text = "Plane"
-
-[node name="CratesFront" type="Area2D" parent="."]
-position = Vector2(-230, -50)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="CratesFront"]
-shape = SubResource("RectangleShape2D_crates_front")
-
-[node name="GapBlock" type="Area2D" parent="."]
-position = Vector2(-300, 215)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="GapBlock"]
-shape = SubResource("RectangleShape2D_gap")
-
-[node name="GoalPlatform" type="Area2D" parent="."]
-position = Vector2(-450, 120)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="GoalPlatform"]
-shape = SubResource("RectangleShape2D_platform")
+text = "HEBEL: MÜLL INS ALL"
+horizontal_alignment = 1
 
 [node name="CartStart" type="Marker2D" parent="."]
 position = Vector2(300, 330)
