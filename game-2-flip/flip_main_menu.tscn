@@ -1,0 +1,79 @@
+[gd_scene load_steps=2 format=3 uid="uid://flip_mainmenu_001"]
+
+[ext_resource type="Script" path="res://flip_main_menu.gd" id="1_mm"]
+
+[node name="FlipMainMenu" type="Node2D"]
+script = ExtResource("1_mm")
+
+[node name="BG" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.95, 0.95, 0.95, 1)
+
+[node name="BGLabel" type="Label" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 180
+text = "FLIP"
+horizontal_alignment = 1
+vertical_alignment = 1
+modulate = Color(0, 0, 0, 0.06)
+
+[node name="Panel" type="PanelContainer" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -180.0
+offset_right = 200.0
+offset_bottom = 180.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Title" type="Label" parent="Panel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 42
+text = "FLIP"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 0.5, 0.5, 1)
+theme_override_font_sizes/font_size = 14
+text = "Zögere. Dann entscheide."
+horizontal_alignment = 1
+
+[node name="Spacer" type="Control" parent="Panel/VBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 12)
+
+[node name="StartButton" type="Button" parent="Panel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Spielen"
+
+[node name="OldGameButton" type="Button" parent="Panel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Altes Spiel (Deceptive Wiring)"
+
+[node name="ExitButton" type="Button" parent="Panel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Beenden"
+
+[connection signal="pressed" from="Panel/VBox/StartButton"   to="." method="_on_start_pressed"]
+[connection signal="pressed" from="Panel/VBox/OldGameButton" to="." method="_on_old_game_pressed"]
+[connection signal="pressed" from="Panel/VBox/ExitButton"    to="." method="_on_exit_pressed"]

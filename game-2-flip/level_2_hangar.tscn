@@ -1,0 +1,289 @@
+[gd_scene load_steps=6 format=3 uid="uid://c_level_2_hangar_001"]
+
+[ext_resource type="Script" path="res://level_2_hangar.gd" id="1_hangar"]
+[ext_resource type="PackedScene" path="res://exit_door.tscn" id="2_door"]
+
+[sub_resource type="Gradient" id="Gradient_light"]
+colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_light"]
+gradient = SubResource("Gradient_light")
+width = 512
+height = 512
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_shuttle_area"]
+size = Vector2(360, 240)
+
+[node name="Level2_Hangar" type="Node2D"]
+script = ExtResource("1_hangar")
+room_id = 2
+room_title = "LEVEL 2: HANGAR"
+
+[node name="RoomEnvironment" type="Node2D" parent="."]
+
+[node name="Floor" type="ColorRect" parent="RoomEnvironment"]
+offset_left = -600.0
+offset_top = -400.0
+offset_right = 600.0
+offset_bottom = 400.0
+color = Color(0.09, 0.11, 0.15, 1)
+
+[node name="LaunchPad" type="ColorRect" parent="RoomEnvironment"]
+offset_left = 0.0
+offset_top = -160.0
+offset_right = 440.0
+offset_bottom = 160.0
+color = Color(0.13, 0.15, 0.2, 1)
+
+[node name="LaunchPadLabel" type="Label" parent="RoomEnvironment"]
+offset_left = 0.0
+offset_top = 166.0
+offset_right = 440.0
+offset_bottom = 188.0
+theme_override_colors/font_color = Color(0.5, 0.6, 0.75, 1)
+theme_override_font_sizes/font_size = 12
+text = "STARTRAMPE"
+horizontal_alignment = 1
+
+[node name="WallTop" type="StaticBody2D" parent="RoomEnvironment"]
+position = Vector2(0, -400)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="RoomEnvironment/WallTop"]
+polygon = PackedVector2Array(-600, -20, 600, -20, 600, 20, -600, 20)
+
+[node name="WallBottom" type="StaticBody2D" parent="RoomEnvironment"]
+position = Vector2(0, 400)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="RoomEnvironment/WallBottom"]
+polygon = PackedVector2Array(-600, -20, 600, -20, 600, 20, -600, 20)
+
+[node name="WallLeft" type="StaticBody2D" parent="RoomEnvironment"]
+position = Vector2(-600, 0)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="RoomEnvironment/WallLeft"]
+polygon = PackedVector2Array(-20, -400, 20, -400, 20, 400, -20, 400)
+
+[node name="WallRight" type="StaticBody2D" parent="RoomEnvironment"]
+position = Vector2(600, 0)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="RoomEnvironment/WallRight"]
+polygon = PackedVector2Array(-20, -400, 20, -400, 20, 400, -20, 400)
+
+[node name="HangarLight" type="PointLight2D" parent="."]
+position = Vector2(-200, -80)
+color = Color(0.6, 0.75, 1, 1)
+energy = 0.8
+texture = SubResource("GradientTexture2D_light")
+texture_scale = 3.0
+
+[node name="PadLight" type="PointLight2D" parent="."]
+position = Vector2(220, 0)
+color = Color(0.8, 0.9, 1, 1)
+energy = 1.1
+texture = SubResource("GradientTexture2D_light")
+texture_scale = 2.2
+
+[node name="EntranceDoor" parent="." instance=ExtResource("2_door")]
+position = Vector2(-560, 0)
+target_room_id = 20
+target_spawn = Vector2(1510, 0)
+
+[node name="Shuttle" type="Node2D" parent="."]
+position = Vector2(220, 0)
+
+[node name="InteractArea" type="Area2D" parent="Shuttle"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Shuttle/InteractArea"]
+shape = SubResource("RectangleShape2D_shuttle_area")
+
+[node name="WingTop" type="ColorRect" parent="Shuttle"]
+offset_left = -60.0
+offset_top = -90.0
+offset_right = 40.0
+offset_bottom = -30.0
+color = Color(0.55, 0.58, 0.65, 1)
+
+[node name="WingBottom" type="ColorRect" parent="Shuttle"]
+offset_left = -60.0
+offset_top = 30.0
+offset_right = 40.0
+offset_bottom = 90.0
+color = Color(0.55, 0.58, 0.65, 1)
+
+[node name="Body" type="ColorRect" parent="Shuttle"]
+offset_left = -120.0
+offset_top = -36.0
+offset_right = 100.0
+offset_bottom = 36.0
+color = Color(0.78, 0.8, 0.85, 1)
+
+[node name="Nose" type="ColorRect" parent="Shuttle"]
+offset_left = 100.0
+offset_top = -22.0
+offset_right = 140.0
+offset_bottom = 22.0
+color = Color(0.65, 0.68, 0.75, 1)
+
+[node name="Engine" type="ColorRect" parent="Shuttle"]
+offset_left = -140.0
+offset_top = -24.0
+offset_right = -120.0
+offset_bottom = 24.0
+color = Color(0.3, 0.32, 0.38, 1)
+
+[node name="Window" type="ColorRect" parent="Shuttle"]
+offset_left = 60.0
+offset_top = -14.0
+offset_right = 90.0
+offset_bottom = 14.0
+color = Color(0.35, 0.7, 0.95, 1)
+
+[node name="Label" type="Label" parent="Shuttle"]
+offset_left = -120.0
+offset_top = 96.0
+offset_right = 140.0
+offset_bottom = 118.0
+theme_override_colors/font_color = Color(0.85, 0.9, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = "SPACE SHUTTLE"
+horizontal_alignment = 1
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+layer = 0
+
+[node name="HUD" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="LaunchWindowBar" type="ProgressBar" parent="CanvasLayer/HUD"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -180.0
+offset_top = 100.0
+offset_right = 180.0
+offset_bottom = 125.0
+grow_horizontal = 2
+value = 100.0
+
+[node name="ClearancePanel" type="Control" parent="CanvasLayer"]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/ClearancePanel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -150.0
+offset_right = 300.0
+offset_bottom = 150.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/ClearancePanel/PanelContainer"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="PanelTitle" type="Label" parent="CanvasLayer/ClearancePanel/PanelContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.35, 0.7, 0.95, 1)
+theme_override_font_sizes/font_size = 18
+text = "=== STARTFREIGABE: FUNK ZUR BODENKONTROLLE ==="
+horizontal_alignment = 1
+
+[node name="RadioLabel" type="Label" parent="CanvasLayer/ClearancePanel/PanelContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.85, 0.7, 1)
+text = "Bodenkontrolle ..."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Options" type="VBoxContainer" parent="CanvasLayer/ClearancePanel/PanelContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Option1" type="Button" parent="CanvasLayer/ClearancePanel/PanelContainer/VBoxContainer/Options"]
+layout_mode = 2
+text = "Option 1"
+
+[node name="Option2" type="Button" parent="CanvasLayer/ClearancePanel/PanelContainer/VBoxContainer/Options"]
+layout_mode = 2
+text = "Option 2"
+
+[node name="CloseButton" type="Button" parent="CanvasLayer/ClearancePanel/PanelContainer/VBoxContainer"]
+layout_mode = 2
+text = "Abbrechen / Schließen"
+
+[node name="EndScreen" type="Control" parent="CanvasLayer"]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="ColorRect" parent="CanvasLayer/EndScreen"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.02, 0.04, 0.1, 0.92)
+
+[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/EndScreen"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -280.0
+offset_top = -130.0
+offset_right = 280.0
+offset_bottom = 130.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/EndScreen/PanelContainer"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="TitleLabel" type="Label" parent="CanvasLayer/EndScreen/PanelContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.9, 0.6, 1)
+theme_override_font_sizes/font_size = 26
+text = "ENTKOMMEN"
+horizontal_alignment = 1
+
+[node name="TextLabel" type="Label" parent="CanvasLayer/EndScreen/PanelContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.9, 1, 1)
+text = "Das Shuttle ist weg und du mit ihm. Die Lüftung, die Schiene, der Wagen ohne Bremse, die Quarantäne, der Müll und die Bodenkontrolle: Vergangenheit.
+
+DECEPTIVE WIRING - ENDE"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="MenuButton" type="Button" parent="CanvasLayer/EndScreen/PanelContainer/VBoxContainer"]
+layout_mode = 2
+text = "Zurück zum Hauptmenü"

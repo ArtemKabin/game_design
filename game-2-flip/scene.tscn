@@ -1,0 +1,64 @@
+[gd_scene format=3 uid="uid://dk7mifdlcnf13"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_g4v7s"]
+
+[node name="Scene" type="Node3D" unique_id=333233857]
+
+[node name="Level11" type="CSGMesh3D" parent="." unique_id=1375120670]
+transform = Transform3D(2.0773273, 0, 0, 0, 0.024969876, 0, 0, 0, 1.943429, -2.8393035, 0, -3.9114008)
+mesh = SubResource("BoxMesh_g4v7s")
+
+[node name="Level3" type="CSGMesh3D" parent="." unique_id=1078253611]
+transform = Transform3D(2.5818264, 0, 0, 0, 0.024969876, 0, 0, 0, 3.3202257, 1.7260072, 0, -3.9114008)
+mesh = SubResource("BoxMesh_g4v7s")
+
+[node name="Level2" type="CSGMesh3D" parent="." unique_id=992546032]
+transform = Transform3D(2.3656824, 0, 0, 0, 0.024969876, 0, 0, 0, 0.31387705, -0.6816058, 0, -3.9114008)
+mesh = SubResource("BoxMesh_g4v7s")
+
+[node name="path01" type="CSGMesh3D" parent="." unique_id=436481648]
+transform = Transform3D(0.24893086, 0, 0, 0, 0.024969876, 0, 0, 0, 0.99097025, -2.6158051, 0, -2.4652042)
+mesh = SubResource("BoxMesh_g4v7s")
+
+[node name="path0--1" type="CSGMesh3D" parent="path01" unique_id=396159115]
+transform = Transform3D(-0.00801748, 0, -3.980778, 0, 1, 0, 0.25119105, 0, -0.008017456, 1.5034761, 0, 0.62644374)
+mesh = SubResource("BoxMesh_g4v7s")
+
+[node name="path0-1" type="CSGMesh3D" parent="path01" unique_id=360660025]
+transform = Transform3D(-1.0004765, 0, 0.17357343, 0, 1, 0, -0.007581299, 0, -1.4453831, 3.9076912, 0, 1.2255996)
+mesh = SubResource("BoxMesh_g4v7s")
+
+[node name="path2-0" type="CSGMesh3D" parent="." unique_id=1715760018]
+transform = Transform3D(0.24893086, 0, 0, 0, 0.024969876, 0, 0, 0, 0.99097025, 1.4795012, 0.010417938, -1.7449601)
+mesh = SubResource("BoxMesh_g4v7s")
+
+[node name="path0--1" type="CSGMesh3D" parent="path2-0" unique_id=1718109014]
+transform = Transform3D(-0.00801748, 0, -6.2017717, 0, 1, 0, 0.25119105, 0, -0.012490632, -3.5215435, 0, 2.2590375)
+mesh = SubResource("BoxMesh_g4v7s")
+
+[node name="path0--2" type="CSGMesh3D" parent="path2-0" unique_id=568338901]
+transform = Transform3D(-0.00801748, 0, -3.980778, 0, 1, 0, 0.25119105, 0, -0.008017456, 1.5000914, 0, 0.62948847)
+mesh = SubResource("BoxMesh_g4v7s")
+
+[node name="path0--3" type="CSGMesh3D" parent="path2-0" unique_id=1742765043]
+transform = Transform3D(-0.00801748, 0, -3.980778, 0, 1, 0, 0.25119105, 0, -0.008017456, 1.4768013, 0, 1.3591785)
+mesh = SubResource("BoxMesh_g4v7s")
+
+[node name="path03" type="CSGMesh3D" parent="path2-0" unique_id=1160468894]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 0.9579052, 3.9940133, 0, 0.9994475)
+mesh = SubResource("BoxMesh_g4v7s")
+
+[node name="path04" type="CSGMesh3D" parent="path2-0" unique_id=2104954630]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 0.9243589, -0.029441833, 0, 1.9282753)
+mesh = SubResource("BoxMesh_g4v7s")
+
+[node name="Level0" type="CSGMesh3D" parent="." unique_id=1400628531]
+transform = Transform3D(2.0773273, 0, 0, 0, 0.024969876, 0, 0, 0, 1.943429, -1.2115312, 0, 0.43012893)
+mesh = SubResource("BoxMesh_g4v7s")
+
+[node name="Player" type="CharacterBody3D" parent="." unique_id=1158286119]
+transform = Transform3D(2.0773273, 0, 0, 0, 0.024969876, 0, 0, 0, 1.943429, 0, 0, 0)
+
+[node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="Player" unique_id=805151479]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player" unique_id=599685594]

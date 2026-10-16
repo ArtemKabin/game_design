@@ -1,0 +1,188 @@
+[gd_scene load_steps=8 format=3 uid="uid://c_quarantine_cabin_001"]
+
+[ext_resource type="Script" path="res://quarantine_cabin.gd" id="1_cabin"]
+[ext_resource type="PackedScene" path="res://exit_door.tscn" id="2_door"]
+
+[sub_resource type="Gradient" id="Gradient_light"]
+colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_light"]
+gradient = SubResource("Gradient_light")
+width = 512
+height = 512
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_barrier"]
+size = Vector2(12, 270)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_station"]
+size = Vector2(100, 100)
+
+[node name="QuarantineCabin" type="Node2D"]
+script = ExtResource("1_cabin")
+bounds = Rect2(-450, -200, 900, 400)
+
+[node name="RoomEnvironment" type="Node2D" parent="."]
+
+[node name="Floor" type="ColorRect" parent="RoomEnvironment"]
+offset_left = -450.0
+offset_top = -200.0
+offset_right = 450.0
+offset_bottom = 200.0
+color = Color(0.12, 0.14, 0.17, 1)
+
+[node name="WallTop" type="StaticBody2D" parent="RoomEnvironment"]
+position = Vector2(0, -200)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="RoomEnvironment/WallTop"]
+polygon = PackedVector2Array(-450, -20, 450, -20, 450, 20, -450, 20)
+
+[node name="WallBottom" type="StaticBody2D" parent="RoomEnvironment"]
+position = Vector2(0, 200)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="RoomEnvironment/WallBottom"]
+polygon = PackedVector2Array(-450, -20, 450, -20, 450, 20, -450, 20)
+
+[node name="WallLeft" type="StaticBody2D" parent="RoomEnvironment"]
+position = Vector2(-450, 0)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="RoomEnvironment/WallLeft"]
+polygon = PackedVector2Array(-20, -200, 20, -200, 20, 200, -20, 200)
+
+[node name="WallRight" type="StaticBody2D" parent="RoomEnvironment"]
+position = Vector2(450, 0)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="RoomEnvironment/WallRight"]
+polygon = PackedVector2Array(-20, -200, 20, -200, 20, 200, -20, 200)
+
+[node name="Barriers" type="Node2D" parent="."]
+
+[node name="Barrier1" type="StaticBody2D" parent="Barriers"]
+position = Vector2(-300, -45)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Barriers/Barrier1"]
+shape = SubResource("RectangleShape2D_barrier")
+
+[node name="Tape" type="ColorRect" parent="Barriers/Barrier1"]
+offset_left = -6.0
+offset_top = -135.0
+offset_right = 6.0
+offset_bottom = 135.0
+color = Color(0.85, 0.7, 0.2, 1)
+
+[node name="Barrier2" type="StaticBody2D" parent="Barriers"]
+position = Vector2(-150, 45)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Barriers/Barrier2"]
+shape = SubResource("RectangleShape2D_barrier")
+
+[node name="Tape" type="ColorRect" parent="Barriers/Barrier2"]
+offset_left = -6.0
+offset_top = -135.0
+offset_right = 6.0
+offset_bottom = 135.0
+color = Color(0.85, 0.7, 0.2, 1)
+
+[node name="Barrier3" type="StaticBody2D" parent="Barriers"]
+position = Vector2(0, -45)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Barriers/Barrier3"]
+shape = SubResource("RectangleShape2D_barrier")
+
+[node name="Tape" type="ColorRect" parent="Barriers/Barrier3"]
+offset_left = -6.0
+offset_top = -135.0
+offset_right = 6.0
+offset_bottom = 135.0
+color = Color(0.85, 0.7, 0.2, 1)
+
+[node name="Barrier4" type="StaticBody2D" parent="Barriers"]
+position = Vector2(150, 45)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Barriers/Barrier4"]
+shape = SubResource("RectangleShape2D_barrier")
+
+[node name="Tape" type="ColorRect" parent="Barriers/Barrier4"]
+offset_left = -6.0
+offset_top = -135.0
+offset_right = 6.0
+offset_bottom = 135.0
+color = Color(0.85, 0.7, 0.2, 1)
+
+[node name="Barrier5" type="StaticBody2D" parent="Barriers"]
+position = Vector2(300, -45)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Barriers/Barrier5"]
+shape = SubResource("RectangleShape2D_barrier")
+
+[node name="Tape" type="ColorRect" parent="Barriers/Barrier5"]
+offset_left = -6.0
+offset_top = -135.0
+offset_right = 6.0
+offset_bottom = 135.0
+color = Color(0.85, 0.7, 0.2, 1)
+
+[node name="LightLeft" type="PointLight2D" parent="."]
+position = Vector2(-225, 0)
+color = Color(0.7, 0.85, 1, 1)
+energy = 1.0
+texture = SubResource("GradientTexture2D_light")
+texture_scale = 2.0
+
+[node name="LightRight" type="PointLight2D" parent="."]
+position = Vector2(225, 0)
+color = Color(0.7, 0.85, 1, 1)
+energy = 1.0
+texture = SubResource("GradientTexture2D_light")
+texture_scale = 2.0
+
+[node name="TitleLabel" type="Label" parent="."]
+offset_left = -430.0
+offset_top = -170.0
+offset_right = -190.0
+offset_bottom = -146.0
+theme_override_colors/font_color = Color(0.6, 1, 0.7, 1)
+theme_override_font_sizes/font_size = 13
+text = "KABINE"
+
+[node name="QueueLabel" type="Label" parent="."]
+offset_left = -120.0
+offset_top = -196.0
+offset_right = 120.0
+offset_bottom = -174.0
+theme_override_colors/font_color = Color(0.85, 0.7, 0.2, 1)
+theme_override_font_sizes/font_size = 11
+text = "BITTE DER ABSPERRUNG FOLGEN"
+horizontal_alignment = 1
+
+[node name="DoorIn" parent="." instance=ExtResource("2_door")]
+position = Vector2(-410, 0)
+
+[node name="DoorOut" parent="." instance=ExtResource("2_door")]
+position = Vector2(410, 0)
+
+[node name="Station" type="Area2D" parent="."]
+position = Vector2(-75, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Station"]
+shape = SubResource("RectangleShape2D_station")
+
+[node name="Graphic" type="ColorRect" parent="Station"]
+offset_left = -20.0
+offset_top = -14.0
+offset_right = 20.0
+offset_bottom = 14.0
+color = Color(0.3, 0.6, 1, 1)
+
+[node name="Label" type="Label" parent="Station"]
+offset_left = -70.0
+offset_top = 18.0
+offset_right = 70.0
+offset_bottom = 40.0
+theme_override_colors/font_color = Color(0.6, 0.8, 1, 1)
+theme_override_font_sizes/font_size = 11
+text = "STATION"
+horizontal_alignment = 1
+autowrap_mode = 2

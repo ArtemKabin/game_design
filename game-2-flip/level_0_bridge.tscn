@@ -1,0 +1,199 @@
+[gd_scene format=3 uid="uid://yi5rww680bsc"]
+
+[ext_resource type="Script" uid="uid://cnnbt2ud21jna" path="res://level_0_bridge.gd" id="1_bridge"]
+[ext_resource type="PackedScene" path="res://exit_door.tscn" id="2_a8ygq"]
+
+[sub_resource type="Gradient" id="Gradient_light"]
+colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_light"]
+gradient = SubResource("Gradient_light")
+width = 512
+height = 512
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_vent"]
+size = Vector2(200, 140)
+
+[node name="Level0_Bridge" type="Node2D" unique_id=808119582]
+script = ExtResource("1_bridge")
+room_title = "LEVEL 0: BRÜCKE"
+
+[node name="OxygenTimer" type="Timer" parent="." unique_id=697931714]
+
+[node name="EmergencyFlashTimer" type="Timer" parent="." unique_id=1116898495]
+
+[node name="RoomEnvironment" type="Node2D" parent="." unique_id=41850454]
+
+[node name="Floor" type="ColorRect" parent="RoomEnvironment" unique_id=436568562]
+offset_left = -600.0
+offset_top = -400.0
+offset_right = 600.0
+offset_bottom = 400.0
+color = Color(0.1, 0.15, 0.22, 1)
+
+[node name="WallTop" type="StaticBody2D" parent="RoomEnvironment" unique_id=629831712]
+position = Vector2(0, -400)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="RoomEnvironment/WallTop" unique_id=173413142]
+polygon = PackedVector2Array(-600, -20, 600, -20, 600, 20, -600, 20)
+
+[node name="WallBottom" type="StaticBody2D" parent="RoomEnvironment" unique_id=887150113]
+position = Vector2(0, 400)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="RoomEnvironment/WallBottom" unique_id=953895777]
+polygon = PackedVector2Array(-600, -20, 600, -20, 600, 20, -600, 20)
+
+[node name="WallLeft" type="StaticBody2D" parent="RoomEnvironment" unique_id=973889497]
+position = Vector2(-600, 0)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="RoomEnvironment/WallLeft" unique_id=1559266002]
+polygon = PackedVector2Array(-20, -400, 20, -400, 20, 400, -20, 400)
+
+[node name="WallRight" type="StaticBody2D" parent="RoomEnvironment" unique_id=172581926]
+position = Vector2(600, 0)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="RoomEnvironment/WallRight" unique_id=1936893249]
+polygon = PackedVector2Array(-20, -400, 20, -400, 20, 400, -20, 400)
+
+[node name="RoomEmergencyLight" type="PointLight2D" parent="." unique_id=559988240]
+position = Vector2(0, -100)
+color = Color(1, 0.2, 0.2, 1)
+energy = 1.2
+texture = SubResource("GradientTexture2D_light")
+texture_scale = 2.5
+
+[node name="WallVent" type="Area2D" parent="." unique_id=458517068]
+position = Vector2(0, -320)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WallVent" unique_id=1240199801]
+shape = SubResource("RectangleShape2D_vent")
+
+[node name="VentPanel" type="PanelContainer" parent="WallVent" unique_id=1625011444]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -100.0
+offset_top = -50.0
+offset_right = 100.0
+offset_bottom = 50.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="WallVent/VentPanel" unique_id=986004175]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.9, 0.3, 1)
+theme_override_font_sizes/font_size = 14
+text = "LÜFTUNGSVENTIL"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ExitDoor" parent="." unique_id=431118664 instance=ExtResource("2_a8ygq")]
+position = Vector2(-560, 0)
+target_room_id = 10
+target_spawn = Vector2(-90, 0)
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1390983958]
+layer = 0
+
+[node name="HUD" type="Control" parent="CanvasLayer" unique_id=657978658]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="OxygenBar" type="ProgressBar" parent="CanvasLayer/HUD" unique_id=1767540537]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -180.0
+offset_top = 100.0
+offset_right = 180.0
+offset_bottom = 125.0
+grow_horizontal = 2
+value = 100.0
+
+[node name="WiringPanelUI" type="Control" parent="CanvasLayer" unique_id=1331138192]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/WiringPanelUI" unique_id=938008752]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -280.0
+offset_top = -180.0
+offset_right = 280.0
+offset_bottom = 180.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/WiringPanelUI/PanelContainer" unique_id=380883598]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="PanelTitle" type="Label" parent="CanvasLayer/WiringPanelUI/PanelContainer/VBoxContainer" unique_id=1066352409]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.7, 0.2, 1)
+theme_override_font_sizes/font_size = 18
+text = "=== LÜFTUNGS-SCHALTKASTEN (VERKABELUNG) ==="
+horizontal_alignment = 1
+
+[node name="InstructionLabel" type="Label" parent="CanvasLayer/WiringPanelUI/PanelContainer/VBoxContainer" unique_id=319770365]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.8, 0.9, 1)
+text = "Wähle das Kabel aus, das mit den 2 Anschlüssen verbunden werden soll:"
+horizontal_alignment = 1
+
+[node name="WireGrid" type="VBoxContainer" parent="CanvasLayer/WiringPanelUI/PanelContainer/VBoxContainer" unique_id=1361076102]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="WireGreenBtn" type="Button" parent="CanvasLayer/WiringPanelUI/PanelContainer/VBoxContainer/WireGrid" unique_id=776801075]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 1, 0.4, 1)
+text = "GRÜNES KABEL (Grüner Pol A -> Pol B)"
+
+[node name="WireRedBtn" type="Button" parent="CanvasLayer/WiringPanelUI/PanelContainer/VBoxContainer/WireGrid" unique_id=1014199728]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.3, 0.3, 1)
+text = "ROTES KABEL (Roter Pol A -> Pol B)"
+
+[node name="WireBlueBtn" type="Button" parent="CanvasLayer/WiringPanelUI/PanelContainer/VBoxContainer/WireGrid" unique_id=1295554185]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.6, 1, 1)
+text = "BLAUES KABEL (Blauer Pol A -> Pol B)"
+
+[node name="WireOrangeBtn" type="Button" parent="CanvasLayer/WiringPanelUI/PanelContainer/VBoxContainer/WireGrid" unique_id=309239568]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.6, 0.1, 1)
+text = "ORANGEFARBENES KABEL (Oranger Pol A -> Pol B)"
+
+[node name="CloseWiringBtn" type="Button" parent="CanvasLayer/WiringPanelUI/PanelContainer/VBoxContainer" unique_id=563528717]
+layout_mode = 2
+text = "Abbrechen / Schließen"
+
+[node name="ExitDoorRight" parent="." unique_id=901364 instance=ExtResource("2_a8ygq")]
+position = Vector2(560, 0)
+target_room_id = 20
+target_spawn = Vector2(90, 0)
+
+[node name="ExitDoorBottom" parent="." instance=ExtResource("2_a8ygq")]
+position = Vector2(370, 345)
+rotation = 1.5707964
+blocked_message = "Quarantäne-Schleuse: Einbahnstraße. Zurück in den Frachtraum geht es nur über die Frachtschiene."
