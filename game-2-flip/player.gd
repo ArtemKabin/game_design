@@ -1,78 +1,102 @@
+# player.gd
+# CharacterBody2D — side-scrolling platformer.
+# Controls:  A / ←  = slow down (hesitate)   D / →  = speed up   F = world_flip
+# The player auto-runs RIGHT at auto_speed (set by game.gd each frame).
+# Pressing A slows to a stop; pressing D doubles speed briefly.
+# There is NO jump — pressing F mid-air flips the world instead.
 extends CharacterBody2D
 
-# Shared top-down player with flashlight. Instance res://player.tscn in every level.
-# Movement and keys come from the Input Map in project.godot:
-#   move_up / move_down / move_left / move_right (WASD + arrows), interact (E), hit (F)
+signal died
 
-signal interact_pressed
-signal hit_pressed
+const GRAVITY       := 900.0
+const FLIP_COOLDOWN := 0.30   # prevent flip spam
 
-@export var speed: float = 220.0
+@onready var body_rect:       ColorRect      = $BodyRect
+@onready var eye_rect:        ColorRect      = $EyeRect
+@onready var death_particles: CPUParticles2D = $DeathParticles
 
-@onready var interact_label: Label = $InteractHintLabel
-@onready var camera: Camera2D = $Camera2D
+var is_dead:       bool  = false
+var can_move:      bool  = true
+var flip_cooldown: float = 0.0
+var was_on_floor:  bool  = false
+var coyote_timer:  float = 0.0
 
-var can_move: bool = true
+const COYOTE_TIME  := 0.14
+
+## Set each frame by game.gd. The base horizontal speed.
+var auto_speed: float = 0.0
 
 
 func _ready() -> void:
-	interact_label.visible = false
+	WorldState.world_flipped.connect(_on_world_flipped)
+	_apply_colors()
 
 
-func _physics_process(_delta: float) -> void:
-	if not can_move:
+func _physics_process(delta: float) -> void:
+	if is_dead or not can_move:
 		return
-	var input_dir := Input.get_vector("move_left", "move_right", "move_up", "move_down")
-	velocity = input_dir * speed
+
+	# ── Horizontal: A slows to 0, D doubles, neither = auto_speed ────────────
+	var dir := Input.get_axis("move_left", "move_right")
+	velocity.x = clampf(auto_speed + dir * auto_speed, 0.0, auto_speed * 2.2)
+
+	# ── Gravity + coyote ─────────────────────────────────────────────────────
+	if not is_on_floor():
+		velocity.y += GRAVITY * delta
+		if was_on_floor:
+			coyote_timer = COYOTE_TIME
+		coyote_timer = maxf(coyote_timer - delta, 0.0)
+	else:
+		velocity.y   = 0.0
+		coyote_timer = 0.0
+
+	was_on_floor  = is_on_floor()
+	flip_cooldown = maxf(flip_cooldown - delta, 0.0)
+
 	move_and_slide()
+
+	# ── World flip ────────────────────────────────────────────────────────────
+	if Input.is_action_just_pressed("world_flip") and flip_cooldown <= 0.0:
+		WorldState.flip()
+		flip_cooldown = FLIP_COOLDOWN
+
+
+func _on_world_flipped(_is_dark: bool) -> void:
+	_apply_colors()
+
+
+func _apply_colors() -> void:
+	body_rect.color = WorldState.get_player_color()
+	eye_rect.color  = WorldState.get_bg_color()
+
+
+func kill() -> void:
+	if is_dead:
+		return
+	is_dead  = true
+	can_move = false
+	velocity = Vector2.ZERO
+	body_rect.visible        = false
+	eye_rect.visible         = false
+	death_particles.emitting = true
+	died.emit()
+
+
+func respawn(pos: Vector2) -> void:
+	is_dead    = false
+	can_move   = true
+	auto_speed = 0.0
+	global_position          = pos
+	velocity                 = Vector2.ZERO
+	scale.x                  = 1.0
+	body_rect.visible        = true
+	eye_rect.visible         = true
+	death_particles.emitting = false
+	WorldState.reset()
+	_apply_colors()
 
 
 func set_movement_enabled(enabled: bool) -> void:
 	can_move = enabled
-	velocity = Vector2.ZERO
-
-
-# Short camera trip to a point of interest (e.g. a door that just opened) and back.
-# The camera is detached from the player for the duration; its limits still apply unless
-# ignore_limits is set (for a look into another room, see Room.peek_room).
-# Usage: await player.pan_camera_to(door.global_position)
-func pan_camera_to(target: Vector2, hold_seconds: float = 0.8, travel_seconds: float = 0.6,
-		ignore_limits: bool = false) -> void:
-	var home: Vector2 = global_position
-	var limits: Array[int] = [camera.limit_left, camera.limit_top, camera.limit_right, camera.limit_bottom]
-	if ignore_limits:
-		camera.limit_left = -10000000
-		camera.limit_top = -10000000
-		camera.limit_right = 10000000
-		camera.limit_bottom = 10000000
-	camera.top_level = true
-	camera.global_position = home
-	var tween: Tween = create_tween()
-	tween.tween_property(camera, "global_position", target, travel_seconds) \
-		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	tween.tween_interval(hold_seconds)
-	tween.tween_property(camera, "global_position", home, travel_seconds) \
-		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	await tween.finished
-	camera.top_level = false
-	camera.position = Vector2.ZERO
-	camera.limit_left = limits[0]
-	camera.limit_top = limits[1]
-	camera.limit_right = limits[2]
-	camera.limit_bottom = limits[3]
-
-
-func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("interact"):
-		interact_pressed.emit()
-	elif event.is_action_pressed("hit"):
-		hit_pressed.emit()
-
-
-func show_interaction_hint(text: String) -> void:
-	interact_label.text = text
-	interact_label.visible = true
-
-
-func hide_interaction_hint() -> void:
-	interact_label.visible = false
+	if not enabled:
+		velocity = Vector2.ZERO

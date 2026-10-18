@@ -1,0 +1,26 @@
+[gd_scene load_steps=4 format=3 uid="uid://chunk_flat_001"]
+
+[ext_resource type="Script" path="res://chunk.gd"          id="1_c"]
+[ext_resource type="Script" path="res://platform_draw.gd"  id="2_pd"]
+
+; Platform: 400 px wide, 32 px tall.
+; StaticBody center at y=16 → top surface at y=0.
+[sub_resource type="RectangleShape2D" id="RS_floor"]
+size = Vector2(400, 32)
+
+[node name="ChunkFlat" type="Node2D"]
+script = ExtResource("1_c")
+width = 400.0
+
+[node name="Floor" type="StaticBody2D" parent="."]
+position = Vector2(200, 16)
+collision_layer = 1
+collision_mask  = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Floor"]
+shape = SubResource("RS_floor")
+
+[node name="PlatformDraw" type="Node2D" parent="Floor"]
+script = ExtResource("2_pd")
+width = 400.0
+height = 32.0

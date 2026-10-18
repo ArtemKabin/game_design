@@ -1,0 +1,34 @@
+[gd_scene load_steps=5 format=3 uid="uid://game_001"]
+
+[ext_resource type="Script"      path="res://game.gd"           id="1_game"]
+[ext_resource type="PackedScene" path="res://player.tscn"       id="2_player"]
+[ext_resource type="PackedScene" path="res://hud.tscn"          id="3_hud"]
+[ext_resource type="PackedScene" path="res://game_over_ui.tscn" id="4_go"]
+
+[node name="Game" type="Node2D"]
+script = ExtResource("1_game")
+
+; Player starts at PLAYER_SPAWN = (200, -20).
+; Ground platforms have their top surface at world y=0.
+; Player half-height = 18, so center at y=-20 puts feet at y=-2 (just above ground).
+; The 2-frame physics wait lets gravity settle them neatly onto the platform.
+[node name="Player" parent="." instance=ExtResource("2_player")]
+position = Vector2(200, -20)
+
+[node name="Camera2D" type="Camera2D" parent="Player"]
+position_smoothing_enabled = true
+position_smoothing_speed = 7.0
+limit_left   = -600
+limit_top    = -400
+limit_right  = 9999999
+limit_bottom = 350
+zoom = Vector2(1.1, 1.1)
+
+; All chunk instances live here (never scrolled)
+[node name="ChunkRoot" type="Node2D" parent="."]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="HUD" parent="CanvasLayer" instance=ExtResource("3_hud")]
+
+[node name="GameOverUI" parent="CanvasLayer" instance=ExtResource("4_go")]

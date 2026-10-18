@@ -1,19 +1,45 @@
+# main_menu.gd
+# Main menu for FLIP. Pressing Start goes straight into the endless game.
 extends Node2D
 
-# Main menu. Start loads the ship (world.tscn); the player begins on the bridge (Level 0).
-# Button signals are connected in main_menu.tscn. Keyboard navigation comes
-# from Godot's focus system: W/S (ui_up/ui_down) move, Enter/Space/E/F accept.
+@onready var start_btn: Button    = $Panel/VBox/StartButton
+@onready var exit_btn:  Button    = $Panel/VBox/ExitButton
+@onready var bg:        ColorRect = $BG
+@onready var title_lbl: Label     = $BGLabel
 
-@onready var start_button: Button = $GraphFrame/VBoxContainer/StartButton
+var _flip_timer: float = 0.0
+const FLIP_INTERVAL := 3.5  # seconds between automatic world flips in the menu
 
 
 func _ready() -> void:
-	start_button.grab_focus()
+	WorldState.reset()
+	WorldState.world_flipped.connect(_on_world_flipped)
+	_apply_colors()
+	start_btn.grab_focus()
 
 
-func _on_start_button_pressed() -> void:
-	GameManager.go_to_world()
+func _process(delta: float) -> void:
+	_flip_timer += delta
+	if _flip_timer >= FLIP_INTERVAL:
+		_flip_timer = 0.0
+		WorldState.flip()
 
 
-func _on_exit_button_pressed() -> void:
+func _on_world_flipped(_is_dark: bool) -> void:
+	_apply_colors()
+
+
+func _apply_colors() -> void:
+	var tween := create_tween()
+	tween.tween_property(bg, "color", WorldState.get_bg_color(), 0.4)
+	title_lbl.modulate = Color(WorldState.get_fg_color().r,
+		WorldState.get_fg_color().g,
+		WorldState.get_fg_color().b, 0.07)
+
+
+func _on_start_pressed() -> void:
+	get_tree().change_scene_to_file("res://game.tscn")
+
+
+func _on_exit_pressed() -> void:
 	get_tree().quit()

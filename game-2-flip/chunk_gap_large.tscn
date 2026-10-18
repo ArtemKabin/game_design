@@ -1,0 +1,64 @@
+[gd_scene load_steps=5 format=3 uid="uid://chunk_gap_l_001"]
+
+[ext_resource type="Script"      path="res://chunk.gd"          id="1_c"]
+[ext_resource type="Script"      path="res://platform_draw.gd"  id="2_pd"]
+[ext_resource type="PackedScene" path="res://sphere.tscn"       id="3_s"]
+
+; Layout:  [180 px pad] [340 px gap] [180 px pad]  = 700 px total
+; Three spheres staggered by height and float speed.
+; In WHITE world: must use at least one sphere as a stepping stone to cross.
+; In BLACK world: all three kill → must navigate the whole gap with no flip (or
+;   flip twice: once to pass a sphere, once to land).
+; This is the hardest chunk and only appears at high difficulty.
+
+[sub_resource type="RectangleShape2D" id="RS_left"]
+size = Vector2(180, 32)
+
+[sub_resource type="RectangleShape2D" id="RS_right"]
+size = Vector2(180, 32)
+
+[node name="ChunkGapLarge" type="Node2D"]
+script = ExtResource("1_c")
+width = 700.0
+
+[node name="LeftPad" type="StaticBody2D" parent="."]
+position = Vector2(90, 16)
+collision_layer = 1
+collision_mask  = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="LeftPad"]
+shape = SubResource("RS_left")
+
+[node name="PlatformDraw" type="Node2D" parent="LeftPad"]
+script = ExtResource("2_pd")
+width = 180.0
+height = 32.0
+
+[node name="RightPad" type="StaticBody2D" parent="."]
+position = Vector2(610, 16)
+collision_layer = 1
+collision_mask  = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RightPad"]
+shape = SubResource("RS_right")
+
+[node name="PlatformDraw" type="Node2D" parent="RightPad"]
+script = ExtResource("2_pd")
+width = 180.0
+height = 32.0
+
+; Three spheres at staggered heights and speeds
+[node name="SphereA" parent="." instance=ExtResource("3_s")]
+position = Vector2(240, -64)
+float_speed = 1.4
+float_amplitude = 7.0
+
+[node name="SphereB" parent="." instance=ExtResource("3_s")]
+position = Vector2(350, -136)
+float_speed = 2.5
+float_amplitude = 12.0
+
+[node name="SphereC" parent="." instance=ExtResource("3_s")]
+position = Vector2(470, -72)
+float_speed = 1.9
+float_amplitude = 9.0
