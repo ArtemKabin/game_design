@@ -2,7 +2,7 @@ extends Control
 
 # Shared game-over panel. Instance res://game_over_ui.tscn under a CanvasLayer.
 # show_game_over(title, subtitle) shows it and focuses the restart button;
-# Enter/Space/E/F or R emit restart_requested. What "restart" means is the level's job.
+# Enter/Space or R emit restart_requested. What "restart" means is the level's job.
 
 signal restart_requested
 

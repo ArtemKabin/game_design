@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://flip_chunk_001"]
+
+[ext_resource type="Script" path="res://flip_chunk.gd" id="1_fc"]
+
+; Generic hazard chunk. game.gd sets `pattern` before adding it to the tree;
+; floor, kill zones and drawing are built in flip_chunk.gd.
+[node name="FlipChunk" type="Node2D"]
+script = ExtResource("1_fc")
+pattern = "####....####"

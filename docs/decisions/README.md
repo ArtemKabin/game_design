@@ -55,7 +55,9 @@ What follows from it? What do we give up?
 | [0019](0019-hud-and-text-polish.md) | HUD shows only the room title, status text types in and waits to be read, no emojis, bigger rail stubs | accepted |
 | [0020](0020-level-2-launch-clearance.md) | Level 2 is the hangar: launch clearance by real double meanings (abheben, einstellen, aufgeben), launch-window countdown, then escape and end screen | accepted |
 | [0021](0021-east-rail-shared-corridor-script.md) | A second cart rail (east, slalom) between bridge and hangar; both rails share rail_corridor.gd | accepted |
-| [0022](0022-flip-visible-wall-and-menu-layout.md) | FLIP: back wall is a visible node with Sprite2D placeholder; menu UI on CanvasLayer + Control + CenterContainer | accepted |
+| [0022](0022-flip-visible-wall-and-menu-layout.md) | FLIP: back wall is a visible node with Sprite2D placeholder; menu UI on CanvasLayer + Control + CenterContainer | accepted, wall part replaced by 0024 |
+| [0023](0023-flip-virtual-holes-and-safe-zones.md) | FLIP: holes are virtual (solid floor + Area2D kill zone), safe zones alternate with pattern hazards | accepted |
+| [0024](0024-flip-one-world-spheres-no-wall.md) | FLIP: spheres exist in one world only and may patrol; back wall removed | accepted |
 
 ## Open questions (not yet decided)
 

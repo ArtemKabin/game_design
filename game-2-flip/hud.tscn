@@ -78,5 +78,5 @@ grow_horizontal = 2
 grow_vertical = 0
 theme_override_colors/font_color = Color(0.45, 0.45, 0.45, 1)
 theme_override_font_sizes/font_size = 13
-text = "A / D  =  Laufen     |     F  =  Welt wechseln"
+text = "A / D  =  Laufen     |     Enter  =  Welt wechseln"
 horizontal_alignment = 1

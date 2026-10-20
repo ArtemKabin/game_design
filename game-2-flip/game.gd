@@ -1,9 +1,7 @@
 # game.gd
 # Endless runner: the PLAYER moves right at auto_speed (set each frame).
 # Chunks are STATIONARY — they don't scroll. The camera follows the player.
-# A "back wall" advances at scroll_speed; if the player falls too far behind it, they die.
-# The wall is visible: the Wall node (wall.gd) is moved to _wall_x every frame.
-# This avoids the StaticBody2D push bug from the old scrolling approach.
+# There is no back wall: hesitating costs nothing but time.
 extends Node2D
 
 # ── Constants ─────────────────────────────────────────────────────────────────
@@ -11,16 +9,45 @@ const SCROLL_SPEED_START := 140.0   # px/s
 const SCROLL_SPEED_MAX   := 380.0
 const SPEED_RAMP         :=   6.0   # px/s per second
 const SPAWN_AHEAD        := 1100.0  # px ahead of player to keep chunks ready
-const VOID_KILL_Y        :=  350.0  # y below which = fallen off
-const WALL_GRACE         :=  260.0  # how far behind back-wall before death
+const VOID_KILL_Y        :=  350.0  # y below which = fallen off (safety net, floor is continuous)
 const CHUNK_PRE_SPAWN    :=  460.0  # how far left of spawn point to pre-seed ground
 
-## Chunk pool: [scene_path, base_weight]
-const CHUNK_POOL: Array = [
-	["res://chunk_flat.tscn",        8],
-	["res://chunk_gap_small.tscn",   5],
-	["res://chunk_gap_medium.tscn",  3],
-	["res://chunk_gap_large.tscn",   1],
+## Level rhythm: SAFE, HAZARD, SAFE, HAZARD, ...
+## A safe zone (chunk_safe.tscn) is flat, never inverts, flipping there is harmless.
+const SAFE_SCENE   := "res://chunk_safe.tscn"
+const HOLE_SCENE   := "res://flip_chunk.tscn"
+const SPHERE_SCENE := "res://sphere_chunk.tscn"
+
+## Hazard pool. Each entry is a Dictionary with weights w0 (difficulty 0) and
+## w1 (difficulty 1); the weight is interpolated in between, 0 = never.
+##
+## HOLE chunk:   {"holes": "<pattern>"}
+##   '#' = ground in the WHITE world, '.' = hole in the WHITE world, BLACK = inverse.
+##   One char = 80 px. Keep every run at least 2 chars (see FLIP_COOLDOWN in player.gd).
+##
+## SPHERE chunk: {"width": px, "spheres": [[x, in_dark, patrol_distance, patrol_speed], ...]}
+##   Floor is solid in both worlds. A sphere exists (visible + deadly) only in
+##   its world: in_dark=false -> WHITE, true -> BLACK. Pass it in the other world.
+##   patrol_distance != 0 -> it moves that far (negative = left) and back at patrol_speed px/s.
+const HAZARD_POOL: Array = [
+	# holes
+	{"holes": "####....####",     "w0": 6, "w1": 1},
+	{"holes": "....####....",     "w0": 4, "w1": 1},
+	{"holes": "####..####",       "w0": 3, "w1": 2},
+	{"holes": "###...###...###",  "w0": 2, "w1": 3},
+	{"holes": "...###...###...",  "w0": 1, "w1": 3},
+	{"holes": "##..##..##..##",   "w0": 0, "w1": 4},
+	{"holes": "..##..##..##..",   "w0": 0, "w1": 3},
+	{"holes": "####..####..####", "w0": 1, "w1": 3},
+	# spheres, stationary
+	{"width": 560, "spheres": [[280, false, 0, 0]],                                        "w0": 5, "w1": 1},
+	{"width": 560, "spheres": [[280, true,  0, 0]],                                        "w0": 5, "w1": 1},
+	{"width": 800, "spheres": [[240, false, 0, 0], [560, true, 0, 0]],                     "w0": 2, "w1": 3},
+	{"width": 880, "spheres": [[200, true, 0, 0], [440, false, 0, 0], [680, true, 0, 0]],  "w0": 0, "w1": 3},
+	# spheres, patrolling
+	{"width": 720, "spheres": [[200, false, 320, 140]],                                    "w0": 2, "w1": 2},
+	{"width": 720, "spheres": [[520, true, -320, 180]],                                    "w0": 1, "w1": 2},
+	{"width": 960, "spheres": [[160, false, 240, 120], [720, true, -240, 160]],            "w0": 0, "w1": 3},
 ]
 
 # Player starts here. Enough pre-seeded ground behind for a clean landing.
@@ -32,7 +59,6 @@ const PLAYER_SPAWN := Vector2(200.0, -20.0)
 @onready var hud:          Control         = $CanvasLayer/HUD
 @onready var game_over_ui: Control         = $CanvasLayer/GameOverUI
 @onready var chunk_root:   Node2D          = $ChunkRoot
-@onready var wall:         Node2D          = $Wall   # visible back wall, see wall.gd
 
 # ── State ─────────────────────────────────────────────────────────────────────
 var scroll_speed:    float = SCROLL_SPEED_START
@@ -41,8 +67,8 @@ var _last_score:     int   = -1
 var _running:        bool  = false
 var _chunk_right_x:  float = 0.0
 var _chunks:         Array = []
-var _wall_x:         float = 0.0   # the advancing back-wall world-x
 var _die_reason:     String = ""
+var _last_was_hazard: bool = false   # spawn rhythm: safe / hazard alternate
 
 
 func _ready() -> void:
@@ -64,11 +90,9 @@ func _start() -> void:
 	score        = 0
 	_last_score  = -1
 	scroll_speed = SCROLL_SPEED_START
-	_wall_x      = PLAYER_SPAWN.x - WALL_GRACE - 100.0
-	wall.position.x = _wall_x
 	_die_reason  = ""
 	hud.set_score(0)
-	hud.show_status("Zögere — dann entscheide.\n[A] = langsamer   [D] = schneller   [F] = Welt wechseln", 4.5)
+	hud.show_status("Zögere — dann entscheide.\nFlippe genau an der Kante, wo Boden und Loch wechseln. Kugeln gibt es nur in einer Welt: weiche ihnen in der anderen aus. Auf Plattformen mit Raute bist du sicher.\n[A] = langsamer   [D] = schneller   [Enter] = Welt wechseln", 6.0)
 
 
 func _reset_chunks() -> void:
@@ -80,10 +104,12 @@ func _reset_chunks() -> void:
 	# Seed ground well before the player so they land safely.
 	_chunk_right_x = PLAYER_SPAWN.x - CHUNK_PRE_SPAWN
 
-	# Force first 3 chunks to be flat so the player has solid ground to start.
+	# Start on a long safe stretch (3 safe chunks) so the first decision comes
+	# after the controls hint has been read.
 	for _i in range(3):
-		_spawn_chunk("res://chunk_flat.tscn")
-	# Then fill ahead with random chunks.
+		_spawn_safe()
+	_last_was_hazard = false
+	# Then fill ahead with the safe/hazard rhythm.
 	while _chunk_right_x < PLAYER_SPAWN.x + SPAWN_AHEAD:
 		_spawn_next_chunk(0.0)
 
@@ -99,22 +125,12 @@ func _physics_process(delta: float) -> void:
 	# Ramp difficulty
 	scroll_speed = minf(scroll_speed + SPEED_RAMP * delta, SCROLL_SPEED_MAX)
 
-	# Advance back wall (logic) and move its visual to match
-	_wall_x += scroll_speed * delta
-	wall.position.x = _wall_x
-
 	var px := player.global_position.x
 	var py := player.global_position.y
 
-	# Void kill — fell off bottom
+	# Void kill — safety net only, the floor is continuous
 	if py > VOID_KILL_Y and not player.is_dead:
-		_die_reason = "Du bist gefallen.\nZögere — aber spring ab bevor du fällst!"
-		player.kill()
-		return
-
-	# Wall kill — hesitated too long
-	if px < _wall_x and not player.is_dead:
-		_die_reason = "Du hast zu lange gezögert.\nDie Wand hat dich erwischt!"
+		_die_reason = "Du bist gefallen."
 		player.kill()
 		return
 
@@ -141,50 +157,78 @@ func _physics_process(delta: float) -> void:
 
 
 # ── Chunk spawning ────────────────────────────────────────────────────────────
+## Alternates safe zone and hazard. `difficulty` 0..1 weights the hazard pool.
 func _spawn_next_chunk(difficulty: float) -> void:
-	var pool := _build_pool(difficulty)
-	_spawn_chunk(pool[randi() % pool.size()])
+	if _last_was_hazard:
+		_spawn_safe()
+	else:
+		_spawn_hazard(_pick_hazard(difficulty))
+	_last_was_hazard = not _last_was_hazard
 
 
-func _spawn_chunk(path: String) -> void:
+func _spawn_safe() -> void:
+	var chunk := _instantiate_chunk(SAFE_SCENE)
+	if chunk:
+		_place_chunk(chunk)
+
+
+func _spawn_hazard(spec: Dictionary) -> void:
+	if spec.has("holes"):
+		var chunk := _instantiate_chunk(HOLE_SCENE) as FlipChunk
+		if chunk == null:
+			return
+		chunk.pattern = spec["holes"]       # must be set BEFORE add_child (built in _ready)
+		_place_chunk(chunk)
+		chunk.hole_entered.connect(_on_hole_entered)
+	elif spec.has("spheres"):
+		var chunk := _instantiate_chunk(SPHERE_SCENE) as SphereChunk
+		if chunk == null:
+			return
+		chunk.width   = float(spec["width"])
+		chunk.spheres = spec["spheres"]
+		_place_chunk(chunk)
+		chunk.sphere_hit.connect(_on_sphere_hit)
+	else:
+		push_error("game.gd: hazard entry has neither 'holes' nor 'spheres': %s" % spec)
+
+
+func _instantiate_chunk(path: String) -> Chunk:
 	var packed: PackedScene = load(path)
 	if packed == null:
 		push_error("game.gd: cannot load '%s'" % path)
-		return
-	var chunk := packed.instantiate() as Chunk
+		return null
+	return packed.instantiate() as Chunk
+
+
+func _place_chunk(chunk: Chunk) -> void:
 	chunk.position = Vector2(_chunk_right_x, 0.0)
-	chunk_root.add_child(chunk)
+	chunk_root.add_child(chunk)      # _ready runs here and sets the final width
 	_chunks.append(chunk)
 	_chunk_right_x += chunk.width
-	_wire_spheres(chunk)
 
 
-func _wire_spheres(chunk: Node) -> void:
-	for child in chunk.get_children():
-		if child.has_node("KillZone"):
-			var kz := child.get_node("KillZone") as Area2D
-			if kz and not kz.body_entered.is_connected(_on_sphere_kill):
-				kz.body_entered.connect(_on_sphere_kill)
-
-
-func _build_pool(difficulty: float) -> Array:
-	var weights := [
-		lerpf(8.0, 1.0, difficulty),
-		lerpf(5.0, 5.0, difficulty),
-		lerpf(3.0, 7.0, difficulty),
-		lerpf(1.0, 5.0, difficulty),
-	]
+func _pick_hazard(difficulty: float) -> Dictionary:
 	var pool: Array = []
-	for i in range(CHUNK_POOL.size()):
-		for _j in range(maxi(int(weights[i]), 1)):
-			pool.append(CHUNK_POOL[i][0])
-	return pool
+	for entry in HAZARD_POOL:
+		var w := int(round(lerpf(float(entry["w0"]), float(entry["w1"]), difficulty)))
+		for _j in range(w):
+			pool.append(entry)
+	if pool.is_empty():
+		return HAZARD_POOL[0]
+	return pool[randi() % pool.size()]
 
 
 # ── Callbacks ─────────────────────────────────────────────────────────────────
-func _on_sphere_kill(body: Node) -> void:
-	if body == player and not player.is_dead:
-		_die_reason = "Die Kugel in der schwarzen Welt hat dich erwischt.\nZögere — dann entscheide den richtigen Moment."
+func _on_hole_entered(body: Node) -> void:
+	# Holes only count while the run is live (not during death/restart).
+	if _running and body == player and not player.is_dead:
+		_die_reason = "Du bist in ein Loch gefallen.\nFlippe genau an der Kante, wo Boden und Loch wechseln."
+		player.kill_by_fall()
+
+
+func _on_sphere_hit(body: Node) -> void:
+	if _running and body == player and not player.is_dead:
+		_die_reason = "Die Kugel hat dich erwischt.\nSie existiert nur in einer Welt — weiche ihr in der anderen aus."
 		player.kill()
 
 
@@ -203,6 +247,10 @@ func _on_restart() -> void:
 	game_over_ui.visible = false
 	WorldState.reset()
 	player.respawn(PLAYER_SPAWN)
+	# Let the physics server apply the teleport BEFORE new kill zones exist.
+	# Otherwise a fresh zone can overlap the player's old (death) position for
+	# one step and kill them again before the run even starts.
+	await get_tree().physics_frame
 	_reset_chunks()
 	# One physics frame pause so the reset chunks register collision.
 	await get_tree().physics_frame

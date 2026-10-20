@@ -1,24 +1,16 @@
-[gd_scene load_steps=5 format=3 uid="uid://sphere_001"]
+[gd_scene load_steps=4 format=3 uid="uid://sphere_001"]
 
 [ext_resource type="Script" path="res://sphere.gd"      id="1_s"]
 [ext_resource type="Script" path="res://sphere_draw.gd"  id="2_sd"]
 [ext_resource type="Script" path="res://aura_draw.gd"    id="3_ad"]
 
-[sub_resource type="CircleShape2D" id="CS_safe"]
+[sub_resource type="CircleShape2D" id="CS_kill"]
 radius = 22.0
 
-[sub_resource type="CircleShape2D" id="CS_kill"]
-radius = 24.0
-
+; One-world hazard sphere. Place it with its centre at y = -22 so it sits on
+; the floor (floor top at y = 0) at player height.
 [node name="Sphere" type="Node2D"]
 script = ExtResource("1_s")
-
-[node name="SafeBody" type="StaticBody2D" parent="."]
-collision_layer = 1
-collision_mask = 0
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="SafeBody"]
-shape = SubResource("CS_safe")
 
 [node name="KillZone" type="Area2D" parent="."]
 monitoring = false
