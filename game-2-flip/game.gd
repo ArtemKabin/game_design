@@ -2,6 +2,7 @@
 # Endless runner: the PLAYER moves right at auto_speed (set each frame).
 # Chunks are STATIONARY — they don't scroll. The camera follows the player.
 # A "back wall" advances at scroll_speed; if the player falls too far behind it, they die.
+# The wall is visible: the Wall node (wall.gd) is moved to _wall_x every frame.
 # This avoids the StaticBody2D push bug from the old scrolling approach.
 extends Node2D
 
@@ -31,6 +32,7 @@ const PLAYER_SPAWN := Vector2(200.0, -20.0)
 @onready var hud:          Control         = $CanvasLayer/HUD
 @onready var game_over_ui: Control         = $CanvasLayer/GameOverUI
 @onready var chunk_root:   Node2D          = $ChunkRoot
+@onready var wall:         Node2D          = $Wall   # visible back wall, see wall.gd
 
 # ── State ─────────────────────────────────────────────────────────────────────
 var scroll_speed:    float = SCROLL_SPEED_START
@@ -63,6 +65,7 @@ func _start() -> void:
 	_last_score  = -1
 	scroll_speed = SCROLL_SPEED_START
 	_wall_x      = PLAYER_SPAWN.x - WALL_GRACE - 100.0
+	wall.position.x = _wall_x
 	_die_reason  = ""
 	hud.set_score(0)
 	hud.show_status("Zögere — dann entscheide.\n[A] = langsamer   [D] = schneller   [F] = Welt wechseln", 4.5)
@@ -96,8 +99,9 @@ func _physics_process(delta: float) -> void:
 	# Ramp difficulty
 	scroll_speed = minf(scroll_speed + SPEED_RAMP * delta, SCROLL_SPEED_MAX)
 
-	# Advance back wall
+	# Advance back wall (logic) and move its visual to match
 	_wall_x += scroll_speed * delta
+	wall.position.x = _wall_x
 
 	var px := player.global_position.x
 	var py := player.global_position.y

@@ -2,10 +2,12 @@
 # Main menu for FLIP. Pressing Start goes straight into the endless game.
 extends Node2D
 
-@onready var start_btn: Button    = $Panel/VBox/StartButton
-@onready var exit_btn:  Button    = $Panel/VBox/ExitButton
-@onready var bg:        ColorRect = $BG
-@onready var title_lbl: Label     = $BGLabel
+# UI lives on a CanvasLayer with a full-screen Control root (see main_menu.tscn),
+# so it stays centred at any window size.
+@onready var start_btn: Button    = $CanvasLayer/Root/Center/Panel/VBox/StartButton
+@onready var exit_btn:  Button    = $CanvasLayer/Root/Center/Panel/VBox/ExitButton
+@onready var bg:        ColorRect = $CanvasLayer/Root/BG
+@onready var title_lbl: Label     = $CanvasLayer/Root/BGLabel
 
 var _flip_timer: float = 0.0
 const FLIP_INTERVAL := 3.5  # seconds between automatic world flips in the menu
