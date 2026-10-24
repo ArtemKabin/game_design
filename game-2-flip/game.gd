@@ -59,6 +59,7 @@ const PLAYER_SPAWN := Vector2(200.0, -20.0)
 @onready var hud:          Control         = $CanvasLayer/HUD
 @onready var game_over_ui: Control         = $CanvasLayer/GameOverUI
 @onready var chunk_root:   Node2D          = $ChunkRoot
+@onready var sight_fog:    Node2D          = $Player/SightFog   # sight radius, see sight_fog.gd
 
 # ── State ─────────────────────────────────────────────────────────────────────
 var scroll_speed:    float = SCROLL_SPEED_START
@@ -91,8 +92,9 @@ func _start() -> void:
 	_last_score  = -1
 	scroll_speed = SCROLL_SPEED_START
 	_die_reason  = ""
+	sight_fog.reset()
 	hud.set_score(0)
-	hud.show_status("Zögere — dann entscheide.\nFlippe genau an der Kante, wo Boden und Loch wechseln. Kugeln gibt es nur in einer Welt: weiche ihnen in der anderen aus. Auf Plattformen mit Raute bist du sicher.\n[A] = langsamer   [D] = schneller   [Enter] = Welt wechseln", 6.0)
+	hud.show_status("Zögere — dann entscheide.\nFlippe genau an der Kante, wo Boden und Loch wechseln. Kugeln gibt es nur in einer Welt: weiche ihnen in der anderen aus.\nJeder Schritt nimmt dir Sicht. Bleib stehen, um wieder zu sehen. Leuchtende Rauten zeigen, wo das sicher ist.\n[A] = langsamer   [D] = schneller   [Enter] = Welt wechseln", 7.0)
 
 
 func _reset_chunks() -> void:

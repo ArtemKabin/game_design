@@ -58,6 +58,7 @@ What follows from it? What do we give up?
 | [0022](0022-flip-visible-wall-and-menu-layout.md) | FLIP: back wall is a visible node with Sprite2D placeholder; menu UI on CanvasLayer + Control + CenterContainer | accepted, wall part replaced by 0024 |
 | [0023](0023-flip-virtual-holes-and-safe-zones.md) | FLIP: holes are virtual (solid floor + Area2D kill zone), safe zones alternate with pattern hazards | accepted |
 | [0024](0024-flip-one-world-spheres-no-wall.md) | FLIP: spheres exist in one world only and may patrol; back wall removed | accepted |
+| [0025](0025-flip-sight-radius-glowing-markers.md) | FLIP: sight radius shrinks with distance travelled and regrows when standing; safe markers glow above the fog | accepted |
 
 ## Open questions (not yet decided)
 
