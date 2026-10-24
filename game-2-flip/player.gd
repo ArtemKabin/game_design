@@ -1,6 +1,6 @@
 # player.gd
 # CharacterBody2D — side-scrolling platformer.
-# Controls:  A / ←  = slow down (hesitate)   D / →  = speed up   Enter = world_flip
+# Controls:  A / ←  = slow down (hesitate)   D / →  = speed up   Enter / Space = world_flip
 # The player auto-runs RIGHT at auto_speed (set by game.gd each frame).
 # Pressing A slows to a stop; pressing D doubles speed briefly.
 # There is NO jump. Holes are virtual (see flip_chunk.gd): the floor is always

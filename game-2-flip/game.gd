@@ -15,48 +15,69 @@ const CHUNK_PRE_SPAWN    :=  460.0  # how far left of spawn point to pre-seed gr
 ## Level rhythm: SAFE, HAZARD, SAFE, HAZARD, ...
 ## A safe zone (chunk_safe.tscn) is flat, never inverts, flipping there is harmless.
 const SAFE_SCENE   := "res://chunk_safe.tscn"
-const HOLE_SCENE   := "res://flip_chunk.tscn"
-const SPHERE_SCENE := "res://sphere_chunk.tscn"
+const HAZARD_SCENE := "res://flip_chunk.tscn"
 
-## Hazard pool. Each entry is a Dictionary with weights w0 (difficulty 0) and
-## w1 (difficulty 1); the weight is interpolated in between, 0 = never.
+## Hazard pool. Every entry is one FlipChunk (flip_chunk.gd) with weights
+## w0 (difficulty 0) and w1 (difficulty 1); interpolated in between, 0 = never.
 ##
-## HOLE chunk:   {"holes": "<pattern>"}
-##   '#' = ground in the WHITE world, '.' = hole in the WHITE world, BLACK = inverse.
-##   One char = 80 px. Keep every run at least 2 chars (see FLIP_COOLDOWN in player.gd).
-##
-## SPHERE chunk: {"width": px, "spheres": [[x, in_dark, patrol_distance, patrol_speed], ...]}
-##   Floor is solid in both worlds. A sphere exists (visible + deadly) only in
-##   its world: in_dark=false -> WHITE, true -> BLACK. Pass it in the other world.
-##   patrol_distance != 0 -> it moves that far (negative = left) and back at patrol_speed px/s.
-##
-## STAR entries:  "stars": [[x, in_dark], ...]  (same chunk type, may be mixed with spheres)
-##   A star is visible, frozen and deadly in its world. In the other world it is
-##   hidden, harmless and hunts the player while on screen (see star.gd).
+##   "floor":   pattern string, one char = 80 px
+##              '#' ground only in WHITE   '.' ground only in BLACK   '=' ground in BOTH
+##              Keep every one-world run at least 2 chars (see FLIP_COOLDOWN in player.gd).
+##   "spheres": [[x, in_dark, patrol_distance, patrol_speed], ...]   (sphere.gd)
+##              exists (visible + deadly) only in its world; patrol_distance != 0 → moves
+##              that far (negative = left) and back at patrol_speed px/s.
+##   "stars":   [[x, in_dark], ...]                                   (star.gd)
+##              visible/frozen/deadly in its world; hidden and hunting in the other.
+##   x is chunk-local; segment i has its centre at i*80+40. A hazard must stand on
+##   ground of the world where it is HIDDEN (use '=' when in doubt), otherwise the
+##   chunk is impassable — flip_chunk.gd warns about that.
 const HAZARD_POOL: Array = [
-	# holes
-	{"holes": "####....####",     "w0": 6, "w1": 1},
-	{"holes": "....####....",     "w0": 4, "w1": 1},
-	{"holes": "####..####",       "w0": 3, "w1": 2},
-	{"holes": "###...###...###",  "w0": 2, "w1": 3},
-	{"holes": "...###...###...",  "w0": 1, "w1": 3},
-	{"holes": "##..##..##..##",   "w0": 0, "w1": 4},
-	{"holes": "..##..##..##..",   "w0": 0, "w1": 3},
-	{"holes": "####..####..####", "w0": 1, "w1": 3},
-	# spheres, stationary
-	{"width": 560, "spheres": [[280, false, 0, 0]],                                        "w0": 5, "w1": 1},
-	{"width": 560, "spheres": [[280, true,  0, 0]],                                        "w0": 5, "w1": 1},
-	{"width": 800, "spheres": [[240, false, 0, 0], [560, true, 0, 0]],                     "w0": 2, "w1": 3},
-	{"width": 880, "spheres": [[200, true, 0, 0], [440, false, 0, 0], [680, true, 0, 0]],  "w0": 0, "w1": 3},
-	# spheres, patrolling
-	{"width": 720, "spheres": [[200, false, 320, 140]],                                    "w0": 2, "w1": 2},
-	{"width": 720, "spheres": [[520, true, -320, 180]],                                    "w0": 1, "w1": 2},
-	{"width": 960, "spheres": [[160, false, 240, 120], [720, true, -240, 160]],            "w0": 0, "w1": 3},
-	# stars (hunters)
-	{"width": 640, "stars": [[400, false]],                                                "w0": 3, "w1": 2},
-	{"width": 640, "stars": [[400, true]],                                                 "w0": 3, "w1": 2},
-	{"width": 880, "stars": [[300, false], [620, true]],                                   "w0": 0, "w1": 3},
-	{"width": 880, "spheres": [[300, false, 0, 0]], "stars": [[620, false]],               "w0": 1, "w1": 3},
+	# ── floor only: flip at the edges ───────────────────────────────────────────
+	{"floor": "####....####",     "w0": 6, "w1": 1},
+	{"floor": "....####....",     "w0": 4, "w1": 1},
+	{"floor": "####..####",       "w0": 3, "w1": 2},
+	{"floor": "###...###...###",  "w0": 2, "w1": 3},
+	{"floor": "...###...###...",  "w0": 1, "w1": 3},
+	{"floor": "##..##..##..##",   "w0": 0, "w1": 4},
+	{"floor": "..##..##..##..",   "w0": 0, "w1": 3},
+	{"floor": "####..####..####", "w0": 1, "w1": 3},
+	# ── spheres on solid floor: be in the other world when you pass ─────────────
+	{"floor": "=======",      "spheres": [[280, false, 0, 0]],                                       "w0": 5, "w1": 1},
+	{"floor": "=======",      "spheres": [[280, true,  0, 0]],                                       "w0": 5, "w1": 1},
+	{"floor": "==========",   "spheres": [[240, false, 0, 0], [560, true, 0, 0]],                    "w0": 2, "w1": 3},
+	{"floor": "===========",  "spheres": [[200, true, 0, 0], [440, false, 0, 0], [680, true, 0, 0]], "w0": 0, "w1": 3},
+	{"floor": "=========",    "spheres": [[200, false, 320, 140]],                                   "w0": 2, "w1": 2},
+	{"floor": "=========",    "spheres": [[520, true, -320, 180]],                                   "w0": 1, "w1": 2},
+	{"floor": "============", "spheres": [[160, false, 240, 120], [720, true, -240, 160]],           "w0": 0, "w1": 3},
+	# dance: two patrolling spheres, one per world, crossing each other
+	{"floor": "========",     "spheres": [[80, false, 480, 150], [560, true, -480, 150]],            "w0": 0, "w1": 2},
+	# ── stars on solid floor: hidden hunters ───────────────────────────────────
+	{"floor": "========",     "stars": [[400, false]],                                               "w0": 3, "w1": 2},
+	{"floor": "========",     "stars": [[400, true]],                                                "w0": 3, "w1": 2},
+	{"floor": "===========",  "stars": [[300, false], [620, true]],                                  "w0": 0, "w1": 3},
+	{"floor": "===========",  "spheres": [[300, false, 0, 0]], "stars": [[620, false]],              "w0": 1, "w1": 3},
+	# ── combinations: floor + hazards ──────────────────────────────────────────
+	# white sphere on the '==' bridge: flip to black on the bridge BEFORE the sphere,
+	# cross the black-only stretch, flip back at the last edge.
+	{"floor": "###==...###",  "spheres": [[360, false, 0, 0]],                                       "w0": 2, "w1": 3},
+	# narrow window: the white star sits on the 2nd '=' → you must flip to black on
+	# the 1st '=' (80 px) or die; it then hunts you from behind.
+	{"floor": "####==....",   "stars": [[440, false]],                                               "w0": 1, "w1": 3},
+	# hidden hunter over white ground: enter in black, flip to white, run through the
+	# invisible black star, flip back at the end — but only if it is behind you.
+	{"floor": "..####..",     "stars": [[440, true]],                                                "w0": 1, "w1": 3},
+	# classic hole with a hunter: a black star hides on the white ground before the
+	# hole. Slow down at the edge and it catches you right when you flip.
+	{"floor": "####....####", "stars": [[200, true]],                                                "w0": 1, "w1": 3},
+	# two bridges, one star each in opposite worlds: black → white → black.
+	{"floor": "...==###==...", "stars": [[360, true], [680, false]],                                 "w0": 0, "w1": 3},
+	# chaser behind, blocker ahead: black star on the first bridge, flip early to white,
+	# cross, flip back on the second bridge (the star followed you in white).
+	{"floor": "..==##==..",   "stars": [[200, true]],                                                "w0": 1, "w1": 2},
+	# patrolling sphere guards the entry bridge, then a black-only stretch.
+	{"floor": "===....===",   "spheres": [[40, false, 160, 120]],                                    "w0": 1, "w1": 2},
+	# gauntlet: four flips, alternating hazards — late game only.
+	{"floor": "===..==##==..===", "spheres": [[120, false, 0, 0], [1160, true, 0, 0]], "stars": [[520, true], [840, false]], "w0": 0, "w1": 3},
 ]
 
 # Player starts here. Enough pre-seeded ground behind for a clean landing.
@@ -103,7 +124,6 @@ func _start() -> void:
 	_die_reason  = ""
 	sight_fog.reset()
 	hud.set_score(0)
-	hud.show_status("Zögere — dann entscheide.\nFlippe genau an der Kante, wo Boden und Loch wechseln. Kugeln gibt es nur in einer Welt: weiche ihnen in der anderen aus. Sterne stehen still, solange du sie siehst. Siehst du sie nicht, kommen sie.\nJeder Schritt nimmt dir Sicht. Bleib stehen, um wieder zu sehen. Leuchtende Rauten zeigen, wo das sicher ist.\n[A] = langsamer   [D] = schneller   [Enter] = Welt wechseln", 7.0)
 
 
 func _reset_chunks() -> void:
@@ -184,25 +204,20 @@ func _spawn_safe() -> void:
 
 
 func _spawn_hazard(spec: Dictionary) -> void:
-	if spec.has("holes"):
-		var chunk := _instantiate_chunk(HOLE_SCENE) as FlipChunk
+	if spec.has("floor"):
+		var chunk := _instantiate_chunk(HAZARD_SCENE) as FlipChunk
 		if chunk == null:
 			return
-		chunk.pattern = spec["holes"]       # must be set BEFORE add_child (built in _ready)
-		_place_chunk(chunk)
-		chunk.hole_entered.connect(_on_hole_entered)
-	elif spec.has("spheres") or spec.has("stars"):
-		var chunk := _instantiate_chunk(SPHERE_SCENE) as SphereChunk
-		if chunk == null:
-			return
-		chunk.width   = float(spec["width"])
+		# Must be set BEFORE add_child: the chunk is built in _ready.
+		chunk.pattern = spec["floor"]
 		chunk.spheres = spec.get("spheres", [])
 		chunk.stars   = spec.get("stars", [])
 		_place_chunk(chunk)
+		chunk.hole_entered.connect(_on_hole_entered)
 		chunk.sphere_hit.connect(_on_sphere_hit)
 		chunk.star_hit.connect(_on_star_hit)
 	else:
-		push_error("game.gd: hazard entry has no 'holes', 'spheres' or 'stars': %s" % spec)
+		push_error("game.gd: hazard entry has no 'floor' pattern: %s" % spec)
 
 
 func _instantiate_chunk(path: String) -> Chunk:

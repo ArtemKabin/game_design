@@ -1,9 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://sphere_chunk_001"]
-
-[ext_resource type="Script" path="res://sphere_chunk.gd" id="1_sc"]
-
-; Generic sphere chunk. game.gd sets `width` and `spheres` before adding it;
-; floor and spheres are built in sphere_chunk.gd.
-[node name="SphereChunk" type="Node2D"]
-script = ExtResource("1_sc")
-width = 640.0
