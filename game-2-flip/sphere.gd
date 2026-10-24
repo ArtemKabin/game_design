@@ -12,6 +12,11 @@
 # this node later; the kill logic does not care how it looks.
 extends Node2D
 
+## Emitted when the player touches the sphere while it is deadly. Fired by the
+## KillZone's body_entered AND by an explicit overlap check every physics frame,
+## so a flip that makes the sphere appear inside the player always kills.
+signal hit(body: Node)
+
 const RADIUS := 22.0   # must match the KillZone shape in sphere.tscn
 
 @export var in_dark_world:   bool  = false
@@ -26,6 +31,8 @@ const RADIUS := 22.0   # must match the KillZone shape in sphere.tscn
 
 var _base: Vector2 = Vector2.ZERO
 var _time: float   = 0.0
+var _player: Node2D = null
+var _player_half: Vector2 = Vector2(14.0, 18.0)   # read from the player's collision shape
 
 
 func _ready() -> void:
@@ -34,6 +41,7 @@ func _ready() -> void:
 	var col := Color(0.95, 0.95, 0.95) if in_dark_world else Color(0.08, 0.08, 0.08)
 	sphere_draw.color = col
 	aura.color = col
+	kill_zone.body_entered.connect(func(body: Node) -> void: hit.emit(body))
 	WorldState.world_flipped.connect(_on_world_flipped)
 	_apply_state(WorldState.is_dark)
 
@@ -45,6 +53,27 @@ func _process(delta: float) -> void:
 		p.x += pingpong(_time * patrol_speed, absf(patrol_distance)) * signf(patrol_distance)
 	p.y += sin(_time * TAU * bob_speed) * bob_amplitude
 	position = p
+
+
+func _physics_process(_delta: float) -> void:
+	if _player == null:
+		_player = get_tree().get_first_node_in_group("player") as Node2D
+		if _player == null:
+			return
+		var shape := _player.get_node_or_null("CollisionShape2D") as CollisionShape2D
+		if shape and shape.shape is RectangleShape2D:
+			_player_half = (shape.shape as RectangleShape2D).size * 0.5
+	# Deadly and standing in the player → hit, no matter what the area reported.
+	if kill_zone.monitoring and _overlaps_player():
+		hit.emit(_player)
+
+
+## Circle (this sphere) vs. the player's rectangle.
+func _overlaps_player() -> bool:
+	var v := global_position - _player.global_position
+	var closest := Vector2(clampf(v.x, -_player_half.x, _player_half.x),
+		clampf(v.y, -_player_half.y, _player_half.y))
+	return v.distance_to(closest) <= RADIUS
 
 
 func _on_world_flipped(is_dark: bool) -> void:

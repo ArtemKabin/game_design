@@ -29,6 +29,10 @@ const SPHERE_SCENE := "res://sphere_chunk.tscn"
 ##   Floor is solid in both worlds. A sphere exists (visible + deadly) only in
 ##   its world: in_dark=false -> WHITE, true -> BLACK. Pass it in the other world.
 ##   patrol_distance != 0 -> it moves that far (negative = left) and back at patrol_speed px/s.
+##
+## STAR entries:  "stars": [[x, in_dark], ...]  (same chunk type, may be mixed with spheres)
+##   A star is visible, frozen and deadly in its world. In the other world it is
+##   hidden, harmless and hunts the player while on screen (see star.gd).
 const HAZARD_POOL: Array = [
 	# holes
 	{"holes": "####....####",     "w0": 6, "w1": 1},
@@ -48,6 +52,11 @@ const HAZARD_POOL: Array = [
 	{"width": 720, "spheres": [[200, false, 320, 140]],                                    "w0": 2, "w1": 2},
 	{"width": 720, "spheres": [[520, true, -320, 180]],                                    "w0": 1, "w1": 2},
 	{"width": 960, "spheres": [[160, false, 240, 120], [720, true, -240, 160]],            "w0": 0, "w1": 3},
+	# stars (hunters)
+	{"width": 640, "stars": [[400, false]],                                                "w0": 3, "w1": 2},
+	{"width": 640, "stars": [[400, true]],                                                 "w0": 3, "w1": 2},
+	{"width": 880, "stars": [[300, false], [620, true]],                                   "w0": 0, "w1": 3},
+	{"width": 880, "spheres": [[300, false, 0, 0]], "stars": [[620, false]],               "w0": 1, "w1": 3},
 ]
 
 # Player starts here. Enough pre-seeded ground behind for a clean landing.
@@ -94,7 +103,7 @@ func _start() -> void:
 	_die_reason  = ""
 	sight_fog.reset()
 	hud.set_score(0)
-	hud.show_status("Zögere — dann entscheide.\nFlippe genau an der Kante, wo Boden und Loch wechseln. Kugeln gibt es nur in einer Welt: weiche ihnen in der anderen aus.\nJeder Schritt nimmt dir Sicht. Bleib stehen, um wieder zu sehen. Leuchtende Rauten zeigen, wo das sicher ist.\n[A] = langsamer   [D] = schneller   [Enter] = Welt wechseln", 7.0)
+	hud.show_status("Zögere — dann entscheide.\nFlippe genau an der Kante, wo Boden und Loch wechseln. Kugeln gibt es nur in einer Welt: weiche ihnen in der anderen aus. Sterne stehen still, solange du sie siehst. Siehst du sie nicht, kommen sie.\nJeder Schritt nimmt dir Sicht. Bleib stehen, um wieder zu sehen. Leuchtende Rauten zeigen, wo das sicher ist.\n[A] = langsamer   [D] = schneller   [Enter] = Welt wechseln", 7.0)
 
 
 func _reset_chunks() -> void:
@@ -182,16 +191,18 @@ func _spawn_hazard(spec: Dictionary) -> void:
 		chunk.pattern = spec["holes"]       # must be set BEFORE add_child (built in _ready)
 		_place_chunk(chunk)
 		chunk.hole_entered.connect(_on_hole_entered)
-	elif spec.has("spheres"):
+	elif spec.has("spheres") or spec.has("stars"):
 		var chunk := _instantiate_chunk(SPHERE_SCENE) as SphereChunk
 		if chunk == null:
 			return
 		chunk.width   = float(spec["width"])
-		chunk.spheres = spec["spheres"]
+		chunk.spheres = spec.get("spheres", [])
+		chunk.stars   = spec.get("stars", [])
 		_place_chunk(chunk)
 		chunk.sphere_hit.connect(_on_sphere_hit)
+		chunk.star_hit.connect(_on_star_hit)
 	else:
-		push_error("game.gd: hazard entry has neither 'holes' nor 'spheres': %s" % spec)
+		push_error("game.gd: hazard entry has no 'holes', 'spheres' or 'stars': %s" % spec)
 
 
 func _instantiate_chunk(path: String) -> Chunk:
@@ -234,6 +245,12 @@ func _on_sphere_hit(body: Node) -> void:
 		player.kill()
 
 
+func _on_star_hit(body: Node) -> void:
+	if _running and body == player and not player.is_dead:
+		_die_reason = "Der Stern hat dich.\nSolange du ihn siehst, steht er still. Siehst du ihn nicht, kommt er näher."
+		player.kill()
+
+
 func _on_player_died() -> void:
 	_running = false
 	player.set_movement_enabled(false)
@@ -249,6 +266,7 @@ func _on_restart() -> void:
 	game_over_ui.visible = false
 	WorldState.reset()
 	player.respawn(PLAYER_SPAWN)
+	camera.reset_smoothing()   # snap to the spawn; a lagging camera would "see" far stars and despawn them
 	# Let the physics server apply the teleport BEFORE new kill zones exist.
 	# Otherwise a fresh zone can overlap the player's old (death) position for
 	# one step and kill them again before the run even starts.
