@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=3 uid="uid://pause_menu_001"]
+[gd_scene load_steps=7 format=3 uid="uid://pause_menu_001"]
 
 [ext_resource type="Script"      path="res://pause_menu.gd"         id="1_pause"]
 [ext_resource type="Script"      path="res://lantern_menu.gd"       id="2_menu"]
 [ext_resource type="Script"      path="res://pixel_text.gd"         id="3_pt"]
 [ext_resource type="PackedScene" path="res://scoreboard_panel.tscn" id="4_sb"]
 [ext_resource type="PackedScene" path="res://options_menu.tscn"     id="5_opt"]
+[ext_resource type="PackedScene" path="res://help_menu.tscn"        id="6_help"]
 
 ; Pause overlay (pause_menu.gd). Layer 3: above the HUD. Works while paused.
 [node name="PauseMenu" type="CanvasLayer"]
@@ -87,6 +88,24 @@ text = "WEITER"
 scale_factor = 4
 align_center = true
 
+[node name="Help" type="Button" parent="Root/Menu/Buttons"]
+layout_mode = 2
+custom_minimum_size = Vector2(320, 44)
+flat = true
+
+[node name="Label" type="Control" parent="Root/Menu/Buttons/Help"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("3_pt")
+text = "HILFE"
+scale_factor = 4
+align_center = true
+
 [node name="Options" type="Button" parent="Root/Menu/Buttons"]
 layout_mode = 2
 custom_minimum_size = Vector2(320, 44)
@@ -143,3 +162,5 @@ offset_bottom = 560.0
 grow_horizontal = 2
 
 [node name="OptionsMenu" parent="Root" instance=ExtResource("5_opt")]
+
+[node name="HelpMenu" parent="Root" instance=ExtResource("6_help")]

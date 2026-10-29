@@ -9,8 +9,9 @@
 #   controls    – one rebindable key per action (move_left, move_right,
 #                 world_flip). The secondary keys from project.godot (arrows,
 #                 Space, keypad Enter) stay as they are.
-#   hunter_hint_shown – the game-over screen explains the hunter's sound once,
-#                 the first time a hunter kills the player (game.gd)
+#   tips        – ids of help tips the player has unlocked by dying in a
+#                 certain way (game.gd unlocks, help_menu.gd shows). The
+#                 hunter's tip also prints a hint on the game-over screen once.
 extends Node
 
 const PATH := "user://settings.cfg"
@@ -25,7 +26,7 @@ var fullscreen: bool = false
 var music: int = 30
 var sfx: int = 30
 var controls: Dictionary = DEFAULT_CONTROLS.duplicate()
-var hunter_hint_shown: bool = false
+var tips: PackedStringArray = PackedStringArray()   # unlocked tip ids, see help_menu.gd
 
 var _applied: Dictionary = {}   # action -> keycode currently added to the InputMap
 
@@ -121,9 +122,18 @@ func reset_controls() -> void:
 	save_settings()
 
 
-func mark_hunter_hint_shown() -> void:
-	hunter_hint_shown = true
+## Unlock a help tip. Returns true if it was new (the game-over screen then
+## points the player to the help).
+func unlock_tip(id: String) -> bool:
+	if tips.has(id):
+		return false
+	tips.append(id)
 	save_settings()
+	return true
+
+
+func is_tip_unlocked(id: String) -> bool:
+	return tips.has(id)
 
 
 ## Display name of an action's primary key, e.g. "A", "ENTER", "LEFT".
@@ -141,7 +151,7 @@ func load_settings() -> void:
 	sfx        = clampi(int(cfg.get_value("audio", "sfx", sfx)), 0, 100)
 	for action in DEFAULT_CONTROLS:
 		controls[action] = int(cfg.get_value("controls", action, DEFAULT_CONTROLS[action]))
-	hunter_hint_shown = bool(cfg.get_value("hints", "hunter", hunter_hint_shown))
+	tips = PackedStringArray(cfg.get_value("hints", "tips", tips))
 
 
 func save_settings() -> void:
@@ -151,6 +161,6 @@ func save_settings() -> void:
 	cfg.set_value("audio", "sfx", sfx)
 	for action in DEFAULT_CONTROLS:
 		cfg.set_value("controls", action, int(controls[action]))
-	cfg.set_value("hints", "hunter", hunter_hint_shown)
+	cfg.set_value("hints", "tips", tips)
 	if cfg.save(PATH) != OK:
 		push_warning("settings.gd: cannot write %s" % PATH)

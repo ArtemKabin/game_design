@@ -1,0 +1,106 @@
+[gd_scene load_steps=3 format=3 uid="uid://help_menu_001"]
+
+[ext_resource type="Script" path="res://help_menu.gd"  id="1_help"]
+[ext_resource type="Script" path="res://pixel_text.gd" id="2_pt"]
+
+; Help overlay (help_menu.gd). Full-screen, hidden until open(). Story on top,
+; tips below; pixel scale 2 so six story lines and seven tips fit 648 px.
+[node name="HelpMenu" type="Control"]
+process_mode = 3
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_help")
+
+[node name="Overlay" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.93)
+
+[node name="Title" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -400.0
+offset_top = 36.0
+offset_right = 400.0
+offset_bottom = 76.0
+grow_horizontal = 2
+mouse_filter = 2
+script = ExtResource("2_pt")
+text = "HILFE"
+scale_factor = 5
+align_center = true
+
+[node name="Story" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -540.0
+offset_top = 100.0
+offset_right = 540.0
+offset_bottom = 220.0
+grow_horizontal = 2
+mouse_filter = 2
+script = ExtResource("2_pt")
+text = ""
+scale_factor = 2
+align_center = true
+
+[node name="TipsTitle" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -400.0
+offset_top = 262.0
+offset_right = 400.0
+offset_bottom = 286.0
+grow_horizontal = 2
+mouse_filter = 2
+script = ExtResource("2_pt")
+text = "TIPPS"
+scale_factor = 3
+align_center = true
+
+[node name="Tips" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -540.0
+offset_top = 306.0
+offset_right = 540.0
+offset_bottom = 580.0
+grow_horizontal = 2
+mouse_filter = 2
+script = ExtResource("2_pt")
+text = ""
+scale_factor = 2
+
+[node name="Footer" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -400.0
+offset_top = 604.0
+offset_right = 400.0
+offset_bottom = 620.0
+grow_horizontal = 2
+mouse_filter = 2
+script = ExtResource("2_pt")
+text = "ENTER ODER ESC: ZURÜCK"
+scale_factor = 2
+align_center = true

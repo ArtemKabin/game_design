@@ -61,6 +61,7 @@ What follows from it? What do we give up?
 | [0025](0025-flip-sight-radius-glowing-markers.md) | FLIP: sight radius shrinks with distance travelled and regrows when standing; safe markers glow above the fog | accepted |
 | [0026](0026-flip-hunter-stars.md) | FLIP: hunter stars freeze and kill when visible, hunt the player when hidden, despawn off screen | accepted |
 | [0027](0027-flip-one-chunk-type-three-floors.md) | FLIP: one hazard chunk type; floor chars `#` `.` `=`; spheres and stars on any pattern | accepted |
+| [0028](0028-flip-help-story-and-unlockable-tips.md) | FLIP: HILFE overlay in main and pause menu with the story and tips; four tips unlock through deaths, persisted per browser | accepted |
 
 ## Open questions (not yet decided)
 

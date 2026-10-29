@@ -1,6 +1,7 @@
 # main_menu.gd
-# Main menu for FLIP: corridor wall, pixel-font title, SPIELEN / OPTIONEN with
-# the lantern cursor (lantern_menu.gd), the best list, and the options overlay.
+# Main menu for FLIP: corridor wall, pixel-font title, SPIELEN / HILFE /
+# OPTIONEN with the lantern cursor (lantern_menu.gd), the best list, and the
+# help and options overlays.
 # The menu flips worlds on its own every few seconds, which drives the colour
 # filter and the lantern colour — a preview of the mechanic. No exit button:
 # the game runs in the browser.
@@ -10,8 +11,10 @@ const FLIP_INTERVAL := 3.5   # seconds between automatic world flips
 
 @onready var menu:        LanternMenu     = $CanvasLayer/Root/Menu
 @onready var start_btn:   Button          = $CanvasLayer/Root/Menu/Buttons/StartButton
+@onready var help_btn:    Button          = $CanvasLayer/Root/Menu/Buttons/HelpButton
 @onready var options_btn: Button          = $CanvasLayer/Root/Menu/Buttons/OptionsButton
 @onready var options:     Control         = $CanvasLayer/Root/OptionsMenu
+@onready var help:        Control         = $CanvasLayer/Root/HelpMenu
 @onready var scoreboard:  ScoreboardPanel = $CanvasLayer/Root/ScoreboardPanel
 @onready var title:       PixelText       = $CanvasLayer/Root/Title
 @onready var tagline:     PixelText       = $CanvasLayer/Root/Tagline
@@ -23,8 +26,10 @@ func _ready() -> void:
 	WorldState.reset()
 	WorldState.world_flipped.connect(_on_world_flipped)
 	start_btn.pressed.connect(_on_start_pressed)
+	help_btn.pressed.connect(_open_help)
 	options_btn.pressed.connect(_open_options)
 	options.closed.connect(_close_options)
+	help.closed.connect(_close_help)
 	_apply_world()
 	scoreboard.refresh()
 	menu.focus_first()
@@ -59,6 +64,18 @@ func _close_options() -> void:
 	for n in [menu, scoreboard, title, tagline]:
 		n.visible = true
 	menu.focus_button(options_btn)
+
+
+func _open_help() -> void:
+	for n in [menu, scoreboard, title, tagline]:
+		n.visible = false
+	help.open()
+
+
+func _close_help() -> void:
+	for n in [menu, scoreboard, title, tagline]:
+		n.visible = true
+	menu.focus_button(help_btn)
 
 
 func _on_start_pressed() -> void:

@@ -8,6 +8,7 @@ extends Node2D
 const SCROLL_SPEED_START := 140.0   # px/s
 const SCROLL_SPEED_MAX   := 380.0
 const SPEED_RAMP         :=   6.0   # px/s per second
+const SPRINT_TIP_FACTOR  :=   1.5   # dying above this x auto_speed counts as "sprinting" (D doubles it)
 const SPAWN_AHEAD        := 1100.0  # px ahead of player to keep chunks ready
 const VOID_KILL_Y        :=  350.0  # y below which = fallen off (safety net, floor is continuous)
 const CHUNK_PRE_SPAWN    :=  460.0  # how far left of spawn point to pre-seed ground
@@ -292,6 +293,7 @@ func _on_hole_entered(body: Node) -> void:
 	# Holes only count while the run is live (not during death/restart).
 	if _running and body == player and not player.is_dead:
 		_die_reason = "Du bist in ein Loch gefallen.\nFlippe genau an der Kante, wo Boden und Loch wechseln."
+		_unlock_tips("hole")
 		Audio.play("fall")
 		player.kill_by_fall()
 
@@ -299,6 +301,7 @@ func _on_hole_entered(body: Node) -> void:
 func _on_sphere_hit(body: Node) -> void:
 	if _running and body == player and not player.is_dead:
 		_die_reason = "Der Geist hat dich erwischt.\nEr existiert nur in einer Welt. Weiche ihm in der anderen aus."
+		_unlock_tips("ghost")
 		Audio.play("ghost_hit")   # every ghost kind shares this sound
 		player.kill()
 
@@ -306,12 +309,25 @@ func _on_sphere_hit(body: Node) -> void:
 func _on_star_hit(body: Node) -> void:
 	if _running and body == player and not player.is_dead:
 		_die_reason = "Der Jäger hat dich.\nIm Licht weicht er zurück. Siehst du ihn nicht, kommt er näher."
-		if not Settings.hunter_hint_shown:
-			# Once per player: the hunter's voice is the warning.
-			_die_reason += "\nTipp: Hör auf das Flüstern. Es wird lauter, wenn ein Jäger nah ist."
-			Settings.mark_hunter_hint_shown()
+		_unlock_tips("hunter")
 		Audio.play("ghost_hit")
 		player.kill()
+
+
+## Each kind of death unlocks a tip in the help (help_menu.gd); dying while
+## sprinting unlocks the sprint tip on top. The game-over text says when
+## something new is there. The hunter's tip is spelled out at once, because
+## its sound is the one thing the player cannot guess.
+func _unlock_tips(cause: String) -> void:
+	var fresh: Array[String] = []
+	if Settings.unlock_tip(cause):
+		fresh.append(cause)
+	if player.velocity.x > player.auto_speed * SPRINT_TIP_FACTOR and Settings.unlock_tip("sprint"):
+		fresh.append("sprint")
+	if fresh.has("hunter"):
+		_die_reason += "\nTipp: Hör auf das Flüstern. Es wird lauter, wenn ein Jäger nah ist."
+	elif not fresh.is_empty():
+		_die_reason += "\nNeuer Tipp in der Hilfe!"
 
 
 func _on_player_died() -> void:
