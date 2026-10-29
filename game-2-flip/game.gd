@@ -16,6 +16,15 @@ const CHUNK_PRE_SPAWN    :=  460.0  # how far left of spawn point to pre-seed gr
 ## A safe zone (chunk_safe.tscn) is flat, never inverts, flipping there is harmless.
 const SAFE_SCENE   := "res://chunk_safe.tscn"
 const HAZARD_SCENE := "res://flip_chunk.tscn"
+const LANTERN_SCENE := "res://wall_lantern.tscn"
+
+## Wall lanterns sit on the BackdropLanterns Parallax2D, which scrolls at this
+## factor (must match the node in game.tscn). Parallax2D offsets its content by
+## the screen's top-left corner times (1 - factor), so a lantern meant to hang
+## over world x = X when the camera is centred there goes to parallax-local
+## x = X * factor + half_screen_width * (1 - factor). See _lantern_local_x().
+const BACKDROP_SCROLL := 0.85
+const LANTERN_OFFSET  := Vector2(140.0, -40.0)   # over the middle of a safe chunk
 
 ## Hazard pool. Every entry is one FlipChunk (flip_chunk.gd) with weights
 ## w0 (difficulty 0) and w1 (difficulty 1); interpolated in between, 0 = never.
@@ -90,6 +99,8 @@ const PLAYER_SPAWN := Vector2(200.0, -20.0)
 @onready var game_over_ui: Control         = $CanvasLayer/GameOverUI
 @onready var chunk_root:   Node2D          = $ChunkRoot
 @onready var sight_fog:    Node2D          = $Player/SightFog   # sight radius, see sight_fog.gd
+@onready var lantern_root: Node2D          = $BackdropLanterns
+@onready var pause_menu:   CanvasLayer     = $PauseMenu
 
 # ── State ─────────────────────────────────────────────────────────────────────
 var scroll_speed:    float = SCROLL_SPEED_START
@@ -105,8 +116,10 @@ var _last_was_hazard: bool = false   # spawn rhythm: safe / hazard alternate
 func _ready() -> void:
 	WorldState.reset()
 	player.died.connect(_on_player_died)
-	game_over_ui.restart_requested.connect(_on_restart)
+	game_over_ui.menu_requested.connect(_on_menu)
 	game_over_ui.visible = false
+	# Escape pauses, but not over the game-over screen or while dying.
+	pause_menu.can_pause = func() -> bool: return _running and not player.is_dead
 
 	_reset_chunks()
 
@@ -129,7 +142,7 @@ func _start() -> void:
 func _reset_chunks() -> void:
 	for c in _chunks:
 		if is_instance_valid(c):
-			c.queue_free()
+			_free_chunk(c)
 	_chunks.clear()
 
 	# Seed ground well before the player so they land safely.
@@ -152,6 +165,9 @@ func _physics_process(delta: float) -> void:
 
 	# Push player auto_speed
 	player.auto_speed = scroll_speed
+
+	# HUD lantern shows how much sight is left
+	hud.set_sight_level(sight_fog.level())
 
 	# Ramp difficulty
 	scroll_speed = minf(scroll_speed + SPEED_RAMP * delta, SCROLL_SPEED_MAX)
@@ -184,7 +200,7 @@ func _physics_process(delta: float) -> void:
 			continue
 		if (chunk as Chunk).global_position.x + (chunk as Chunk).width < free_threshold:
 			_chunks.erase(chunk)
-			chunk.queue_free()
+			_free_chunk(chunk)
 
 
 # ── Chunk spawning ────────────────────────────────────────────────────────────
@@ -199,8 +215,31 @@ func _spawn_next_chunk(difficulty: float) -> void:
 
 func _spawn_safe() -> void:
 	var chunk := _instantiate_chunk(SAFE_SCENE)
-	if chunk:
-		_place_chunk(chunk)
+	if chunk == null:
+		return
+	_place_chunk(chunk)
+	# Wall lantern on the parallax layer, freed together with the chunk.
+	var packed: PackedScene = load(LANTERN_SCENE)
+	if packed:
+		var lantern := packed.instantiate() as Node2D
+		lantern.position = Vector2(_lantern_local_x(chunk.position.x + LANTERN_OFFSET.x), LANTERN_OFFSET.y)
+		lantern_root.add_child(lantern)
+		chunk.set_meta("lantern", lantern)
+
+
+## Parallax-local x for a lantern that should sit over world x when the camera
+## is centred on it (see BACKDROP_SCROLL).
+func _lantern_local_x(world_x: float) -> float:
+	var half_w := get_viewport().get_visible_rect().size.x * 0.5
+	return world_x * BACKDROP_SCROLL + half_w * (1.0 - BACKDROP_SCROLL)
+
+
+func _free_chunk(chunk: Node) -> void:
+	if chunk.has_meta("lantern"):
+		var lantern: Node = chunk.get_meta("lantern")
+		if is_instance_valid(lantern):
+			lantern.queue_free()
+	chunk.queue_free()
 
 
 func _spawn_hazard(spec: Dictionary) -> void:
@@ -256,13 +295,13 @@ func _on_hole_entered(body: Node) -> void:
 
 func _on_sphere_hit(body: Node) -> void:
 	if _running and body == player and not player.is_dead:
-		_die_reason = "Die Kugel hat dich erwischt.\nSie existiert nur in einer Welt — weiche ihr in der anderen aus."
+		_die_reason = "Der Geist hat dich erwischt.\nEr existiert nur in einer Welt - weiche ihm in der anderen aus."
 		player.kill()
 
 
 func _on_star_hit(body: Node) -> void:
 	if _running and body == player and not player.is_dead:
-		_die_reason = "Der Stern hat dich.\nSolange du ihn siehst, steht er still. Siehst du ihn nicht, kommt er näher."
+		_die_reason = "Der Jäger hat dich.\nIm Licht weicht er zurück. Siehst du ihn nicht, kommt er näher."
 		player.kill()
 
 
@@ -271,10 +310,12 @@ func _on_player_died() -> void:
 	player.set_movement_enabled(false)
 	await get_tree().create_timer(0.85).timeout
 	if not game_over_ui.visible:
-		game_over_ui.show_game_over(
-			"GAME OVER — SCORE: %d" % score,
-			_die_reason
-		)
+		var rank: int = Scoreboard.add(score)
+		game_over_ui.show_game_over(score, _die_reason, rank)
+
+
+func _on_menu() -> void:
+	get_tree().change_scene_to_file("res://main_menu.tscn")
 
 
 func _on_restart() -> void:

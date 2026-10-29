@@ -5,6 +5,12 @@
 # Pressing A slows to a stop; pressing D doubles speed briefly.
 # There is NO jump. Holes are virtual (see flip_chunk.gd): the floor is always
 # solid, a hole kills via kill_by_fall() which plays a short fall animation.
+#
+# LOOK: three stacked AnimatedSprite2D under $Visual — ArmBack, Body, ArmFront.
+# All sheets share frame size, order and tags (art/README.md), so the arms just
+# mirror the body's animation and frame. The world flip swaps the two arm
+# sheets: WHITE world = RED lantern raised (right hand), BLACK world = BLUE
+# lantern raised (left hand).
 extends CharacterBody2D
 
 signal died
@@ -13,10 +19,39 @@ const GRAVITY       := 900.0
 const FLIP_COOLDOWN := 0.15   # prevent flip spam; must stay below the time to cross 2 segments at top speed
 const FALL_DROP     := 60.0   # px the player sinks during the hole death animation
 const FALL_TIME     := 0.35
+const IDLE_SPEED    := 10.0   # px/s below which the idle animation plays
+const RUN_REF_SPEED := 140.0  # velocity at which the run animation plays at 1x
+# Horizontal speed eases towards its target instead of jumping: a short
+# wind-up when starting, a much shorter skid when braking. (At 2800 px/s² a
+# stop from the start speed takes ~0.05 s and ~3 px, well inside the 14 px
+# flip grace.)
+const ACCEL         := 900.0  # px/s² when speeding up
+const DECEL         := 2800.0 # px/s² when slowing down — abrupt, just softened
 
-@onready var body_rect:       ColorRect      = $BodyRect
-@onready var eye_rect:        ColorRect      = $EyeRect
-@onready var death_particles: CPUParticles2D = $DeathParticles
+# ── Sprite sheets (exported from art/shaggy.aseprite) ────────────────────────
+const SHEET_DIR := "res://assets/player/"
+const SHEETS := {
+	"body":       "shaggy_body.png",
+	"front_red":  "shaggy_arm_front_red.png",
+	"back_red":   "shaggy_arm_back_red.png",
+	"front_blue": "shaggy_arm_front_blue.png",
+	"back_blue":  "shaggy_arm_back_blue.png",
+}
+const FRAME_W := 48
+const FRAME_H := 68
+const ANIMS := {
+	"idle": {"from": 0, "to": 3, "fps": 1000.0 / 150.0},
+	"run":  {"from": 4, "to": 7, "fps": 1000.0 / 90.0},
+}
+## Where $Visual sits relative to the collision box (28x36, centred): the
+## sprite's ground line (y=66 of 68) lands on the box's bottom edge (+18).
+const VISUAL_OFFSET := Vector2(-2.0, -14.0)
+
+@onready var visual:          Node2D           = $Visual
+@onready var body_sprite:     AnimatedSprite2D = $Visual/Body
+@onready var arm_front:       AnimatedSprite2D = $Visual/ArmFront
+@onready var arm_back:        AnimatedSprite2D = $Visual/ArmBack
+@onready var death_particles: CPUParticles2D   = $DeathParticles
 
 var is_dead:       bool  = false
 var can_move:      bool  = true
@@ -24,6 +59,7 @@ var flip_cooldown: float = 0.0
 var was_on_floor:  bool  = false
 var coyote_timer:  float = 0.0
 var _fall_tween:   Tween = null
+var _frames:       Dictionary = {}   # key from SHEETS -> SpriteFrames
 
 const COYOTE_TIME  := 0.14
 
@@ -32,8 +68,24 @@ var auto_speed: float = 0.0
 
 
 func _ready() -> void:
+	_load_sheets()
+	body_sprite.frame_changed.connect(_sync_arms)
+	body_sprite.animation_changed.connect(_sync_arms)
 	WorldState.world_flipped.connect(_on_world_flipped)
-	_apply_colors()
+	_apply_world(WorldState.is_dark)
+	body_sprite.play("idle")
+
+
+func _load_sheets() -> void:
+	for key in SHEETS:
+		var path: String = SHEET_DIR + SHEETS[key]
+		var tex := load(path) as Texture2D
+		if tex == null:
+			push_warning("player.gd: sprite sheet missing: %s" % path)
+			continue
+		_frames[key] = SpriteSheetFrames.build(tex, FRAME_W, FRAME_H, ANIMS)
+	if _frames.has("body"):
+		body_sprite.sprite_frames = _frames["body"]
 
 
 func _physics_process(delta: float) -> void:
@@ -41,8 +93,11 @@ func _physics_process(delta: float) -> void:
 		return
 
 	# ── Horizontal: A slows to 0, D doubles, neither = auto_speed ────────────
+	# The target changes instantly, the actual speed eases towards it.
 	var dir := Input.get_axis("move_left", "move_right")
-	velocity.x = clampf(auto_speed + dir * auto_speed, 0.0, auto_speed * 2.2)
+	var target := clampf(auto_speed + dir * auto_speed, 0.0, auto_speed * 2.2)
+	var rate := ACCEL if target > velocity.x else DECEL
+	velocity.x = move_toward(velocity.x, target, rate * delta)
 
 	# ── Gravity + coyote ─────────────────────────────────────────────────────
 	if not is_on_floor():
@@ -58,6 +113,7 @@ func _physics_process(delta: float) -> void:
 	flip_cooldown = maxf(flip_cooldown - delta, 0.0)
 
 	move_and_slide()
+	_update_animation()
 
 	# ── World flip ────────────────────────────────────────────────────────────
 	if Input.is_action_just_pressed("world_flip") and flip_cooldown <= 0.0:
@@ -65,23 +121,47 @@ func _physics_process(delta: float) -> void:
 		flip_cooldown = FLIP_COOLDOWN
 
 
-func _on_world_flipped(_is_dark: bool) -> void:
-	_apply_colors()
+# ── Look ──────────────────────────────────────────────────────────────────────
+func _update_animation() -> void:
+	var want := "run" if absf(velocity.x) > IDLE_SPEED else "idle"
+	if body_sprite.animation != want:
+		body_sprite.play(want)
+	# Faster legs when sprinting, slower when hesitating.
+	body_sprite.speed_scale = clampf(velocity.x / RUN_REF_SPEED, 0.7, 2.2) if want == "run" else 1.0
 
 
-func _apply_colors() -> void:
-	body_rect.color = WorldState.get_player_color()
-	eye_rect.color  = WorldState.get_bg_color()
+## Arms show the same animation and frame as the body.
+func _sync_arms() -> void:
+	for arm in [arm_front, arm_back]:
+		if arm.sprite_frames == null or not arm.sprite_frames.has_animation(body_sprite.animation):
+			continue
+		if arm.animation != body_sprite.animation:
+			arm.animation = body_sprite.animation
+		arm.frame = body_sprite.frame
 
 
+func _on_world_flipped(is_dark: bool) -> void:
+	_apply_world(is_dark)
+
+
+## WHITE world → red lantern (right hand) raised; BLACK world → blue (left hand).
+func _apply_world(is_dark: bool) -> void:
+	var suffix := "blue" if is_dark else "red"
+	if _frames.has("front_" + suffix):
+		arm_front.sprite_frames = _frames["front_" + suffix]
+	if _frames.has("back_" + suffix):
+		arm_back.sprite_frames = _frames["back_" + suffix]
+	_sync_arms()
+
+
+# ── Death / respawn ───────────────────────────────────────────────────────────
 func kill() -> void:
 	if is_dead:
 		return
 	is_dead  = true
 	can_move = false
 	velocity = Vector2.ZERO
-	body_rect.visible        = false
-	eye_rect.visible         = false
+	visual.visible           = false
 	death_particles.emitting = true
 	died.emit()
 
@@ -94,21 +174,18 @@ func kill_by_fall() -> void:
 	is_dead  = true
 	can_move = false
 	velocity = Vector2.ZERO
+	body_sprite.pause()
 	var tween := create_tween().set_parallel(true)
 	_fall_tween = tween
-	tween.tween_property(body_rect, "position:y", body_rect.position.y + FALL_DROP, FALL_TIME) \
+	tween.tween_property(visual, "position:y", VISUAL_OFFSET.y + FALL_DROP, FALL_TIME) \
 		.set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUAD)
-	tween.tween_property(eye_rect, "position:y", eye_rect.position.y + FALL_DROP, FALL_TIME) \
-		.set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUAD)
-	tween.tween_property(body_rect, "modulate:a", 0.0, FALL_TIME)
-	tween.tween_property(eye_rect,  "modulate:a", 0.0, FALL_TIME)
+	tween.tween_property(visual, "modulate:a", 0.0, FALL_TIME)
 	tween.chain().tween_callback(_finish_fall)
 	died.emit()
 
 
 func _finish_fall() -> void:
-	body_rect.visible        = false
-	eye_rect.visible         = false
+	visual.visible           = false
 	death_particles.position = Vector2(0.0, FALL_DROP * 0.5)
 	death_particles.emitting = true
 
@@ -123,19 +200,17 @@ func respawn(pos: Vector2) -> void:
 	global_position          = pos
 	velocity                 = Vector2.ZERO
 	scale.x                  = 1.0
-	body_rect.visible        = true
-	eye_rect.visible         = true
-	body_rect.position       = Vector2(-14.0, -18.0)
-	eye_rect.position        = Vector2(4.0, -12.0)
-	body_rect.modulate.a     = 1.0
-	eye_rect.modulate.a      = 1.0
+	visual.visible           = true
+	visual.position          = VISUAL_OFFSET
+	visual.modulate.a        = 1.0
 	death_particles.position = Vector2.ZERO
 	death_particles.emitting = false
 	WorldState.reset()
-	_apply_colors()
+	body_sprite.play("idle")
 
 
 func set_movement_enabled(enabled: bool) -> void:
 	can_move = enabled
 	if not enabled:
 		velocity = Vector2.ZERO
+		_update_animation()

@@ -51,8 +51,17 @@ var _white_holes: Array[Area2D] = []   # deadly while the world is WHITE
 var _black_holes: Array[Area2D] = []   # deadly while the world is BLACK
 var placement_warnings: Array[String] = []   # filled by _build(), used by tests
 
+# Floor tiles (assets/env, 80x32 each, see art/README.md). If a tile is
+# missing, the old flat drawing is used instead.
+const TILE_SINGLE_PATH := "res://assets/env/floor_single.png"   # ground in one world
+const TILE_BOTH_PATH   := "res://assets/env/floor_both.png"     # '=' ground in both worlds
+var _tile_single: Texture2D = null
+var _tile_both:   Texture2D = null
+
 
 func _ready() -> void:
+	_tile_single = load(TILE_SINGLE_PATH) as Texture2D
+	_tile_both   = load(TILE_BOTH_PATH) as Texture2D
 	_build()
 	WorldState.world_flipped.connect(_on_world_flipped)
 	_apply_state(WorldState.is_dark)
@@ -181,13 +190,18 @@ func _draw() -> void:
 		if not is_ground(idx, is_dark):
 			continue
 		var rect := Rect2(idx * SEGMENT_WIDTH, 0.0, SEGMENT_WIDTH, FLOOR_HEIGHT)
-		draw_rect(rect, col)
-		# '=' segments (solid in both worlds) get a dotted top edge so the
+		var both := pattern[idx] == "="
+		# '=' segments (solid in both worlds) use the iron-banded tile so the
 		# player can tell "safe to flip here" from one-world ground.
-		if pattern[idx] == "=":
-			for k in range(4):
-				var dx := idx * SEGMENT_WIDTH + 10.0 + k * 20.0
-				draw_rect(Rect2(dx, 5.0, 8.0, 4.0), dots)
+		var tile := _tile_both if both else _tile_single
+		if tile != null:
+			draw_texture_rect(tile, rect, false)
+		else:
+			draw_rect(rect, col)
+			if both:
+				for k in range(4):
+					var dx := idx * SEGMENT_WIDTH + 10.0 + k * 20.0
+					draw_rect(Rect2(dx, 5.0, 8.0, 4.0), dots)
 
 	# Edge lines where the visible ground ends.
 	var edge := WorldState.get_fg_color()

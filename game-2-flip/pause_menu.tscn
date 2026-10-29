@@ -1,0 +1,145 @@
+[gd_scene load_steps=6 format=3 uid="uid://pause_menu_001"]
+
+[ext_resource type="Script"      path="res://pause_menu.gd"         id="1_pause"]
+[ext_resource type="Script"      path="res://lantern_menu.gd"       id="2_menu"]
+[ext_resource type="Script"      path="res://pixel_text.gd"         id="3_pt"]
+[ext_resource type="PackedScene" path="res://scoreboard_panel.tscn" id="4_sb"]
+[ext_resource type="PackedScene" path="res://options_menu.tscn"     id="5_opt"]
+
+; Pause overlay (pause_menu.gd). Layer 3: above the HUD. Works while paused.
+[node name="PauseMenu" type="CanvasLayer"]
+process_mode = 3
+layer = 3
+script = ExtResource("1_pause")
+
+[node name="Root" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Overlay" type="ColorRect" parent="Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.65)
+
+[node name="Title" type="Control" parent="Root"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -400.0
+offset_top = 110.0
+offset_right = 400.0
+offset_bottom = 174.0
+grow_horizontal = 2
+mouse_filter = 2
+script = ExtResource("3_pt")
+text = "PAUSE"
+scale_factor = 8
+align_center = true
+
+[node name="Menu" type="Control" parent="Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("2_menu")
+
+[node name="Buttons" type="VBoxContainer" parent="Root/Menu"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -360.0
+offset_top = 260.0
+offset_right = -40.0
+offset_bottom = 440.0
+grow_horizontal = 2
+theme_override_constants/separation = 14
+
+[node name="Resume" type="Button" parent="Root/Menu/Buttons"]
+layout_mode = 2
+custom_minimum_size = Vector2(320, 44)
+flat = true
+
+[node name="Label" type="Control" parent="Root/Menu/Buttons/Resume"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("3_pt")
+text = "WEITER"
+scale_factor = 4
+align_center = true
+
+[node name="Options" type="Button" parent="Root/Menu/Buttons"]
+layout_mode = 2
+custom_minimum_size = Vector2(320, 44)
+flat = true
+
+[node name="Label" type="Control" parent="Root/Menu/Buttons/Options"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("3_pt")
+text = "OPTIONEN"
+scale_factor = 4
+align_center = true
+
+[node name="ToMenu" type="Button" parent="Root/Menu/Buttons"]
+layout_mode = 2
+custom_minimum_size = Vector2(320, 44)
+flat = true
+
+[node name="Label" type="Control" parent="Root/Menu/Buttons/ToMenu"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("3_pt")
+text = "ZUM MENÜ"
+scale_factor = 4
+align_center = true
+
+[node name="Cursor" type="TextureRect" parent="Root/Menu"]
+layout_mode = 0
+offset_right = 32.0
+offset_bottom = 48.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 0
+
+[node name="ScoreboardPanel" parent="Root" instance=ExtResource("4_sb")]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = 60.0
+offset_top = 240.0
+offset_right = 380.0
+offset_bottom = 560.0
+grow_horizontal = 2
+
+[node name="OptionsMenu" parent="Root" instance=ExtResource("5_opt")]

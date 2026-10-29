@@ -1,11 +1,12 @@
-[gd_scene load_steps=5 format=3 uid="uid://chunk_safe_001"]
+[gd_scene load_steps=4 format=3 uid="uid://chunk_safe_001"]
 
 [ext_resource type="Script" path="res://chunk.gd"         id="1_c"]
 [ext_resource type="Script" path="res://platform_draw.gd" id="2_pd"]
-[ext_resource type="Script" path="res://safe_marker.gd"   id="3_sm"]
 
 ; SAFE ZONE: flat platform, never inverted, no hazards. Flipping here is harmless.
-; 280 px wide, floor top at y=0.
+; 280 px wide, floor top at y=0. The wall lantern that marks it is NOT part of
+; this chunk: game.gd puts one on the BackdropLanterns parallax layer so it
+; scrolls with the wall (see wall_lantern.tscn).
 [sub_resource type="RectangleShape2D" id="RS_floor"]
 size = Vector2(280, 32)
 
@@ -26,10 +27,3 @@ script = ExtResource("2_pd")
 width = 280.0
 height = 32.0
 is_safe = true
-
-; ASSET PLACEHOLDER: Marker/Sprite2D has no texture yet (drawn diamond as fallback).
-[node name="Marker" type="Node2D" parent="."]
-position = Vector2(140, -26)
-script = ExtResource("3_sm")
-
-[node name="Sprite2D" type="Sprite2D" parent="Marker"]

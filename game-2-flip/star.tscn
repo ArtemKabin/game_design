@@ -3,10 +3,11 @@
 [ext_resource type="Script" path="res://star.gd" id="1_star"]
 
 [sub_resource type="CircleShape2D" id="CS_kill"]
-radius = 20.0
+radius = 13.0
 
-; One-world hunter star. Place it with its centre at y = -22 so it sits on
-; the floor (floor top at y = 0) at player height. See star.gd.
+; One-world hunter ("star" in the code, an angry ghost on screen). Place it
+; with its centre at y = -22 so it hovers just above the floor at player
+; height. Look: assets/hazards/ghost_hunter.png (star.gd).
 [node name="Star" type="Node2D"]
 script = ExtResource("1_star")
 
@@ -18,3 +19,5 @@ collision_mask = 1
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="KillZone"]
 shape = SubResource("CS_kill")
+
+[node name="Sprite" type="AnimatedSprite2D" parent="."]

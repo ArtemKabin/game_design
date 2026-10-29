@@ -12,7 +12,7 @@
 # 4000x4000 ColorRect with sight_fog.gdshader.
 extends Node2D
 
-# The camera shows about 524 px to each side of the player (1152 px window, zoom 1.1),
+# The camera shows about 576 px to each side of the player (1152 px window, zoom 1),
 # so SIGHT_MAX + SOFTNESS must stay clearly below that or the fog is never seen.
 const SIGHT_MAX      := 340.0   # px — radius at the start / after a stop
 const SIGHT_MIN      := 90.0    # px — never smaller than this (player + one segment)
@@ -20,6 +20,13 @@ const SHRINK_PER_PX  := 0.35    # radius px lost per px travelled → max to min
 const REGROW_PER_SEC := 220.0   # radius px regained per second while standing (~1.1 s min→max)
 const STOP_SPEED     := 12.0    # px/s below which the player counts as standing
 const SOFTNESS       := 70.0    # fade band width in px
+
+# Wall lanterns (group "wall_lantern") each clear a small disc of fog around
+# them, about the player's minimum sight, so safe zones stay visible.
+const LIGHT_RADIUS   := SIGHT_MIN
+const LIGHT_SOFTNESS := 50.0
+const MAX_LIGHTS     := 8       # must match the array size in sight_fog.gdshader
+const LIGHT_RANGE    := 1400.0  # lanterns farther than this are ignored
 
 @onready var rect: ColorRect = $Rect
 
@@ -38,6 +45,8 @@ func _ready() -> void:
 	WorldState.world_flipped.connect(_on_world_flipped)
 	rect.material.set_shader_parameter("softness", SOFTNESS)
 	rect.material.set_shader_parameter("size", rect.size)
+	rect.material.set_shader_parameter("light_radius", LIGHT_RADIUS)
+	rect.material.set_shader_parameter("light_softness", LIGHT_SOFTNESS)
 	_apply()
 
 
@@ -62,6 +71,26 @@ func _physics_process(delta: float) -> void:
 func _apply() -> void:
 	rect.material.set_shader_parameter("radius", radius)
 	rect.material.set_shader_parameter("fog_color", fog_color)
+	_apply_lights()
+
+
+## Pass the nearest wall lanterns to the shader, relative to the player.
+func _apply_lights() -> void:
+	var origin := _player.global_position
+	var lights := PackedVector2Array()
+	for node in get_tree().get_nodes_in_group("wall_lantern"):
+		if not (node is Node2D):
+			continue
+		var rel: Vector2 = (node as Node2D).global_position - origin
+		if absf(rel.x) <= LIGHT_RANGE:
+			lights.append(rel)
+	if lights.size() > MAX_LIGHTS:
+		lights.resize(MAX_LIGHTS)
+	var count := lights.size()
+	while lights.size() < MAX_LIGHTS:
+		lights.append(Vector2.ZERO)
+	rect.material.set_shader_parameter("lights", lights)
+	rect.material.set_shader_parameter("light_count", count)
 
 
 func _on_world_flipped(_is_dark: bool) -> void:
@@ -69,6 +98,11 @@ func _on_world_flipped(_is_dark: bool) -> void:
 	var tween := create_tween()
 	tween.tween_property(self, "fog_color", WorldState.get_bg_color(), 0.35) \
 		.set_trans(Tween.TRANS_SINE)
+
+
+## Sight as 0..1 (SIGHT_MIN → 0, SIGHT_MAX → 1), for the HUD lantern meter.
+func level() -> float:
+	return clampf((radius - SIGHT_MIN) / (SIGHT_MAX - SIGHT_MIN), 0.0, 1.0)
 
 
 ## Back to full sight (new run).

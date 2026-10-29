@@ -1,23 +1,33 @@
 # main_menu.gd
-# Main menu for FLIP. Pressing Start goes straight into the endless game.
+# Main menu for FLIP: corridor wall, pixel-font title, SPIELEN / OPTIONEN with
+# the lantern cursor (lantern_menu.gd), the best list, and the options overlay.
+# The menu flips worlds on its own every few seconds, which drives the colour
+# filter and the lantern colour — a preview of the mechanic. No exit button:
+# the game runs in the browser.
 extends Node2D
 
-# UI lives on a CanvasLayer with a full-screen Control root (see main_menu.tscn),
-# so it stays centred at any window size.
-@onready var start_btn: Button    = $CanvasLayer/Root/Center/Panel/VBox/StartButton
-@onready var exit_btn:  Button    = $CanvasLayer/Root/Center/Panel/VBox/ExitButton
-@onready var bg:        ColorRect = $CanvasLayer/Root/BG
-@onready var title_lbl: Label     = $CanvasLayer/Root/BGLabel
+const FLIP_INTERVAL := 3.5   # seconds between automatic world flips
+
+@onready var menu:        LanternMenu     = $CanvasLayer/Root/Menu
+@onready var start_btn:   Button          = $CanvasLayer/Root/Menu/Buttons/StartButton
+@onready var options_btn: Button          = $CanvasLayer/Root/Menu/Buttons/OptionsButton
+@onready var options:     Control         = $CanvasLayer/Root/OptionsMenu
+@onready var scoreboard:  ScoreboardPanel = $CanvasLayer/Root/ScoreboardPanel
+@onready var title:       PixelText       = $CanvasLayer/Root/Title
+@onready var tagline:     PixelText       = $CanvasLayer/Root/Tagline
 
 var _flip_timer: float = 0.0
-const FLIP_INTERVAL := 3.5  # seconds between automatic world flips in the menu
 
 
 func _ready() -> void:
 	WorldState.reset()
 	WorldState.world_flipped.connect(_on_world_flipped)
-	_apply_colors()
-	start_btn.grab_focus()
+	start_btn.pressed.connect(_on_start_pressed)
+	options_btn.pressed.connect(_open_options)
+	options.closed.connect(_close_options)
+	_apply_world()
+	scoreboard.refresh()
+	menu.focus_first()
 
 
 func _process(delta: float) -> void:
@@ -28,20 +38,27 @@ func _process(delta: float) -> void:
 
 
 func _on_world_flipped(_is_dark: bool) -> void:
-	_apply_colors()
+	_apply_world()
 
 
-func _apply_colors() -> void:
-	var tween := create_tween()
-	tween.tween_property(bg, "color", WorldState.get_bg_color(), 0.4)
-	title_lbl.modulate = Color(WorldState.get_fg_color().r,
-		WorldState.get_fg_color().g,
-		WorldState.get_fg_color().b, 0.07)
+func _apply_world() -> void:
+	var fg := WorldState.get_fg_color()
+	title.color   = fg
+	tagline.color = fg.darkened(0.2)
+
+
+# The options overlay replaces the menu content instead of sitting on top of it.
+func _open_options() -> void:
+	for n in [menu, scoreboard, title, tagline]:
+		n.visible = false
+	options.open()
+
+
+func _close_options() -> void:
+	for n in [menu, scoreboard, title, tagline]:
+		n.visible = true
+	menu.focus_button(options_btn)
 
 
 func _on_start_pressed() -> void:
 	get_tree().change_scene_to_file("res://game.tscn")
-
-
-func _on_exit_pressed() -> void:
-	get_tree().quit()

@@ -19,6 +19,8 @@ config/icon="res://icon.svg"
 
 _mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
 WorldState="*res://world_state.gd"
+Scoreboard="*res://scoreboard.gd"
+Settings="*res://settings.gd"
 
 [display]
 
@@ -105,4 +107,5 @@ world_flip={
 rendering_device/driver.windows="d3d12"
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
-environment/defaults/default_clear_color=Color(0.95, 0.95, 0.95, 1)
+environment/defaults/default_clear_color=Color(0.17, 0.106, 0.07, 1)
+textures/canvas_textures/default_texture_filter=0

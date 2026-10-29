@@ -1,0 +1,24 @@
+[gd_scene load_steps=4 format=3 uid="uid://world_filter_001"]
+
+[ext_resource type="Shader" path="res://world_filter.gdshader" id="1_sh"]
+[ext_resource type="Script" path="res://world_filter.gd"      id="2_gd"]
+
+[sub_resource type="ShaderMaterial" id="SM_filter"]
+shader = ExtResource("1_sh")
+shader_parameter/tint = Vector3(1, 1, 1)
+shader_parameter/saturation = 1.0
+
+; Full-screen colour grade (world_filter.gd). Instance it in any scene; layer 1
+; puts it above the world and below HUD layers (use layer 2+ for those).
+[node name="WorldFilter" type="CanvasLayer"]
+layer = 1
+script = ExtResource("2_gd")
+
+[node name="Rect" type="ColorRect" parent="."]
+material = SubResource("SM_filter")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2

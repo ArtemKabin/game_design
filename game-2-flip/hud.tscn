@@ -1,7 +1,17 @@
-[gd_scene load_steps=2 format=3 uid="uid://hud_001"]
+[gd_scene load_steps=5 format=3 uid="uid://hud_001"]
 
-[ext_resource type="Script" path="res://hud.gd" id="1_hud"]
+[ext_resource type="Script" path="res://hud.gd"                id="1_hud"]
+[ext_resource type="Script" path="res://pixel_text.gd"         id="2_pt"]
+[ext_resource type="Shader" path="res://lantern_meter.gdshader" id="3_meter"]
 
+[sub_resource type="ShaderMaterial" id="SM_meter"]
+shader = ExtResource("3_meter")
+shader_parameter/fill = 1.0
+
+; In-game HUD (hud.gd): the big world lantern bottom-left doubles as the sight
+; meter (full colour = full sight, greys out from the top as sight shrinks, glow
+; shrinks with it); score in the pixel font bottom-right; a status label for
+; occasional messages; a transparent flash overlay for flips.
 [node name="HUD" type="Control"]
 layout_mode = 3
 anchors_preset = 15
@@ -20,30 +30,41 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-color = Color(0.95, 0.95, 0.95, 1)
+color = Color(0, 0, 0, 0)
 
-[node name="TopBar" type="HBoxContainer" parent="."]
+[node name="WorldLantern" type="TextureRect" parent="."]
+material = SubResource("SM_meter")
 layout_mode = 1
-anchors_preset = 10
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 28.0
+offset_top = -124.0
+offset_right = 92.0
+offset_bottom = -28.0
+grow_vertical = 0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 0
+
+[node name="ScoreText" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
 anchor_right = 1.0
-offset_top = 10.0
-offset_bottom = 50.0
-grow_horizontal = 2
-theme_override_constants/separation = 0
-
-[node name="WorldLabel" type="Label" parent="TopBar"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 17
-text = "○  WEISZE WELT"
-horizontal_alignment = 1
-
-[node name="ScoreLabel" type="Label" parent="TopBar"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 17
-text = "SCORE  0"
-horizontal_alignment = 1
+anchor_bottom = 1.0
+offset_left = -520.0
+offset_top = -60.0
+offset_right = -32.0
+offset_bottom = -32.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+script = ExtResource("2_pt")
+text = "SCORE 0"
+scale_factor = 3
+align_right = true
 
 [node name="StatusLabel" type="Label" parent="."]
 layout_mode = 1

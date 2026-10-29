@@ -1,12 +1,15 @@
-[gd_scene load_steps=9 format=3 uid="uid://game_001"]
+[gd_scene load_steps=11 format=3 uid="uid://game_001"]
 
-[ext_resource type="Script"      path="res://game.gd"           id="1_game"]
-[ext_resource type="PackedScene" path="res://player.tscn"       id="2_player"]
-[ext_resource type="PackedScene" path="res://hud.tscn"          id="3_hud"]
-[ext_resource type="PackedScene" path="res://game_over_ui.tscn" id="4_go"]
-[ext_resource type="Script"      path="res://bg.gd"             id="5_bg"]
-[ext_resource type="Shader"      path="res://sight_fog.gdshader" id="6_fogsh"]
-[ext_resource type="Script"      path="res://sight_fog.gd"      id="7_fog"]
+[ext_resource type="Script"      path="res://game.gd"                      id="1_game"]
+[ext_resource type="PackedScene" path="res://player.tscn"                  id="2_player"]
+[ext_resource type="PackedScene" path="res://hud.tscn"                     id="3_hud"]
+[ext_resource type="PackedScene" path="res://game_over_ui.tscn"            id="4_go"]
+[ext_resource type="Script"      path="res://bg.gd"                        id="5_bg"]
+[ext_resource type="Shader"      path="res://sight_fog.gdshader"           id="6_fogsh"]
+[ext_resource type="Script"      path="res://sight_fog.gd"                 id="7_fog"]
+[ext_resource type="Texture2D"   path="res://assets/env/corridor_wall.png" id="8_wall"]
+[ext_resource type="PackedScene" path="res://world_filter.tscn"            id="10_filt"]
+[ext_resource type="PackedScene" path="res://pause_menu.tscn"              id="11_pause"]
 
 [sub_resource type="ShaderMaterial" id="SM_fog"]
 shader = ExtResource("6_fogsh")
@@ -32,6 +35,30 @@ mouse_filter = 2
 color = Color(0.95, 0.95, 0.95, 1)
 script = ExtResource("5_bg")
 
+; ── Corridor wall ─────────────────────────────────────────────────────────────
+; Dark wood planks (assets/env/corridor_wall.png, 160x448, tiles horizontally).
+; Covers world y -416..32 so the baseboard sits just under the floor line.
+; Scrolls slightly slower than the floor for a bit of depth.
+; The sprite shows a 1280 px wide region of the repeating texture; Parallax2D
+; loops that strip every 1280 px and draws a second copy, so it never runs out.
+[node name="Backdrop" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.85, 1)
+repeat_size = Vector2(1280, 0)
+repeat_times = 2
+
+[node name="Wall" type="Sprite2D" parent="Backdrop"]
+texture_repeat = 2
+position = Vector2(0, -416)
+texture = ExtResource("8_wall")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 1280, 448)
+
+; Wall lanterns of the safe zones (wall_lantern.tscn), spawned by game.gd.
+; Same scroll speed as the wall, but no repeat: each lantern exists once.
+[node name="BackdropLanterns" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.85, 1)
+
 ; ── Player ────────────────────────────────────────────────────────────────────
 ; Spawn at (200, -20): ground top is at y=0, player half-height=18, so -20 is 2px above ground.
 [node name="Player" parent="." instance=ExtResource("2_player")]
@@ -44,10 +71,7 @@ limit_left   = -600
 limit_top    = -400
 limit_right  = 9999999
 limit_bottom = 360
-zoom = Vector2(1.1, 1.1)
-
-; ── Chunk container ───────────────────────────────────────────────────────────
-[node name="ChunkRoot" type="Node2D" parent="."]
+zoom = Vector2(1, 1)
 
 ; ── Sight fog ─────────────────────────────────────────────────────────────────
 ; Child of the player, so it is always centred on them. Hides everything beyond
@@ -65,9 +89,19 @@ offset_right = 2000.0
 offset_bottom = 2000.0
 mouse_filter = 2
 
+; ── Chunk container ───────────────────────────────────────────────────────────
+[node name="ChunkRoot" type="Node2D" parent="."]
+
+; ── World colour filter (layer 1: above the world, below the HUD) ─────────────
+[node name="WorldFilter" parent="." instance=ExtResource("10_filt")]
+
 ; ── HUD layer ─────────────────────────────────────────────────────────────────
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
+layer = 2
 
 [node name="HUD" parent="CanvasLayer" instance=ExtResource("3_hud")]
 
 [node name="GameOverUI" parent="CanvasLayer" instance=ExtResource("4_go")]
+
+; ── Pause menu (layer 3, works while paused) ──────────────────────────────────
+[node name="PauseMenu" parent="." instance=ExtResource("11_pause")]

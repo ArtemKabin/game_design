@@ -1,0 +1,233 @@
+[gd_scene load_steps=4 format=3 uid="uid://options_menu_001"]
+
+[ext_resource type="Script" path="res://options_menu.gd" id="1_opt"]
+[ext_resource type="Script" path="res://lantern_menu.gd" id="2_menu"]
+[ext_resource type="Script" path="res://pixel_text.gd"   id="3_pt"]
+
+; Options overlay (options_menu.gd). Full-screen, hidden until open().
+; Eight entries at pixel scale 3 so everything fits a 648 px window.
+[node name="OptionsMenu" type="Control"]
+process_mode = 3
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_opt")
+
+[node name="Overlay" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.93)
+
+[node name="Title" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -400.0
+offset_top = 70.0
+offset_right = 400.0
+offset_bottom = 118.0
+grow_horizontal = 2
+mouse_filter = 2
+script = ExtResource("3_pt")
+text = "OPTIONEN"
+scale_factor = 6
+align_center = true
+
+[node name="Hint" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -500.0
+offset_top = 134.0
+offset_right = 500.0
+offset_bottom = 150.0
+grow_horizontal = 2
+mouse_filter = 2
+script = ExtResource("3_pt")
+text = "LINKS UND RECHTS ÄNDERN, ENTER SCHALTET ODER BELEGT NEU"
+scale_factor = 2
+align_center = true
+
+[node name="Menu" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("2_menu")
+
+[node name="Buttons" type="VBoxContainer" parent="Menu"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -280.0
+offset_top = 190.0
+offset_right = 280.0
+offset_bottom = 560.0
+grow_horizontal = 2
+theme_override_constants/separation = 10
+
+[node name="Fullscreen" type="Button" parent="Menu/Buttons"]
+layout_mode = 2
+custom_minimum_size = Vector2(560, 34)
+flat = true
+
+[node name="Label" type="Control" parent="Menu/Buttons/Fullscreen"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("3_pt")
+text = "VOLLBILD: AUS"
+scale_factor = 3
+align_center = true
+
+[node name="Music" type="Button" parent="Menu/Buttons"]
+layout_mode = 2
+custom_minimum_size = Vector2(560, 34)
+flat = true
+
+[node name="Label" type="Control" parent="Menu/Buttons/Music"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("3_pt")
+text = "MUSIK: 80"
+scale_factor = 3
+align_center = true
+
+[node name="Sfx" type="Button" parent="Menu/Buttons"]
+layout_mode = 2
+custom_minimum_size = Vector2(560, 34)
+flat = true
+
+[node name="Label" type="Control" parent="Menu/Buttons/Sfx"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("3_pt")
+text = "EFFEKTE: 80"
+scale_factor = 3
+align_center = true
+
+[node name="KeyLeft" type="Button" parent="Menu/Buttons"]
+layout_mode = 2
+custom_minimum_size = Vector2(560, 34)
+flat = true
+
+[node name="Label" type="Control" parent="Menu/Buttons/KeyLeft"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("3_pt")
+text = "LINKS: A"
+scale_factor = 3
+align_center = true
+
+[node name="KeyRight" type="Button" parent="Menu/Buttons"]
+layout_mode = 2
+custom_minimum_size = Vector2(560, 34)
+flat = true
+
+[node name="Label" type="Control" parent="Menu/Buttons/KeyRight"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("3_pt")
+text = "RECHTS: D"
+scale_factor = 3
+align_center = true
+
+[node name="KeyFlip" type="Button" parent="Menu/Buttons"]
+layout_mode = 2
+custom_minimum_size = Vector2(560, 34)
+flat = true
+
+[node name="Label" type="Control" parent="Menu/Buttons/KeyFlip"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("3_pt")
+text = "FLIP: ENTER"
+scale_factor = 3
+align_center = true
+
+[node name="ResetKeys" type="Button" parent="Menu/Buttons"]
+layout_mode = 2
+custom_minimum_size = Vector2(560, 34)
+flat = true
+
+[node name="Label" type="Control" parent="Menu/Buttons/ResetKeys"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("3_pt")
+text = "STEUERUNG ZURÜCKSETZEN"
+scale_factor = 3
+align_center = true
+
+[node name="Back" type="Button" parent="Menu/Buttons"]
+layout_mode = 2
+custom_minimum_size = Vector2(560, 34)
+flat = true
+
+[node name="Label" type="Control" parent="Menu/Buttons/Back"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("3_pt")
+text = "ZURÜCK"
+scale_factor = 3
+align_center = true
+
+[node name="Cursor" type="TextureRect" parent="Menu"]
+layout_mode = 0
+offset_right = 32.0
+offset_bottom = 48.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 0
