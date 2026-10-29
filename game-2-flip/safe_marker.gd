@@ -15,6 +15,13 @@ const DIAMOND_R := 9.0       # fallback marker if the textures are missing
 
 @onready var sprite: Sprite2D = $Sprite2D
 
+# The flame is audible: a looping fire sound that comes from the lantern
+# (panned left/right, fading with distance). Parallax2D moves this node in
+# canvas space, so the player2D sits where the lantern is seen on screen.
+const FIRE_RANGE       := 520.0
+const FIRE_ATTENUATION := 1.6
+
+var _fire: AudioStreamPlayer2D = null
 var _tex_red:  Texture2D = null
 var _tex_blue: Texture2D = null
 var _pulse: float = 0.0
@@ -26,6 +33,9 @@ func _ready() -> void:
 	_tex_blue = load(TEX_BLUE_PATH) as Texture2D
 	WorldState.world_flipped.connect(_on_world_flipped)
 	_apply_world(WorldState.is_dark)
+	_fire = Audio.make_loop("lantern", true, FIRE_RANGE, FIRE_ATTENUATION) as AudioStreamPlayer2D
+	add_child(_fire)
+	Audio.start_loop_desynced(_fire)
 
 
 func _process(delta: float) -> void:

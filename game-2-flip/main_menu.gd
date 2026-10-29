@@ -28,6 +28,7 @@ func _ready() -> void:
 	_apply_world()
 	scoreboard.refresh()
 	menu.focus_first()
+	Audio.play_music("menu")
 
 
 func _process(delta: float) -> void:

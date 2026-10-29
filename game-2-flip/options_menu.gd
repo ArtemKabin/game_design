@@ -71,6 +71,7 @@ func _input(event: InputEvent) -> void:
 			var key := (event as InputEventKey).keycode
 			if key != KEY_ESCAPE:
 				Settings.set_control(_listening_action, key)
+			Audio.play("ui_back" if key == KEY_ESCAPE else "ui_select")
 			_listening_action = ""
 			_refresh()
 			get_viewport().set_input_as_handled()
@@ -78,6 +79,7 @@ func _input(event: InputEvent) -> void:
 
 	if event.is_action_pressed("ui_cancel"):
 		get_viewport().set_input_as_handled()
+		Audio.play("ui_back")
 		close()
 	elif event.is_action_pressed("ui_left") or event.is_action_pressed("ui_right"):
 		var dir := -STEP if event.is_action_pressed("ui_left") else STEP
@@ -89,6 +91,8 @@ func _input(event: InputEvent) -> void:
 		elif focused == fullscreen_btn:
 			Settings.set_fullscreen(not Settings.fullscreen)
 			_refresh()
+		if focused in [music_btn, sfx_btn, fullscreen_btn]:
+			Audio.play("ui_move")   # on the SFX bus, so the new effects volume is heard at once
 		get_viewport().set_input_as_handled()
 
 

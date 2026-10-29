@@ -27,6 +27,16 @@ const RUN_REF_SPEED := 140.0  # velocity at which the run animation plays at 1x
 # flip grace.)
 const ACCEL         := 900.0  # px/s² when speeding up
 const DECEL         := 2800.0 # px/s² when slowing down — abrupt, just softened
+# Footstep loop (assets/audio/sfx/step.mp3 via Audio.make_loop): runs a bit
+# faster than recorded and speeds up with the player, but only up to a point.
+const STEP_BASE_PITCH := 1.40   # at RUN_REF_SPEED (the start speed)
+const STEP_MIN_PITCH  := 0.75   # crawling while hesitating (A held)
+const STEP_MAX_PITCH  := 2.40   # cap, reached at about twice the start speed
+const STEP_PITCH_POW  := 0.8    # nearly proportional to speed: slower steps when slow, faster when fast
+# The flip whoosh: a little lower when dropping into the blue world, a little
+# higher when coming back to red, on top of the random spread.
+const FLIP_PITCH_BLUE := 0.92
+const FLIP_PITCH_RED  := 1.08
 
 # ── Sprite sheets (exported from art/shaggy.aseprite) ────────────────────────
 const SHEET_DIR := "res://assets/player/"
@@ -60,6 +70,8 @@ var was_on_floor:  bool  = false
 var coyote_timer:  float = 0.0
 var _fall_tween:   Tween = null
 var _frames:       Dictionary = {}   # key from SHEETS -> SpriteFrames
+var _steps:        AudioStreamPlayer = null   # looping footsteps, see _update_steps
+var _step_jitter:  float = 1.0                # random pitch picked each time the loop starts
 
 const COYOTE_TIME  := 0.14
 
@@ -74,6 +86,8 @@ func _ready() -> void:
 	WorldState.world_flipped.connect(_on_world_flipped)
 	_apply_world(WorldState.is_dark)
 	body_sprite.play("idle")
+	_steps = Audio.make_loop("step", false) as AudioStreamPlayer
+	add_child(_steps)
 
 
 func _load_sheets() -> void:
@@ -118,6 +132,7 @@ func _physics_process(delta: float) -> void:
 	# ── World flip ────────────────────────────────────────────────────────────
 	if Input.is_action_just_pressed("world_flip") and flip_cooldown <= 0.0:
 		WorldState.flip()
+		Audio.play("flip", FLIP_PITCH_BLUE if WorldState.is_dark else FLIP_PITCH_RED)
 		flip_cooldown = FLIP_COOLDOWN
 
 
@@ -128,6 +143,26 @@ func _update_animation() -> void:
 		body_sprite.play(want)
 	# Faster legs when sprinting, slower when hesitating.
 	body_sprite.speed_scale = clampf(velocity.x / RUN_REF_SPEED, 0.7, 2.2) if want == "run" else 1.0
+	_update_steps(want == "run" and is_on_floor())
+
+
+## Footsteps follow the legs: loop while running, pitched up with speed.
+func _update_steps(running: bool) -> void:
+	if _steps == null:
+		return
+	if not running:
+		_stop_steps()
+		return
+	if not _steps.playing:
+		_step_jitter = Audio.random_pitch("step")
+		Audio.start_loop_desynced(_steps)
+	var by_speed := STEP_BASE_PITCH * pow(maxf(velocity.x, 0.0) / RUN_REF_SPEED, STEP_PITCH_POW)
+	_steps.pitch_scale = clampf(by_speed, STEP_MIN_PITCH, STEP_MAX_PITCH) * _step_jitter
+
+
+func _stop_steps() -> void:
+	if _steps and _steps.playing:
+		_steps.stop()
 
 
 ## Arms show the same animation and frame as the body.
@@ -161,6 +196,7 @@ func kill() -> void:
 	is_dead  = true
 	can_move = false
 	velocity = Vector2.ZERO
+	_stop_steps()
 	visual.visible           = false
 	death_particles.emitting = true
 	died.emit()
@@ -174,6 +210,7 @@ func kill_by_fall() -> void:
 	is_dead  = true
 	can_move = false
 	velocity = Vector2.ZERO
+	_stop_steps()
 	body_sprite.pause()
 	var tween := create_tween().set_parallel(true)
 	_fall_tween = tween
@@ -213,4 +250,4 @@ func set_movement_enabled(enabled: bool) -> void:
 	can_move = enabled
 	if not enabled:
 		velocity = Vector2.ZERO
-		_update_animation()
+		_update_animation()   # idle look, footsteps off

@@ -37,6 +37,13 @@ const ANIMS := {"float": {"from": 0, "to": 3, "fps": 1000.0 / 120.0}}
 @onready var kill_zone: Area2D           = $KillZone
 @onready var sprite:    AnimatedSprite2D = $Sprite
 
+# Ghost voice (shared with sphere.gd): a positional loop while on screen,
+# louder while it hunts unseen — the sound is the warning.
+const VOICE_HUNT_DB_OFFSET   := 4.0    # clearly audible: the warning that a hunter is close
+const VOICE_FROZEN_DB_OFFSET := -6.0
+
+var _voice: AudioStreamPlayer2D = null
+var _voice_db: float = 0.0
 var _player: Node2D = null
 var _player_half: Vector2 = Vector2(14.0, 18.0)   # read from the player's collision shape
 var _frozen: bool   = true
@@ -52,8 +59,23 @@ func _ready() -> void:
 	else:
 		push_warning("star.gd: sprite sheet missing: %s" % SHEET_PATH)
 	kill_zone.body_entered.connect(func(body: Node) -> void: hit.emit(body))
+	_voice = Audio.make_loop("ghost_hunt", true, 800.0, 1.4) as AudioStreamPlayer2D
+	_voice_db = _voice.volume_db
+	add_child(_voice)
 	WorldState.world_flipped.connect(_on_world_flipped)
 	_apply_state(WorldState.is_dark)
+
+
+func _update_voice(on_screen: bool) -> void:
+	if _voice == null:
+		return
+	if not on_screen:
+		if _voice.playing:
+			_voice.stop()
+		return
+	_voice.volume_db = _voice_db + (VOICE_FROZEN_DB_OFFSET if _frozen else VOICE_HUNT_DB_OFFSET)
+	if not _voice.playing:
+		Audio.start_loop_desynced(_voice)
 
 
 func _physics_process(delta: float) -> void:
@@ -71,6 +93,7 @@ func _physics_process(delta: float) -> void:
 	elif _seen:
 		queue_free()          # left the screen after being seen → gone for good
 		return
+	_update_voice(on_screen)
 
 	# Deadly and standing in the player → hit, no matter what the area reported.
 	if kill_zone.monitoring and _overlaps_player():

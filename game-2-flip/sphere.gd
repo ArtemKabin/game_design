@@ -34,6 +34,11 @@ const ANIMS := {"float": {"from": 0, "to": 3, "fps": 1000.0 / 160.0}}
 @onready var kill_zone: Area2D           = $KillZone
 @onready var sprite:    AnimatedSprite2D = $Sprite
 
+# Ghost voice (same sound as star.gd): positional loop while the ghost is
+# deadly and the player is close enough to hear it.
+const VOICE_RANGE := 700.0
+
+var _voice: AudioStreamPlayer2D = null
 var _base: Vector2 = Vector2.ZERO
 var _time: float   = 0.0
 var _player: Node2D = null
@@ -51,6 +56,8 @@ func _ready() -> void:
 	else:
 		push_warning("sphere.gd: sprite sheet missing: %s" % SHEET_PATH)
 	kill_zone.body_entered.connect(func(body: Node) -> void: hit.emit(body))
+	_voice = Audio.make_loop("ghost_hunt", true, VOICE_RANGE, 1.5) as AudioStreamPlayer2D
+	add_child(_voice)
 	WorldState.world_flipped.connect(_on_world_flipped)
 	_apply_state(WorldState.is_dark)
 
@@ -76,6 +83,18 @@ func _physics_process(_delta: float) -> void:
 	# Deadly and standing in the player → hit, no matter what the area reported.
 	if kill_zone.monitoring and _overlaps_player():
 		hit.emit(_player)
+	_update_voice()
+
+
+func _update_voice() -> void:
+	if _voice == null:
+		return
+	var audible := kill_zone.monitoring \
+		and absf(global_position.x - _player.global_position.x) < VOICE_RANGE
+	if audible and not _voice.playing:
+		Audio.start_loop_desynced(_voice)
+	elif not audible and _voice.playing:
+		_voice.stop()
 
 
 ## Circle (this ghost) vs. the player's rectangle.

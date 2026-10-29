@@ -11,6 +11,8 @@ extends Control
 const CURSOR_RED_PATH  := "res://assets/env/lantern_red.png"
 const CURSOR_BLUE_PATH := "res://assets/env/lantern_blue.png"
 const CURSOR_GAP := 16.0
+## Buttons with these node names click with the "back" sound instead of "select".
+const BACK_BUTTON_NAMES := ["Back", "Resume"]
 
 @onready var buttons_box: Container   = $Buttons
 @onready var cursor:      TextureRect = $Cursor
@@ -31,6 +33,7 @@ func _ready() -> void:
 			var btn := child as Button
 			_buttons.append(btn)
 			btn.focus_entered.connect(_on_button_focused.bind(btn))
+			btn.pressed.connect(_on_button_pressed.bind(btn))
 			for style in ["normal", "hover", "pressed", "focus", "disabled"]:
 				btn.add_theme_stylebox_override(style, empty)
 	# Keep keyboard focus inside this menu (wrap top/bottom, no left/right):
@@ -89,7 +92,14 @@ func _cursor_pos(btn: Button) -> Vector2:
 
 
 func _on_button_focused(btn: Button) -> void:
+	# A tick when the cursor moves; silent when a menu opens and sets its first entry.
+	if _focused != null and _focused != btn and is_visible_in_tree():
+		Audio.play("ui_move")
 	_focused = btn
+
+
+func _on_button_pressed(btn: Button) -> void:
+	Audio.play("ui_back" if String(btn.name) in BACK_BUTTON_NAMES else "ui_select")
 
 
 func _on_world_flipped(_is_dark: bool) -> void:

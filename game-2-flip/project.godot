@@ -21,6 +21,7 @@ _mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
 WorldState="*res://world_state.gd"
 Scoreboard="*res://scoreboard.gd"
 Settings="*res://settings.gd"
+Audio="*res://audio.gd"
 
 [display]
 
@@ -104,8 +105,8 @@ world_flip={
 
 [rendering]
 
+textures/canvas_textures/default_texture_filter=0
 rendering_device/driver.windows="d3d12"
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
 environment/defaults/default_clear_color=Color(0.17, 0.106, 0.07, 1)
-textures/canvas_textures/default_texture_filter=0

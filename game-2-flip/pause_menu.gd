@@ -33,13 +33,16 @@ func _unhandled_input(event: InputEvent) -> void:
 		return   # the options overlay closes itself
 	get_viewport().set_input_as_handled()
 	if root.visible:
+		Audio.play("ui_back")
 		close()
 	elif can_pause.call():
+		Audio.play("ui_back")
 		open()
 
 
 func open() -> void:
 	get_tree().paused = true
+	Audio.duck_music(true)
 	title.color = WorldState.get_fg_color()
 	scoreboard.refresh()
 	root.visible = true
@@ -50,6 +53,7 @@ func close() -> void:
 	root.visible = false
 	options.visible = false
 	get_tree().paused = false
+	Audio.duck_music(false)
 
 
 # The options overlay replaces the pause content instead of sitting on top of it.

@@ -39,3 +39,6 @@ func show_game_over(score: int, reason: String, rank: int = 0) -> void:
 	scoreboard.refresh(rank)
 	visible = true
 	menu.focus_first()
+	Audio.play("game_over")
+	if rank == 1:
+		get_tree().create_timer(0.9).timeout.connect(func() -> void: Audio.play("record"))

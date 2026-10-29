@@ -120,6 +120,7 @@ func _ready() -> void:
 	game_over_ui.visible = false
 	# Escape pauses, but not over the game-over screen or while dying.
 	pause_menu.can_pause = func() -> bool: return _running and not player.is_dead
+	Audio.play_music("run")
 
 	_reset_chunks()
 
@@ -178,6 +179,7 @@ func _physics_process(delta: float) -> void:
 	# Void kill — safety net only, the floor is continuous
 	if py > VOID_KILL_Y and not player.is_dead:
 		_die_reason = "Du bist gefallen."
+		Audio.play("fall")
 		player.kill()
 		return
 
@@ -290,24 +292,32 @@ func _on_hole_entered(body: Node) -> void:
 	# Holes only count while the run is live (not during death/restart).
 	if _running and body == player and not player.is_dead:
 		_die_reason = "Du bist in ein Loch gefallen.\nFlippe genau an der Kante, wo Boden und Loch wechseln."
+		Audio.play("fall")
 		player.kill_by_fall()
 
 
 func _on_sphere_hit(body: Node) -> void:
 	if _running and body == player and not player.is_dead:
-		_die_reason = "Der Geist hat dich erwischt.\nEr existiert nur in einer Welt - weiche ihm in der anderen aus."
+		_die_reason = "Der Geist hat dich erwischt.\nEr existiert nur in einer Welt. Weiche ihm in der anderen aus."
+		Audio.play("ghost_hit")   # every ghost kind shares this sound
 		player.kill()
 
 
 func _on_star_hit(body: Node) -> void:
 	if _running and body == player and not player.is_dead:
 		_die_reason = "Der Jäger hat dich.\nIm Licht weicht er zurück. Siehst du ihn nicht, kommt er näher."
+		if not Settings.hunter_hint_shown:
+			# Once per player: the hunter's voice is the warning.
+			_die_reason += "\nTipp: Hör auf das Flüstern. Es wird lauter, wenn ein Jäger nah ist."
+			Settings.mark_hunter_hint_shown()
+		Audio.play("ghost_hit")
 		player.kill()
 
 
 func _on_player_died() -> void:
 	_running = false
 	player.set_movement_enabled(false)
+	Audio.duck_music(true)
 	await get_tree().create_timer(0.85).timeout
 	if not game_over_ui.visible:
 		var rank: int = Scoreboard.add(score)

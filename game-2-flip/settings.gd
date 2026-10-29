@@ -9,6 +9,8 @@
 #   controls    – one rebindable key per action (move_left, move_right,
 #                 world_flip). The secondary keys from project.godot (arrows,
 #                 Space, keypad Enter) stay as they are.
+#   hunter_hint_shown – the game-over screen explains the hunter's sound once,
+#                 the first time a hunter kills the player (game.gd)
 extends Node
 
 const PATH := "user://settings.cfg"
@@ -20,9 +22,10 @@ const DEFAULT_CONTROLS := {
 }
 
 var fullscreen: bool = false
-var music: int = 80
-var sfx: int = 80
+var music: int = 30
+var sfx: int = 30
 var controls: Dictionary = DEFAULT_CONTROLS.duplicate()
+var hunter_hint_shown: bool = false
 
 var _applied: Dictionary = {}   # action -> keycode currently added to the InputMap
 
@@ -118,6 +121,11 @@ func reset_controls() -> void:
 	save_settings()
 
 
+func mark_hunter_hint_shown() -> void:
+	hunter_hint_shown = true
+	save_settings()
+
+
 ## Display name of an action's primary key, e.g. "A", "ENTER", "LEFT".
 func control_name(action: String) -> String:
 	return OS.get_keycode_string(int(controls.get(action, DEFAULT_CONTROLS[action]))).to_upper()
@@ -133,6 +141,7 @@ func load_settings() -> void:
 	sfx        = clampi(int(cfg.get_value("audio", "sfx", sfx)), 0, 100)
 	for action in DEFAULT_CONTROLS:
 		controls[action] = int(cfg.get_value("controls", action, DEFAULT_CONTROLS[action]))
+	hunter_hint_shown = bool(cfg.get_value("hints", "hunter", hunter_hint_shown))
 
 
 func save_settings() -> void:
@@ -142,5 +151,6 @@ func save_settings() -> void:
 	cfg.set_value("audio", "sfx", sfx)
 	for action in DEFAULT_CONTROLS:
 		cfg.set_value("controls", action, int(controls[action]))
+	cfg.set_value("hints", "hunter", hunter_hint_shown)
 	if cfg.save(PATH) != OK:
 		push_warning("settings.gd: cannot write %s" % PATH)
