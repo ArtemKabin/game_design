@@ -69,6 +69,7 @@ What follows from it? What do we give up?
 | [0033](0033-game3-t-corridor.md) | Game 3: T-shaped dorm corridor, side corridor with two rotated rooms; `low_roof` for locked rooms in front of walkable areas | accepted (view part superseded by 0035) |
 | [0034](0034-game3-wc-and-showers.md) | Game 3: two WCs and a shower block (mini corridor, two separate cabins) south of the main corridor; transparent `Block` colours | accepted |
 | [0035](0035-game3-room-view-zones.md) | Game 3: full walls; RoomView + Zones: active room lit, others shaded, occluders in front cut; dorm exit with doormat | accepted |
+| [0036](0036-game3-outside-and-portals.md) | Game 3: real dorm and campus outside 1:1 from OSM (north up, relations, connected roads, no overlaps), entrances on the shared footway; Portals + Spawns; RoomView outdoors | accepted |
 
 ## Open questions (not yet decided)
 

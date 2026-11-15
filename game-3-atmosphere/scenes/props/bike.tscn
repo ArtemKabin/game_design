@@ -1,0 +1,66 @@
+[gd_scene format=3]
+
+[sub_resource type="StandardMaterial3D" id="Tyre"]
+albedo_color = Color(0.1, 0.1, 0.1, 1)
+
+[sub_resource type="StandardMaterial3D" id="Frame"]
+albedo_color = Color(0.7, 0.2, 0.18, 1)
+
+[sub_resource type="CylinderMesh" id="WheelMesh"]
+material = SubResource("Tyre")
+top_radius = 0.33
+bottom_radius = 0.33
+height = 0.05
+
+[sub_resource type="BoxMesh" id="BarMesh"]
+material = SubResource("Frame")
+size = Vector3(0.05, 0.05, 1.0)
+
+[sub_resource type="BoxMesh" id="SeatMesh"]
+material = SubResource("Tyre")
+size = Vector3(0.12, 0.05, 0.25)
+
+[sub_resource type="BoxMesh" id="HandleMesh"]
+material = SubResource("Tyre")
+size = Vector3(0.55, 0.04, 0.04)
+
+[sub_resource type="BoxMesh" id="PostMesh"]
+material = SubResource("Frame")
+size = Vector3(0.04, 0.5, 0.04)
+
+[sub_resource type="BoxShape3D" id="BikeShape"]
+size = Vector3(0.5, 1.0, 1.7)
+
+[node name="Bike" type="StaticBody3D"]
+
+[node name="WheelFront" type="MeshInstance3D" parent="."]
+transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, 0, 0.33, -0.55)
+mesh = SubResource("WheelMesh")
+
+[node name="WheelBack" type="MeshInstance3D" parent="."]
+transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, 0, 0.33, 0.55)
+mesh = SubResource("WheelMesh")
+
+[node name="Bar" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.62, 0)
+mesh = SubResource("BarMesh")
+
+[node name="SeatPost" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0.35)
+mesh = SubResource("PostMesh")
+
+[node name="Seat" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.96, 0.35)
+mesh = SubResource("SeatMesh")
+
+[node name="HandlePost" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, -0.5)
+mesh = SubResource("PostMesh")
+
+[node name="Handle" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, -0.5)
+mesh = SubResource("HandleMesh")
+
+[node name="Collision" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("BikeShape")

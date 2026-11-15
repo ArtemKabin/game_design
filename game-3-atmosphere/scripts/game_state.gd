@@ -12,8 +12,8 @@ signal day_started(day: int)
 const DAY_NAMES := ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"]
 const DAY_START := 8 * 60   # 08:00
 const DAY_END := 22 * 60    # 22:00
-## 14 h game day in 120 s real time.
-const GAME_MINUTES_PER_SECOND := 7.0
+## 14 h game day in 14 min real time.
+const GAME_MINUTES_PER_SECOND := 1.0
 
 ## Passive change per game hour.
 const ENERGY_PER_HOUR := -3.0
@@ -32,6 +32,18 @@ var satiety := 70.0       ## 0..100, high is good (low = hungry)
 var readiness := 10.0     ## Prüfungssicherheit 0..100
 var stress := 10.0        ## 0..100, derived, high is bad
 var money := 40.0         ## Euro
+
+## Set by a Portal before a scene change: name of the Marker3D under
+## "Spawns" in the next scene, and a message to show after arriving.
+var spawn_point := ""
+var arrival_message := ""
+
+
+## Loads another place (scene) and puts the player at `spawn` there.
+func travel(scene_path: String, spawn: String, arrival_text := "") -> void:
+	spawn_point = spawn
+	arrival_message = arrival_text
+	get_tree().change_scene_to_file.call_deferred(scene_path)
 
 
 func _process(delta: float) -> void:

@@ -1,10 +1,11 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://d3445vrk3ud2p"]
 
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="1_player"]
-[ext_resource type="Script" path="res://scripts/camera_rig.gd" id="2_cam"]
-[ext_resource type="Script" path="res://scripts/hud.gd" id="3_hud"]
+[ext_resource type="Script" uid="uid://cegexlmr8jw68" path="res://scripts/camera_rig.gd" id="2_cam"]
+[ext_resource type="Script" uid="uid://pw3mvscmq15i" path="res://scripts/hud.gd" id="3_hud"]
 [ext_resource type="PackedScene" path="res://scenes/dorm_floor.tscn" id="4_dorm"]
-[ext_resource type="Shader" path="res://shaders/ground_grid.gdshader" id="6_grid"]
+[ext_resource type="Shader" uid="uid://bs4i3aekg7ekh" path="res://shaders/ground_grid.gdshader" id="6_grid"]
+[ext_resource type="Script" uid="uid://bcpc0dt015qg3" path="res://scripts/level.gd" id="7_level"]
 
 [sub_resource type="ProceduralSkyMaterial" id="SkyMat"]
 sky_top_color = Color(0.45, 0.62, 0.85, 1)
@@ -24,7 +25,10 @@ reflected_light_source = 1
 tonemap_mode = 3
 
 [sub_resource type="ShaderMaterial" id="GridMat"]
+render_priority = 0
 shader = ExtResource("6_grid")
+shader_parameter/base_color = Color(0.5, 0.5, 0.5, 1)
+shader_parameter/line_color = Color(0.33, 0.33, 0.35, 1)
 
 [sub_resource type="PlaneMesh" id="GroundMesh"]
 material = SubResource("GridMat")
@@ -33,39 +37,49 @@ size = Vector2(80, 80)
 [sub_resource type="BoxShape3D" id="GroundShape"]
 size = Vector3(80, 1, 80)
 
-[node name="Main" type="Node3D"]
+[node name="Main" type="Node3D" unique_id=512773761]
+script = ExtResource("7_level")
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1443246064]
 environment = SubResource("Env")
 
-[node name="Sun" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.866025, -0.383022, 0.321394, 0, 0.642788, 0.766044, -0.5, -0.663414, 0.556670, 0, 10, 0)
+[node name="Sun" type="DirectionalLight3D" parent="." unique_id=302333112]
+transform = Transform3D(0.866025, -0.383022, 0.321394, 0, 0.642788, 0.766044, -0.5, -0.663414, 0.55667, 0, 10, 0)
 light_energy = 0.75
 shadow_enabled = true
 shadow_opacity = 0.7
 directional_shadow_max_distance = 60.0
 
-[node name="Ground" type="StaticBody3D" parent="."]
+[node name="Ground" type="StaticBody3D" parent="." unique_id=558782010]
 
-[node name="Mesh" type="MeshInstance3D" parent="Ground"]
+[node name="Mesh" type="MeshInstance3D" parent="Ground" unique_id=1651516028]
 mesh = SubResource("GroundMesh")
 
-[node name="Collision" type="CollisionShape3D" parent="Ground"]
+[node name="Collision" type="CollisionShape3D" parent="Ground" unique_id=49282795]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
 shape = SubResource("GroundShape")
 
-[node name="DormFloor" parent="." instance=ExtResource("4_dorm")]
+[node name="DormFloor" parent="." unique_id=1988610325 instance=ExtResource("4_dorm")]
 
-[node name="Player" parent="." instance=ExtResource("1_player")]
+[node name="Player" parent="." unique_id=70917702 instance=ExtResource("1_player")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.5)
 
-[node name="CameraRig" type="Node3D" parent="." node_paths=PackedStringArray("target")]
+[node name="CameraRig" type="Node3D" parent="." unique_id=269360642 node_paths=PackedStringArray("target")]
 script = ExtResource("2_cam")
 target = NodePath("../Player")
+overview_center = Vector3(3.7, 0, 4.2)
+overview_distance = 30.0
+overview_max_distance = 120.0
+overview_bounds = Rect2(-10, -8, 28, 24)
 
-[node name="Camera3D" type="Camera3D" parent="CameraRig"]
+[node name="Camera3D" type="Camera3D" parent="CameraRig" unique_id=346968443]
 current = true
 
-[node name="HUD" type="CanvasLayer" parent="." node_paths=PackedStringArray("player")]
+[node name="HUD" type="CanvasLayer" parent="." unique_id=1159193573 node_paths=PackedStringArray("player")]
 script = ExtResource("3_hud")
 player = NodePath("../Player")
+
+[node name="Spawns" type="Node3D" parent="." unique_id=2065235926]
+
+[node name="StairsExit" type="Marker3D" parent="Spawns" unique_id=782567709]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.9, 0, 10.3)

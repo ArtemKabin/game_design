@@ -4,6 +4,7 @@
 [ext_resource type="Script" path="res://scripts/block.gd" id="2_block"]
 [ext_resource type="Script" path="res://scripts/interactable.gd" id="3_inter"]
 [ext_resource type="Script" path="res://scripts/zone.gd" id="4_zone"]
+[ext_resource type="Script" path="res://scripts/portal.gd" id="5_portal"]
 
 [node name="DormFloor" type="Node3D"]
 
@@ -141,11 +142,13 @@ collides = false
 
 [node name="Exit" type="Area3D" parent="Corridor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.9, 0, 10.65)
-script = ExtResource("3_inter")
-title = "Wohnheim verlassen"
-minutes = 0
+script = ExtResource("5_portal")
+title = "Treppenhaus: nach draußen"
+minutes = 2
 radius = 0.8
-note = "Draußen geht es bald weiter …"
+note = "Erdgeschoss, draußen"
+target_scene = "res://scenes/outside.tscn"
+target_spawn = "DormEntrance"
 
 [node name="WestEnd" type="StaticBody3D" parent="Corridor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.8, 0, 3.95)

@@ -91,6 +91,17 @@ func _build() -> void:
 	_message.modulate.a = 0.0
 	add_child(_message)
 
+	var hint := Label.new()
+	hint.text = "M: Karte  ·  Mausrad: Zoom"
+	hint.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
+	hint.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	hint.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	hint.position += Vector2(-16, -12)
+	hint.add_theme_font_size_override("font_size", 14)
+	hint.add_theme_color_override("font_outline_color", Color.BLACK)
+	hint.add_theme_constant_override("outline_size", 4)
+	add_child(hint)
+
 	_night = ColorRect.new()
 	_night.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_night.color = Color(0.02, 0.02, 0.06)
