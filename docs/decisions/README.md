@@ -62,6 +62,13 @@ What follows from it? What do we give up?
 | [0026](0026-flip-hunter-stars.md) | FLIP: hunter stars freeze and kill when visible, hunt the player when hidden, despawn off screen | accepted |
 | [0027](0027-flip-one-chunk-type-three-floors.md) | FLIP: one hazard chunk type; floor chars `#` `.` `=`; spheres and stars on any pattern | accepted |
 | [0028](0028-flip-help-story-and-unlockable-tips.md) | FLIP: HILFE overlay in main and pause menu with the story and tips; four tips unlock through deaths, persisted per browser | accepted |
+| [0029](0029-game3-3d-topdown-real-scale.md) | Game 3: real 3D, top-down camera, 1 unit = 1 m, 1.75 m placeholder student, greybox blocks | accepted |
+| [0030](0030-game3-bean-and-dorm-room.md) | Game 3: bean player; dorm room 3.0 × 5.5 m with closet part and middle doors; cutaway walls | accepted (view part superseded by 0035) |
+| [0031](0031-game3-dorm-floor-locked-rooms.md) | Game 3: dorm floor with four rooms and a corridor; `locked` rooms get roof and closed door | accepted |
+| [0032](0032-game3-shared-kitchen.md) | Game 3: shared kitchen 4.0 × 7.5 m at the corridor end: fridges, counter with stove, sinks and resident cabinets; bins, shelf and table on the right wall | accepted |
+| [0033](0033-game3-t-corridor.md) | Game 3: T-shaped dorm corridor, side corridor with two rotated rooms; `low_roof` for locked rooms in front of walkable areas | accepted (view part superseded by 0035) |
+| [0034](0034-game3-wc-and-showers.md) | Game 3: two WCs and a shower block (mini corridor, two separate cabins) south of the main corridor; transparent `Block` colours | accepted |
+| [0035](0035-game3-room-view-zones.md) | Game 3: full walls; RoomView + Zones: active room lit, others shaded, occluders in front cut; dorm exit with doormat | accepted |
 
 ## Open questions (not yet decided)
 
