@@ -24,6 +24,7 @@ Uni-Stress-Simulation in unserer Hochschule. Top-down, echtes 3D, Godot 4.7 (GL 
 * `scripts/interactable.gd`: Station mit E-Aktion (Zeit + Stat-Änderungen als Exports).
 * `scenes/outside.tscn`: draußen. Der Bewohner kommt bei 17F raus, alle Eingänge liegen am Fußweg zwischen den Häusern.
 * `scripts/site.gd` + `scripts/site_building.gd` + `data/hka_site.json`: Wohnheim und Hochschulgelände 1:1 nach OpenStreetMap (Norden oben): Gebäude mit echten Umrissen und Stockwerken, verbundene Straßen und Wege, Parkplätze mit Autos, Hecken/Zäune, Wiesen, Wald. Nur von außen.
+* `scripts/traffic.gd` (Knoten `Traffic` in `outside.tscn`): Verkehr auf der Straße nördlich des Wohnheims (`route_roads` = Straßen-Indizes aus der JSON). Autos fahren rechts in beide Richtungen, ein Teil parkt vorwärts in eine freie Parkbucht ein, wartet, setzt zurück und fährt weiter; am Kartenrand verschwinden sie (Pool, `pool_size`). Freie Buchten werden aus den Daten bestimmt (Parkfläche, kein geparktes Auto, kein Baum, keine andere Straße), `debug_spots` zeigt sie an. Autos halten für die Figur und halten Abstand.
 * `scripts/portal.gd` + `scripts/level.gd`: Türen zwischen Szenen (kosten Zeit), Spawnpunkte unter `Spawns`. Nach einem Minispiel steht die Figur wieder dort, wo sie losging.
 * `scripts/hud.gd`: Uhr, Balken, Lernpunkte + Notizen, Prompt, Stress-Vignette, Nacht-Überblendung.
 
