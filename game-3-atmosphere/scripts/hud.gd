@@ -1,12 +1,16 @@
 extends CanvasLayer
-## HUD: day and clock, stat bars, interaction prompt, short messages,
-## stress vignette and the night fade between days. Built in code so it
+## HUD: day and clock, stat bars, study progress (points and found notes from
+## the minigames), interaction prompt, short messages, stress vignette and
+## the night fade between days. Built in code so it
 ## stays one small file while the layout is still changing.
 
 @export var player: Player
 
 var _clock: Label
 var _money: Label
+var _readiness_label: Label
+var _points: Label
+var _notes: Label
 var _prompt: Label
 var _message: Label
 var _bars := {}
@@ -28,6 +32,7 @@ func _ready() -> void:
 	GameState.message.connect(_show_message)
 	GameState.day_ended.connect(_on_day_ended)
 	GameState.day_started.connect(_on_day_started)
+	GameState.progress_changed.connect(_on_progress)
 	if player:
 		player.interactable_changed.connect(_on_focus)
 	_refresh()
@@ -58,6 +63,8 @@ func _build() -> void:
 		l.text = b[1]
 		l.add_theme_font_size_override("font_size", 13)
 		box.add_child(l)
+		if b[0] == "readiness":
+			_readiness_label = l
 		var bar := ProgressBar.new()
 		bar.max_value = 100
 		bar.show_percentage = false
@@ -69,6 +76,16 @@ func _build() -> void:
 		_bars[b[0]] = bar
 	_money = Label.new()
 	box.add_child(_money)
+
+	box.add_child(HSeparator.new())
+	_points = Label.new()
+	_points.add_theme_font_size_override("font_size", 17)
+	_points.add_theme_color_override("font_color", Color(0.55, 0.75, 1.0))
+	box.add_child(_points)
+	_notes = Label.new()
+	_notes.add_theme_font_size_override("font_size", 14)
+	_notes.add_theme_color_override("font_color", Color(0.95, 0.93, 0.86))
+	box.add_child(_notes)
 
 	_prompt = Label.new()
 	_prompt.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
@@ -123,7 +140,18 @@ func _refresh() -> void:
 	_bars["readiness"].value = GameState.readiness
 	_bars["stress"].value = GameState.stress
 	_money.text = "Geld: %.2f €" % GameState.money
+	_readiness_label.text = "Prüfungssicherheit %d %%" % int(GameState.readiness)
+	_points.text = "Lernpunkte: %d" % GameState.study_points
+	_notes.text = "Notizen: %d  ·  Lernbonus ×%.1f" % [GameState.notes_found, GameState.note_multiplier()]
 	(_vignette.material as ShaderMaterial).set_shader_parameter("stress", GameState.stress / 100.0)
+
+
+## Short flash so the growth after a minigame is noticed.
+func _on_progress() -> void:
+	_refresh()
+	for l in [_points, _notes, _readiness_label]:
+		l.modulate = Color(2.2, 2.2, 2.2)
+		create_tween().tween_property(l, "modulate", Color.WHITE, 1.2)
 
 
 func _on_focus(target: Interactable) -> void:

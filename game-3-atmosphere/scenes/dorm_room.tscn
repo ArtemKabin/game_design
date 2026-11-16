@@ -4,6 +4,7 @@
 [ext_resource type="Script" path="res://scripts/interactable.gd" id="2_inter"]
 [ext_resource type="Script" path="res://scripts/dorm_room.gd" id="3_room"]
 [ext_resource type="Script" path="res://scripts/zone.gd" id="4_zone"]
+[ext_resource type="Script" path="res://scripts/minigame_trigger.gd" id="5_mini"]
 
 [node name="DormRoom" type="Node3D"]
 script = ExtResource("3_room")
@@ -145,6 +146,36 @@ size = Vector3(0.04, 0.6, 0.5)
 color = Color(0.7, 0.85, 0.9, 1)
 collides = false
 
+[node name="Clutter" type="Node3D" parent="Furniture"]
+
+[node name="LaundryPile" type="StaticBody3D" parent="Furniture/Clutter"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.05, 0.02, -0.45)
+script = ExtResource("1_block")
+size = Vector3(0.55, 0.14, 0.4)
+color = Color(0.6, 0.72, 0.95, 1)
+collides = false
+
+[node name="PizzaBox" type="StaticBody3D" parent="Furniture/Clutter"]
+transform = Transform3D(0.94, 0, 0.34, 0, 1, 0, -0.34, 0, 0.94, -0.45, 0.02, -0.15)
+script = ExtResource("1_block")
+size = Vector3(0.35, 0.05, 0.35)
+color = Color(0.8, 0.65, 0.45, 1)
+collides = false
+
+[node name="ShirtOnBed" type="StaticBody3D" parent="Furniture/Clutter"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.95, 0.45, -1.2)
+script = ExtResource("1_block")
+size = Vector3(0.4, 0.04, 0.3)
+color = Color(0.85, 0.35, 0.3, 1)
+collides = false
+
+[node name="BooksOnFloor" type="StaticBody3D" parent="Furniture/Clutter"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.35, 0.02, -0.9)
+script = ExtResource("1_block")
+size = Vector3(0.3, 0.1, 0.22)
+color = Color(0.86, 0.7, 0.5, 1)
+collides = false
+
 [node name="Zones" type="Node3D" parent="."]
 
 [node name="Living" type="Area3D" parent="Zones"]
@@ -170,13 +201,22 @@ d_satiety = -3.0
 
 [node name="Desk" type="Area3D" parent="Actions"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9, 0, -2.3)
-script = ExtResource("2_inter")
-title = "Lernen"
+script = ExtResource("5_mini")
+minigame_scene = "res://scenes/minigames/study_journal.tscn"
+accent = Color(0.35, 0.6, 1, 1)
+title = "Lernjournal"
 minutes = 60
 radius = 0.9
-d_energy = -6.0
-d_readiness = 8.0
-d_stress = 3.0
+
+[node name="Tidy" type="Area3D" parent="Actions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.75, 0, -0.4)
+script = ExtResource("5_mini")
+minigame_scene = "res://scenes/minigames/room_cleanup.tscn"
+accent = Color(0.98, 0.8, 0.25, 1)
+clutter = NodePath("../../Furniture/Clutter")
+title = "Zimmer aufräumen"
+minutes = 30
+radius = 0.7
 
 [node name="Sink" type="Area3D" parent="Actions"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.25, 0, 2.0)

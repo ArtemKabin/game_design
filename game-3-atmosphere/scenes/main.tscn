@@ -53,6 +53,7 @@ directional_shadow_max_distance = 60.0
 [node name="Ground" type="StaticBody3D" parent="." unique_id=558782010]
 
 [node name="Mesh" type="MeshInstance3D" parent="Ground" unique_id=1651516028]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.010381162, -0.0039019585, 0.009840012)
 mesh = SubResource("GroundMesh")
 
 [node name="Collision" type="CollisionShape3D" parent="Ground" unique_id=49282795]
