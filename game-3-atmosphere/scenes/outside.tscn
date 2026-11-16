@@ -9,6 +9,9 @@
 [ext_resource type="Shader" path="res://shaders/ground_grid.gdshader" id="11_grid"]
 [ext_resource type="Script" path="res://scripts/site.gd" id="12_site"]
 [ext_resource type="Script" path="res://scripts/traffic.gd" id="13_traffic"]
+[ext_resource type="Script" path="res://scripts/npc_spawner.gd" id="14_npcs"]
+[ext_resource type="Script" path="res://scripts/bikes.gd" id="15_bikes"]
+[ext_resource type="Script" path="res://scripts/crowd.gd" id="16_crowd"]
 
 [sub_resource type="ProceduralSkyMaterial" id="SkyMat"]
 sky_top_color = Color(0.45, 0.62, 0.85, 1)
@@ -68,6 +71,15 @@ script = ExtResource("12_site")
 
 [node name="Traffic" type="Node3D" parent="."]
 script = ExtResource("13_traffic")
+
+[node name="Pedestrians" type="Node3D" parent="."]
+script = ExtResource("14_npcs")
+
+[node name="Bikes" type="Node3D" parent="."]
+script = ExtResource("15_bikes")
+
+[node name="Crowd" type="Node3D" parent="."]
+script = ExtResource("16_crowd")
 
 [node name="Props" type="Node3D" parent="."]
 

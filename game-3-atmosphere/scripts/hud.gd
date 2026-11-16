@@ -1,6 +1,6 @@
 extends CanvasLayer
 ## HUD: day and clock, stat bars, study progress (points and found notes from
-## the minigames), interaction prompt, short messages, stress vignette and
+## the minigames and NPCs, story progress), interaction prompt, short messages, stress vignette and
 ## the night fade between days. Built in code so it
 ## stays one small file while the layout is still changing.
 
@@ -9,6 +9,8 @@ extends CanvasLayer
 var _clock: Label
 var _money: Label
 var _readiness_label: Label
+var _stress_label: Label
+var _story: Label
 var _points: Label
 var _notes: Label
 var _prompt: Label
@@ -65,6 +67,8 @@ func _build() -> void:
 		box.add_child(l)
 		if b[0] == "readiness":
 			_readiness_label = l
+		elif b[0] == "stress":
+			_stress_label = l
 		var bar := ProgressBar.new()
 		bar.max_value = 100
 		bar.show_percentage = false
@@ -86,6 +90,10 @@ func _build() -> void:
 	_notes.add_theme_font_size_override("font_size", 14)
 	_notes.add_theme_color_override("font_color", Color(0.95, 0.93, 0.86))
 	box.add_child(_notes)
+	_story = Label.new()
+	_story.add_theme_font_size_override("font_size", 14)
+	_story.add_theme_color_override("font_color", Color(0.98, 0.8, 0.25))
+	box.add_child(_story)
 
 	_prompt = Label.new()
 	_prompt.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
@@ -141,7 +149,9 @@ func _refresh() -> void:
 	_bars["stress"].value = GameState.stress
 	_money.text = "Geld: %.2f €" % GameState.money
 	_readiness_label.text = "Prüfungssicherheit %d %%" % int(GameState.readiness)
+	_stress_label.text = "Stress %d %%" % int(GameState.stress)
 	_points.text = "Lernpunkte: %d" % GameState.study_points
+	_story.text = "Story: %d / %d" % [GameState.story_index, Encounters.story_total()]
 	_notes.text = "Notizen: %d  ·  Lernbonus ×%.1f" % [GameState.notes_found, GameState.note_multiplier()]
 	(_vignette.material as ShaderMaterial).set_shader_parameter("stress", GameState.stress / 100.0)
 
@@ -149,7 +159,7 @@ func _refresh() -> void:
 ## Short flash so the growth after a minigame is noticed.
 func _on_progress() -> void:
 	_refresh()
-	for l in [_points, _notes, _readiness_label]:
+	for l in [_points, _notes, _readiness_label, _stress_label, _story]:
 		l.modulate = Color(2.2, 2.2, 2.2)
 		create_tween().tween_property(l, "modulate", Color.WHITE, 1.2)
 

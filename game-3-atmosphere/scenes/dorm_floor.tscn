@@ -6,6 +6,7 @@
 [ext_resource type="Script" path="res://scripts/zone.gd" id="4_zone"]
 [ext_resource type="Script" path="res://scripts/portal.gd" id="5_portal"]
 [ext_resource type="Script" path="res://scripts/minigame_trigger.gd" id="6_mini"]
+[ext_resource type="Script" path="res://scripts/npc.gd" id="7_npc"]
 
 [node name="DormFloor" type="Node3D"]
 
@@ -411,6 +412,14 @@ clutter = NodePath("../Dishes")
 title = "Küche aufräumen"
 minutes = 30
 radius = 0.8
+
+[node name="Roommate" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, -1.5)
+script = ExtResource("7_npc")
+npc_id = "jonas"
+patrol = PackedVector3Array(10, 0, -1.5, 10, 0, 3.3, 7.4, 0, 3.85, 3, 0, 3.85, -3.5, 0, 3.85)
+walk_speed = 1.1
+idle_time = Vector2(1.5, 4)
 
 [node name="Bath" type="Node3D" parent="."]
 

@@ -1,7 +1,11 @@
 extends Node
 ## Autoload "GameState": clock, week loop and player stats.
 ## Every action costs time (the core mechanic). Stress is derived from the
-## other stats and lowers how much learning brings.
+## other stats and lowers how much learning brings. Events (actions,
+## minigames, NPC encounters) also shift a slowly fading mood offset, so
+## their effect on stress lasts a few hours.
+## Also the persistent progress: study points, found notes, minigame records,
+## story progress of the NPC encounters (see encounters.gd).
 
 signal clock_changed(day: int, minutes: int)
 signal stats_changed
@@ -31,6 +35,9 @@ const POINTS_PER_READINESS := 40.0
 const NOTE_BONUS_PER_NOTE := 0.1
 const NOTE_BONUS_MAX := 1.0
 const HUB_SCENE := "res://scenes/main.tscn"
+## Lasting stress offset from events, fades by this much per game hour.
+const MOOD_DECAY_PER_HOUR := 4.0
+const MOOD_LIMIT := 40.0
 
 var week := 1
 var day := 0
@@ -42,6 +49,7 @@ var satiety := 70.0       ## 0..100, high is good (low = hungry)
 var readiness := 10.0     ## Prüfungssicherheit 0..100
 var stress := 10.0        ## 0..100, derived, high is bad
 var money := 40.0         ## Euro
+var mood := 0.0           ## lasting stress offset from events, fades over time
 
 ## Set by a Portal before a scene change: name of the Marker3D under
 ## "Spawns" in the next scene, and a message to show after arriving.
@@ -64,6 +72,13 @@ var _has_return := false
 var _minigame_minutes := 0
 var _pending_result := {}
 
+## NPC encounters (encounters.gd, data/encounters.json).
+var story_index := 0         ## next scripted story beat
+var story_seen: Array[String] = []
+var npc_last_met := {}       ## npc id -> absolute day of the last random encounter
+var encounter_seed := randi()  ## per playthrough; random encounters are seeded per NPC and day
+var in_dialogue := false     ## clock and player stand still while talking
+
 
 ## Loads another place (scene) and puts the player at `spawn` there.
 func travel(scene_path: String, spawn: String, arrival_text := "") -> void:
@@ -73,7 +88,7 @@ func travel(scene_path: String, spawn: String, arrival_text := "") -> void:
 
 
 func _process(delta: float) -> void:
-	if not running or in_minigame:
+	if not running or in_minigame or in_dialogue:
 		return
 	_advance(delta * GAME_MINUTES_PER_SECOND)
 	stress = move_toward(stress, _stress_target(), delta * 4.0)
@@ -116,6 +131,7 @@ func do_action(spend_minutes: int, d_energy := 0.0, d_satiety := 0.0,
 		d_readiness *= learn_factor()
 	readiness = clampf(readiness + d_readiness, 0.0, 100.0)
 	stress = clampf(stress + d_stress, 0.0, 100.0)
+	mood = clampf(mood + d_stress, -MOOD_LIMIT, MOOD_LIMIT)
 	money += d_money
 	stats_changed.emit()
 	return true
@@ -125,6 +141,34 @@ func do_action(spend_minutes: int, d_energy := 0.0, d_satiety := 0.0,
 ## `extra`: notes not counted yet (preview on a results screen).
 func note_multiplier(extra := 0) -> float:
 	return 1.0 + minf((notes_found + extra) * NOTE_BONUS_PER_NOTE, NOTE_BONUS_MAX)
+
+
+## Adds study points and found notes (minigames, encounters). Notes can
+## also be lost (lent to someone), never below 0.
+func add_progress(points: int, notes: int) -> void:
+	study_points += points
+	notes_found = maxi(notes_found + notes, 0)
+	progress_changed.emit()
+
+
+## Prüfungssicherheit for `points` study points before learn_factor.
+func points_to_readiness(points: int) -> float:
+	return points / POINTS_PER_READINESS
+
+
+func total_runs() -> int:
+	var n := 0
+	for id in minigame_runs:
+		n += int(minigame_runs[id])
+	return n
+
+
+func met_today(npc_id: String) -> bool:
+	return int(npc_last_met.get(npc_id, -1)) == absolute_day()
+
+
+func mark_met(npc_id: String) -> void:
+	npc_last_met[npc_id] = absolute_day()
 
 
 ## How much Prüfungssicherheit `points` study points bring right now.
@@ -204,6 +248,7 @@ func _advance(game_minutes: float) -> void:
 	var hours := game_minutes / 60.0
 	energy = clampf(energy + ENERGY_PER_HOUR * hours, 0.0, 100.0)
 	satiety = clampf(satiety + SATIETY_PER_HOUR * hours, 0.0, 100.0)
+	mood = move_toward(mood, 0.0, MOOD_DECAY_PER_HOUR * hours)
 	minutes += game_minutes
 	clock_changed.emit(day, int(minutes))
 	if minutes >= DAY_END and running:
@@ -218,7 +263,7 @@ func _stress_target() -> float:
 	var deadline := week_progress * 45.0 * (1.0 - readiness / 100.0)
 	if is_weekend():
 		deadline *= 0.3
-	return clampf(body + deadline, 0.0, 100.0)
+	return clampf(body + deadline + mood, 0.0, 100.0)
 
 
 func _end_day() -> void:

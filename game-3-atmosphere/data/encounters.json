@@ -1,0 +1,134 @@
+{
+	"_info": "NPC-Begegnungen, gelesen von scripts/encounters.gd. npcs: Figuren (place: outside = läuft draußen auf den Fußwegen, dorm = Wohnheim). story: Story-Beats der Reihe nach; einer wird gespielt, wenn man die Figur 'speaker' trifft und alle 'requires' erfüllt sind. random: Zufallsbegegnungen (Gewicht 'weight', optional 'requires'), pro Figur und Tag eine, geseedet. small_talk: wenn heute schon geredet. Texte: {name} = Name der Figur. requires-Schlüssel: readiness, study_points, notes, runs (Minispiele gesamt), day (0 = erster Montag), stress. effects-Schlüssel: notes, points (Lernpunkte), readiness, stress, energy, satiety, money, minutes (Standard 5).",
+	"npcs": [
+		{"id": "jonas", "name": "Jonas", "role": "Mitbewohner", "place": "dorm", "color": [0.4, 0.7, 0.72]},
+		{"id": "lena", "name": "Lena", "role": "Kommilitonin", "place": "outside", "color": [0.78, 0.45, 0.6]},
+		{"id": "tim", "name": "Tim", "role": "Erstsemester", "place": "outside", "color": [0.88, 0.6, 0.3]},
+		{"id": "berger", "name": "Frau Berger", "role": "Tutorin", "place": "outside", "color": [0.45, 0.62, 0.5]},
+		{"id": "sarah", "name": "Sarah", "role": "Fachschaft", "place": "outside", "color": [0.82, 0.76, 0.4]},
+		{"id": "mo", "name": "Mo", "role": "Nachbar aus 15E", "place": "outside", "color": [0.6, 0.52, 0.78]},
+		{"id": "paul", "name": "Paul", "role": "Langzeitstudent", "place": "outside", "color": [0.55, 0.55, 0.5]},
+		{"id": "ines", "name": "Ines", "role": "joggt jeden Abend", "place": "outside", "color": [0.9, 0.48, 0.42]}
+	],
+	"story": [
+		{
+			"id": "intro",
+			"speaker": "jonas",
+			"requires": {},
+			"lines": [
+				"Hey, hast du die Mail gesehen? Die Analysis-Klausur steht fest – Freitag in zwei Wochen.",
+				"Ich hab angefangen, alles in ein Lernjournal zu schreiben. Dein Schreibtisch sieht übrigens aus, als bräuchte er das auch.",
+				"Und wenn du draußen Leute aus dem Kurs triffst: Frag rum. Irgendwer hat immer Mitschriften."
+			],
+			"effects": {"stress": 5}
+		},
+		{
+			"id": "lerngruppe",
+			"speaker": "lena",
+			"requires": {"runs": 1},
+			"lines": [
+				"Du bist doch auch in Analysis, oder? Wir machen eine Lerngruppe auf.",
+				"Hier, meine Zusammenfassung von Kapitel 1 bis 3. Bring sie mir irgendwann zurück!"
+			],
+			"effects": {"notes": 1, "stress": -5}
+		},
+		{
+			"id": "tutorium",
+			"speaker": "berger",
+			"requires": {"study_points": 150},
+			"lines": [
+				"Ah, Sie waren letzte Woche im Tutorium, oder?",
+				"Kleiner Tipp: Rechnen Sie die Altklausuren unter Zeitdruck. Der Stoff ist nicht das Problem – die Zeit ist es.",
+				"Und schlafen Sie vor der Prüfung. Das ist kein Witz."
+			],
+			"effects": {"readiness": 3, "minutes": 10}
+		},
+		{
+			"id": "tim_panik",
+			"speaker": "tim",
+			"requires": {"readiness": 25},
+			"lines": [
+				"Ich check gar nichts mehr. Kettenregel, Produktregel, ich verwechsel alles!",
+				"Du erklärst es ihm zwei Mal mit Händen und Füßen. Beim dritten Mal sieht er dich an: „Ach SO!“",
+				"Erklären ist das beste Lernen – jetzt sitzt es bei dir auch."
+			],
+			"effects": {"points": 80, "stress": 3, "minutes": 15}
+		},
+		{
+			"id": "altklausuren",
+			"speaker": "sarah",
+			"requires": {"notes": 4},
+			"lines": [
+				"Die Fachschaft hat endlich die Altklausuren-Sammlung digitalisiert.",
+				"Ich hab dir die letzten zwei Jahrgänge ausgedruckt. Musst nur versprechen, dass du nächstes Jahr was für die Erstis machst."
+			],
+			"effects": {"notes": 2, "stress": -4}
+		},
+		{
+			"id": "kuechen_frieden",
+			"speaker": "jonas",
+			"requires": {"readiness": 40, "day": 2},
+			"lines": [
+				"Ich hab gesehen, dass du die Küche aufgeräumt hast. Respekt.",
+				"Ich koch heute für alle – setz dich dazu, eine Stunde Pause bringt dich nicht um."
+			],
+			"effects": {"stress": -10, "satiety": 30, "minutes": 60}
+		},
+		{
+			"id": "endspurt",
+			"speaker": "lena",
+			"requires": {"readiness": 60},
+			"lines": [
+				"Weißt du was? Ich glaub, wir sind tatsächlich bereit.",
+				"Lass uns am Tag vor der Klausur nichts Neues mehr lernen. Nur noch wiederholen und früh schlafen.",
+				"(Die Klausur selbst folgt in einem späteren Update.)"
+			],
+			"effects": {"stress": -8}
+		}
+	],
+	"random": [
+		{"id": "mitschrift_geschenkt", "weight": 3,
+			"lines": ["{name} drückt dir ein paar Blätter in die Hand: „Hab die Vorlesung doppelt mitgeschrieben. Brauchst du die?“"],
+			"effects": {"notes": 1}},
+		{"id": "notiz_gefunden", "weight": 2,
+			"lines": ["Neben {name} liegt ein zerknittertes Blatt im Gras – deine Statistik-Mitschrift, die du seit Tagen suchst!"],
+			"effects": {"notes": 1, "stress": -2}},
+		{"id": "ermutigung", "weight": 3,
+			"lines": ["„Du schaffst das. Ehrlich, du bist besser vorbereitet, als du denkst.“"],
+			"effects": {"stress": -8}},
+		{"id": "kaffee", "weight": 2,
+			"lines": ["{name} spendiert dir einen Kaffee aus dem Automaten. „Siehst aus, als bräuchtest du den.“"],
+			"effects": {"stress": -4, "energy": 8, "minutes": 10}},
+		{"id": "panik", "weight": 3,
+			"lines": ["„Hast du gehört? Die Klausur soll dieses Jahr VIEL schwerer sein. Und keine Formelsammlung!“"],
+			"effects": {"stress": 8}},
+		{"id": "geruecht_raum", "weight": 2,
+			"lines": ["„Die Prüfung wurde in einen anderen Raum verlegt … glaub ich. Oder war das nächstes Semester?“"],
+			"effects": {"stress": 5}},
+		{"id": "vergleich", "weight": 2,
+			"lines": ["„Ich bin schon mit allen Altklausuren durch. Zweimal. Du nicht?“"],
+			"effects": {"stress": 6}},
+		{"id": "tipp_kettenregel", "weight": 2,
+			"lines": ["„Tipp: In den Altklausuren kam jedes Jahr eine Aufgabe zur Kettenregel dran.“"],
+			"effects": {"readiness": 2}},
+		{"id": "tipp_schlaf", "weight": 2,
+			"lines": ["„Lern lieber ausgeschlafen. Nachts um drei behält man eh nichts.“"],
+			"effects": {"stress": -3, "readiness": 1}},
+		{"id": "erklaerung", "weight": 2, "requires": {"readiness": 20},
+			"lines": ["{name} erklärt dir in zehn Minuten, wofür man den p-Wert eigentlich braucht. Plötzlich ergibt alles Sinn."],
+			"effects": {"points": 60, "minutes": 10}},
+		{"id": "ausgeliehen", "weight": 1, "requires": {"notes": 2},
+			"lines": ["„Kannst du mir deine Notizen leihen? Ich bring sie morgen zurück, versprochen!“", "(Du hast so ein Gefühl, dass du die nie wiedersiehst.)"],
+			"effects": {"notes": -1, "stress": 4}},
+		{"id": "mensa", "weight": 2,
+			"lines": ["„Heute gibt's Pommes in der Mensa. Nur so als Info.“"],
+			"effects": {"stress": -2}}
+	],
+	"small_talk": [
+		"Na, alles klar?",
+		"Wir sehen uns in der Vorlesung!",
+		"Viel Erfolg beim Lernen!",
+		"Ich muss weiter, bis später!",
+		"Puh, langer Tag heute."
+	]
+}
