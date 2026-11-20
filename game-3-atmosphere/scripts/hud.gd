@@ -19,6 +19,8 @@ var _bars := {}
 var _vignette: ColorRect
 var _night: ColorRect
 var _night_label: Label
+var _deadline: Label
+var _phone: Phone
 
 const BARS := [
 	["energy", "Energie", Color(0.98, 0.8, 0.25)],
@@ -60,6 +62,9 @@ func _build() -> void:
 	_clock = Label.new()
 	_clock.add_theme_font_size_override("font_size", 26)
 	box.add_child(_clock)
+	_deadline = Label.new()
+	_deadline.add_theme_font_size_override("font_size", 13)
+	box.add_child(_deadline)
 	for b in BARS:
 		var l := Label.new()
 		l.text = b[1]
@@ -117,7 +122,7 @@ func _build() -> void:
 	add_child(_message)
 
 	var hint := Label.new()
-	hint.text = "M: Karte  ·  Mausrad: Zoom"
+	hint.text = "Tab: Handy  ·  M: Karte  ·  Mausrad: Zoom"
 	hint.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
 	hint.grow_horizontal = Control.GROW_DIRECTION_BEGIN
 	hint.grow_vertical = Control.GROW_DIRECTION_BEGIN
@@ -126,6 +131,9 @@ func _build() -> void:
 	hint.add_theme_color_override("font_outline_color", Color.BLACK)
 	hint.add_theme_constant_override("outline_size", 4)
 	add_child(hint)
+
+	_phone = Phone.new()
+	add_child(_phone)
 
 	_night = ColorRect.new()
 	_night.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -147,8 +155,18 @@ func _refresh() -> void:
 	_bars["satiety"].value = GameState.satiety
 	_bars["readiness"].value = GameState.readiness
 	_bars["stress"].value = GameState.stress
+	if GameState.submission.get("done", false):
+		_deadline.text = "Abgabe erledigt"
+		_deadline.add_theme_color_override("font_color", Color(0.45, 0.8, 0.4))
+	else:
+		var s := GameState.submission_info()
+		_deadline.text = "Abgabe: %s %s–%s, %s" % [GameState.DAY_NAMES[int(s["day"])], s["start"], s["end"], s["place"]]
+		var urgent := GameState.day == int(s["day"])
+		_deadline.add_theme_color_override("font_color", Color(0.95, 0.3, 0.3) if urgent else Color(0.98, 0.8, 0.25))
 	_money.text = "Geld: %.2f €" % GameState.money
 	_readiness_label.text = "Prüfungssicherheit %d %%" % int(GameState.readiness)
+	if GameState.readiness_forgotten >= 1.0:
+		_readiness_label.text += "  ·  vergessen -%d" % int(GameState.readiness_forgotten)
 	_stress_label.text = "Stress %d %%" % int(GameState.stress)
 	_points.text = "Lernpunkte: %d" % GameState.study_points
 	_story.text = "Story: %d / %d" % [GameState.story_index, Encounters.story_total()]

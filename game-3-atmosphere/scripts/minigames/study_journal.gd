@@ -17,10 +17,10 @@ const TOPICS := [
 const DISTRACTIONS := ["Insta: 12 neue Likes", "Gruppenchat (47)", "Nächste Folge in 5 s",
 	"Meme von Tom", "Mensa: heute Pommes!", "Angebot: -50 %"]
 const CARD_SIZE := Vector2(176, 64)
-const CARD_LIFE := 9.0
+const CARD_LIFE := 7.0
 const MAX_CARDS := 8
 const CHAPTER_TIME := 12.0
-const DISTRACTION_CHANCE := 0.22
+const DISTRACTION_CHANCE := 0.3
 const MAX_LINES := 14
 
 var _cards: Array[DragItem] = []
@@ -43,7 +43,7 @@ func _init() -> void:
 	goal_text = "Die Prüfung rückt näher. Zieh die Lernkarten vom Stapel links in dein Journal rechts, bevor du sie wieder vergisst."
 	controls_text = "Maus: Karten ziehen. Karten des aktuellen Kapitels geben am meisten und bauen eine Kombo auf. Rote Ablenkungen NICHT ins Journal – einfach irgendwo anders hinziehen."
 	duration = 60.0
-	par_score = 350.0
+	par_score = 400.0
 	accent = C_READINESS
 
 

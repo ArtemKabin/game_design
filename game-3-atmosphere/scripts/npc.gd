@@ -205,6 +205,9 @@ func _build(info: Dictionary) -> void:
 	_name_label.font_size = 28
 	_name_label.outline_size = 8
 	_name_label.position.y = 2.1
+	_name_label.no_depth_test = true
+	_name_label.render_priority = 10
+	_name_label.outline_render_priority = 9
 	add_child(_name_label)
 	_marker = Label3D.new()
 	_marker.text = "!"
@@ -214,4 +217,7 @@ func _build(info: Dictionary) -> void:
 	_marker.outline_size = 12
 	_marker.modulate = C_STORY
 	_marker.position.y = 2.45
+	_marker.no_depth_test = true
+	_marker.render_priority = 10
+	_marker.outline_render_priority = 9
 	add_child(_marker)

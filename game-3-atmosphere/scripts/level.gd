@@ -7,6 +7,7 @@ extends Node3D
 
 
 func _ready() -> void:
+	GameState.ensure_started()
 	var spawn := GameState.spawn_point
 	GameState.spawn_point = ""
 	if spawn != "":

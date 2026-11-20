@@ -1,0 +1,27 @@
+{
+  "_info": "Inhalt der Demo-Woche, gelesen von GameState (week_data). intro: Seiten des Story-Intros im Menü. schedule: Stundenplan (day 0 = Montag), station = Minispiel-ID, die im Termin einen Bonus gibt. todos: Wochenziele im Handy, Fortschritt = Läufe des Minispiels 'station' diese Woche. submission: Abgabe-Fenster am Freitag.",
+  "intro": [
+    "Sonntagabend. Wohnheim, Haus 17F, 4. Stock.\n16,5 Quadratmeter: ein Bett, ein Schreibtisch, ein Berg Wäsche.",
+    "Morgen beginnt deine erste richtige Uni-Woche.\nIm Postfach eine Mail:\n\n»Übungsblatt 1 Analysis – Abgabe Freitag bis 18:00 Uhr, Gebäude A.«",
+    "Darunter, fett gedruckt:\n\n»Die Klausur findet in drei Wochen statt.\nDie Übungsblätter fließen in Ihre Vorbereitung ein.«",
+    "Deine Prüfungssicherheit ist … ausbaufähig.\nGeh in die Vorlesungen, lern mit anderen und halt dein Leben halbwegs zusammen.\nEssen. Schlafen. Aufräumen. Alles kostet Zeit.",
+    "Dein Handy [Tab] kennt den Stundenplan, deine To-dos, deine Kontakte und den Weg zur Uni.\n\nViel Glück."
+  ],
+  "schedule": [
+    {"day": 0, "start": "10:00", "end": "11:30", "title": "Analysis – Vorlesung", "place": "Gebäude B", "station": "lecture"},
+    {"day": 1, "start": "14:00", "end": "15:30", "title": "Lerngruppe Analysis", "place": "Gebäude LB", "station": "study_group"},
+    {"day": 2, "start": "10:00", "end": "11:30", "title": "Analysis – Vorlesung", "place": "Gebäude B", "station": "lecture"},
+    {"day": 3, "start": "12:00", "end": "13:30", "title": "Statistik – Vorlesung", "place": "Gebäude B", "station": "lecture"},
+    {"day": 3, "start": "16:00", "end": "17:30", "title": "Lerngruppe Analysis", "place": "Gebäude LB", "station": "study_group"},
+    {"day": 4, "start": "08:00", "end": "18:00", "title": "Abgabe Übungsblatt 1", "place": "Gebäude A", "station": "submission"}
+  ],
+  "todos": [
+    {"text": "Vorlesungen besuchen (Gebäude B)", "station": "lecture", "target": 3},
+    {"text": "Lerngruppe (Gebäude LB)", "station": "study_group", "target": 2},
+    {"text": "Lernjournal führen (Schreibtisch)", "station": "study_journal", "target": 2},
+    {"text": "Zimmer aufräumen", "station": "room_cleanup", "target": 1},
+    {"text": "Küche aufräumen", "station": "kitchen_cleanup", "target": 1},
+    {"text": "Übungsblatt abgeben – Fr bis 18:00, Gebäude A", "station": "submission", "target": 1}
+  ],
+  "submission": {"day": 4, "start": "08:00", "end": "18:00", "place": "Gebäude A", "title": "Übungsblatt 1 Analysis"}
+}

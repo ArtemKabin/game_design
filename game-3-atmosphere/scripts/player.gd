@@ -24,7 +24,7 @@ func _physics_process(delta: float) -> void:
 	var cam := get_viewport().get_camera_3d()
 	if cam:
 		dir = dir.rotated(Vector3.UP, cam.global_rotation.y)
-	if not GameState.running or GameState.in_dialogue:
+	if not GameState.is_free():
 		dir = Vector3.ZERO
 
 	var speed := SPRINT_SPEED if Input.is_action_pressed("sprint") else WALK_SPEED
@@ -37,7 +37,7 @@ func _physics_process(delta: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("interact") and _focus and GameState.running and not GameState.in_dialogue:
+	if event.is_action_pressed("interact") and _focus and GameState.is_free():
 		_focus.interact()
 		get_viewport().set_input_as_handled()
 

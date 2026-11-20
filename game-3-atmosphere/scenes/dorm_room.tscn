@@ -5,6 +5,7 @@
 [ext_resource type="Script" path="res://scripts/dorm_room.gd" id="3_room"]
 [ext_resource type="Script" path="res://scripts/zone.gd" id="4_zone"]
 [ext_resource type="Script" path="res://scripts/minigame_trigger.gd" id="5_mini"]
+[ext_resource type="Script" path="res://scripts/sleep_spot.gd" id="6_sleep"]
 
 [node name="DormRoom" type="Node3D"]
 script = ExtResource("3_room")
@@ -198,6 +199,13 @@ minutes = 60
 radius = 1.0
 d_energy = 20.0
 d_satiety = -3.0
+
+[node name="Sleep" type="Area3D" parent="Actions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6, 0, -2.45)
+script = ExtResource("6_sleep")
+title = "Schlafen"
+minutes = 0
+radius = 0.7
 
 [node name="Desk" type="Area3D" parent="Actions"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9, 0, -2.3)

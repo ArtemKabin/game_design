@@ -73,6 +73,11 @@ func npcs_for(place: String) -> Array:
 	return out
 
 
+## All characters in data order (phone contacts).
+func all_npcs() -> Array:
+	return _data.get("npcs", [])
+
+
 func story_total() -> int:
 	return _data.get("story", []).size()
 

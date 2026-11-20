@@ -162,6 +162,16 @@ func energy_change(_ratio: float) -> float:
 	return 0.0
 
 
+## Extra fields for the result sent to GameState (e.g. on_time, level).
+func _result_extra() -> Dictionary:
+	return {}
+
+
+## Extra lines on the results card, `ratio` = score / par_score (0..1).
+func _result_lines(_ratio: float) -> PackedStringArray:
+	return PackedStringArray()
+
+
 ## Shown under the title in the top bar while playing.
 func _extra_text() -> String:
 	return ""
@@ -302,6 +312,9 @@ func finish() -> void:
 		"points": points, "notes": notes, "d_energy": d_energy, "d_stress": d_stress,
 	}
 	var grade := grade_for(ratio)
+	_result["ratio"] = ratio
+	_result["grade"] = grade
+	_result.merge(_result_extra(), true)
 	var lines := PackedStringArray()
 	lines.append("Punkte: %d%s" % [score, "   – neuer Rekord!" if score > best else ""])
 	lines.append("Lernpunkte: +%d  (×%.2f)" % [points, factor])
@@ -309,8 +322,9 @@ func finish() -> void:
 		lines.append("Gefundene Notizen: %d  (Lernbonus danach ×%.1f)" % [notes, GameState.note_multiplier(notes)])
 	lines.append("Prüfungssicherheit: +%.1f" % readiness)
 	lines.append("Stress %+d  ·  Energie %+d  ·  %d min vergangen" % [int(round(d_stress)), int(round(d_energy)), GameState.minigame_minutes()])
+	lines.append_array(_result_lines(ratio))
 	_open_card("Note %s – %s" % [grade, _grade_comment(grade)], "\n".join(lines),
-			"Zurück ins Zimmer  [E]", _leave)
+			"Weiter  [E]", _leave)
 
 
 func _abort() -> void:

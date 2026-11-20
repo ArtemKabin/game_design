@@ -14,12 +14,15 @@ signal day_ended(day: int)
 signal day_started(day: int)
 ## Study points or found notes changed (after a minigame).
 signal progress_changed
+## The demo week is over (submission done or deadline missed), before the
+## week summary is loaded.
+signal week_finished
 
 const DAY_NAMES := ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"]
 const DAY_START := 8 * 60   # 08:00
 const DAY_END := 22 * 60    # 22:00
-## 14 h game day in 14 min real time.
-const GAME_MINUTES_PER_SECOND := 1.0
+## 14 h game day in ~4.7 min real time (demo pace, see specs/001-demo-gameloop).
+const GAME_MINUTES_PER_SECOND := 3.0
 
 ## Passive change per game hour.
 const ENERGY_PER_HOUR := -3.0
@@ -39,10 +42,33 @@ const HUB_SCENE := "res://scenes/main.tscn"
 const MOOD_DECAY_PER_HOUR := 4.0
 const MOOD_LIMIT := 40.0
 
+## Demo week (data/week.json): timetable, to-dos, Friday submission.
+const WEEK_DATA := "res://data/week.json"
+const SUMMARY_SCENE := "res://scenes/ui/week_summary.tscn"
+const MENU_SCENE := "res://scenes/ui/main_menu.tscn"
+## A lecture played during its timetable slot (or up to this many minutes
+## before) gives more study points.
+const SLOT_EARLY_MINUTES := 30
+const LECTURE_BONUS := 1.3
+## The submission's result (0..1) becomes up to this many exam points.
+const EXAM_POINTS_PER_SUBMISSION := 25
+## The big exam comes after this many week loops (final release).
+const EXAM_LOOPS := 3
+## Forgetting: time that is not spent learning (other actions, idling,
+## sleeping) slowly takes Prüfungssicherheit away again, at most this share
+## of everything learned so far. Grinding one thing and sleeping until the
+## deadline therefore costs up to half of it.
+const FORGET_PER_HOUR := 1.0
+const FORGET_MAX_SHARE := 0.5
+## Hours of forgetting per night.
+const NIGHT_HOURS := 10.0
+
 var week := 1
 var day := 0
 var minutes := float(DAY_START)
-var running := true
+## False in the menu; reset_week() starts the clock.
+var running := false
+var started := false
 
 var energy := 80.0        ## 0..100, high is good
 var satiety := 70.0       ## 0..100, high is good (low = hungry)
@@ -78,6 +104,176 @@ var story_seen: Array[String] = []
 var npc_last_met := {}       ## npc id -> absolute day of the last random encounter
 var encounter_seed := randi()  ## per playthrough; random encounters are seeded per NPC and day
 var in_dialogue := false     ## clock and player stand still while talking
+var in_phone := false        ## clock and player stand still while the phone is open
+
+## Demo week loop.
+var week_data := {}          ## data/week.json
+var week_runs := {}          ## minigame id -> finished runs this week (to-dos)
+var lectures_on_time := 0    ## lectures played during their timetable slot
+var submission := {}         ## {done, grade, ratio, level, exam_points, reason}
+var readiness_earned := 0.0  ## Prüfungssicherheit gained by learning this week
+var readiness_forgotten := 0.0  ## taken away again by forgetting (<= FORGET_MAX_SHARE of earned)
+var week_over := false
+## Global exam preparation, kept across week loops (not reset by reset_week).
+var exam_points := 0
+var loops_done := 0
+
+
+func _ready() -> void:
+	var f := FileAccess.open(WEEK_DATA, FileAccess.READ)
+	if f:
+		var data: Variant = JSON.parse_string(f.get_as_text())
+		if data is Dictionary:
+			week_data = data
+	if week_data.is_empty():
+		push_error("Could not load " + WEEK_DATA)
+
+
+## Start values for a new week loop ("Neues Spiel"). exam_points and
+## loops_done stay: they are the progress towards the exam.
+func reset_week() -> void:
+	week = 1
+	day = 0
+	minutes = float(DAY_START)
+	running = true
+	started = true
+	energy = 80.0
+	satiety = 70.0
+	readiness = 10.0
+	stress = 10.0
+	money = 40.0
+	mood = 0.0
+	spawn_point = ""
+	arrival_message = ""
+	study_points = 0
+	notes_found = 0
+	minigame_best = {}
+	minigame_runs = {}
+	minigame_last_day = {}
+	in_minigame = false
+	_return_scene = ""
+	_has_return = false
+	_pending_result = {}
+	story_index = 0
+	story_seen.clear()
+	npc_last_met = {}
+	encounter_seed = randi()
+	in_dialogue = false
+	in_phone = false
+	week_runs = {}
+	lectures_on_time = 0
+	submission = {}
+	readiness_earned = 0.0
+	readiness_forgotten = 0.0
+	week_over = false
+
+
+## Used by level.gd: a scene started directly from the editor gets a fresh week.
+func ensure_started() -> void:
+	if not started:
+		reset_week()
+
+
+## True while the player may act (clock runs, nothing on top of the world).
+func is_free() -> bool:
+	return running and not in_dialogue and not in_phone and not week_over
+
+
+static func parse_time(text: String) -> int:
+	var parts := text.split(":")
+	return int(parts[0]) * 60 + int(parts[1])
+
+
+func schedule_for(d: int) -> Array:
+	var out: Array = []
+	for e in week_data.get("schedule", []):
+		if int(e["day"]) == d:
+			out.append(e)
+	return out
+
+
+## The timetable slot of `station` that runs today right now (or starts within
+## SLOT_EARLY_MINUTES), else {}.
+func slot_now(station: String) -> Dictionary:
+	for e in schedule_for(day):
+		if e.get("station", "") != station:
+			continue
+		if minutes >= parse_time(e["start"]) - SLOT_EARLY_MINUTES and minutes < parse_time(e["end"]):
+			return e
+	return {}
+
+
+func submission_info() -> Dictionary:
+	return week_data.get("submission", {"day": 4, "start": "08:00", "end": "18:00", "place": "Gebäude A"})
+
+
+func submission_open() -> bool:
+	var s := submission_info()
+	return day == int(s["day"]) and minutes >= parse_time(s["start"]) \
+			and minutes < parse_time(s["end"]) and not submission.get("done", false)
+
+
+## 0..1, how easy the submission is: grows with Prüfungssicherheit.
+func difficulty() -> float:
+	return clampf(readiness / 100.0, 0.0, 1.0)
+
+
+func difficulty_name() -> String:
+	var r := difficulty()
+	if r < 0.25:
+		return "schwer"
+	if r < 0.6:
+		return "mittel"
+	return "leicht"
+
+
+func todo_progress(todo: Dictionary) -> int:
+	var station: String = todo.get("station", "")
+	if station == "submission":
+		return 1 if submission.get("done", false) else 0
+	return int(week_runs.get(station, 0))
+
+
+func todos_done() -> int:
+	var n := 0
+	for t in week_data.get("todos", []):
+		if todo_progress(t) >= int(t.get("target", 1)):
+			n += 1
+	return n
+
+
+## Bed: ends the day now. On submission day without a submission this ends
+## the week (deadline missed).
+func sleep_now() -> void:
+	if not is_free():
+		return
+	var s := submission_info()
+	if day == int(s["day"]) and not submission.get("done", false):
+		finish_week("slept")
+		return
+	var left := DAY_END - minutes
+	_forget(left / 60.0)
+	# Sleeping early: hunger keeps going, but the extra sleep restores a bit.
+	satiety = clampf(satiety + SATIETY_PER_HOUR * left / 60.0, 0.0, 100.0)
+	energy = clampf(energy + 2.0 * left / 60.0, 0.0, 100.0)
+	minutes = DAY_END
+	clock_changed.emit(day, int(minutes))
+	_end_day()
+
+
+## Ends the demo week and shows the week summary.
+## `reason` for a missed submission: "deadline" or "slept".
+func finish_week(reason := "deadline") -> void:
+	if week_over:
+		return
+	week_over = true
+	running = false
+	in_phone = false
+	if not submission.get("done", false):
+		submission = {"done": false, "grade": "5,0", "ratio": 0.0, "exam_points": 0, "reason": reason}
+	loops_done += 1
+	week_finished.emit()
+	get_tree().change_scene_to_file.call_deferred(SUMMARY_SCENE)
 
 
 ## Loads another place (scene) and puts the player at `spawn` there.
@@ -88,9 +284,9 @@ func travel(scene_path: String, spawn: String, arrival_text := "") -> void:
 
 
 func _process(delta: float) -> void:
-	if not running or in_minigame or in_dialogue:
+	if not running or in_minigame or in_dialogue or in_phone:
 		return
-	_advance(delta * GAME_MINUTES_PER_SECOND)
+	_advance(delta * GAME_MINUTES_PER_SECOND, false)
 	stress = move_toward(stress, _stress_target(), delta * 4.0)
 	stats_changed.emit()
 
@@ -124,12 +320,16 @@ func do_action(spend_minutes: int, d_energy := 0.0, d_satiety := 0.0,
 	if d_money < 0.0 and not can_afford(-d_money):
 		message.emit("Nicht genug Geld.")
 		return false
-	_advance(spend_minutes)
+	var learning := d_readiness > 0.0
+	_advance(spend_minutes, learning)
 	energy = clampf(energy + d_energy, 0.0, 100.0)
 	satiety = clampf(satiety + d_satiety, 0.0, 100.0)
-	if d_readiness > 0.0:
+	if learning:
 		d_readiness *= learn_factor()
+	var before := readiness
 	readiness = clampf(readiness + d_readiness, 0.0, 100.0)
+	if learning:
+		readiness_earned += readiness - before
 	stress = clampf(stress + d_stress, 0.0, 100.0)
 	mood = clampf(mood + d_stress, -MOOD_LIMIT, MOOD_LIMIT)
 	money += d_money
@@ -233,6 +433,14 @@ func apply_minigame_result() -> void:
 	minigame_runs[id] = int(minigame_runs.get(id, 0)) + 1
 	minigame_best[id] = maxi(int(minigame_best.get(id, 0)), int(r.get("score", 0)))
 	minigame_last_day[id] = absolute_day()
+	week_runs[id] = int(week_runs.get(id, 0)) + 1
+	if r.get("on_time", false):
+		lectures_on_time += 1
+	if id == "submission":
+		var gained := int(round(float(r.get("ratio", 0.0)) * EXAM_POINTS_PER_SUBMISSION))
+		submission = {"done": true, "grade": r.get("grade", "5,0"), "ratio": r.get("ratio", 0.0),
+				"level": r.get("level", ""), "exam_points": gained}
+		exam_points += gained
 	study_points += points
 	notes_found += notes
 	progress_changed.emit()
@@ -242,15 +450,38 @@ func apply_minigame_result() -> void:
 	message.emit(text)
 	do_action(_minigame_minutes, float(r.get("d_energy", 0.0)), 0.0,
 			points / POINTS_PER_READINESS, float(r.get("d_stress", 0.0)))
+	if id == "submission":
+		finish_week()
 
 
-func _advance(game_minutes: float) -> void:
+## How much Prüfungssicherheit can still be forgotten.
+func forgettable() -> float:
+	return maxf(readiness_earned * FORGET_MAX_SHARE - readiness_forgotten, 0.0)
+
+
+func _forget(hours: float) -> void:
+	var amount := minf(FORGET_PER_HOUR * hours, minf(forgettable(), readiness))
+	if amount <= 0.0:
+		return
+	readiness -= amount
+	readiness_forgotten += amount
+
+
+## `learning`: the time is spent learning, so nothing is forgotten.
+func _advance(game_minutes: float, learning := false) -> void:
 	var hours := game_minutes / 60.0
+	if not learning:
+		_forget(hours)
 	energy = clampf(energy + ENERGY_PER_HOUR * hours, 0.0, 100.0)
 	satiety = clampf(satiety + SATIETY_PER_HOUR * hours, 0.0, 100.0)
 	mood = move_toward(mood, 0.0, MOOD_DECAY_PER_HOUR * hours)
 	minutes += game_minutes
 	clock_changed.emit(day, int(minutes))
+	var s := submission_info()
+	if running and day == int(s["day"]) and minutes >= parse_time(s["end"]) \
+			and not submission.get("done", false):
+		finish_week()
+		return
 	if minutes >= DAY_END and running:
 		_end_day()
 
@@ -271,6 +502,9 @@ func _end_day() -> void:
 	minutes = DAY_END
 	day_ended.emit(day)
 	await get_tree().create_timer(2.5).timeout
+	if week_over:
+		return
+	_forget(NIGHT_HOURS)
 	energy = clampf(energy + SLEEP_ENERGY, 0.0, 100.0)
 	satiety = clampf(satiety + NIGHT_SATIETY, 0.0, 100.0)
 	day += 1

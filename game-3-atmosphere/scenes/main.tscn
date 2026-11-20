@@ -4,7 +4,6 @@
 [ext_resource type="Script" uid="uid://cegexlmr8jw68" path="res://scripts/camera_rig.gd" id="2_cam"]
 [ext_resource type="Script" uid="uid://pw3mvscmq15i" path="res://scripts/hud.gd" id="3_hud"]
 [ext_resource type="PackedScene" path="res://scenes/dorm_floor.tscn" id="4_dorm"]
-[ext_resource type="Shader" uid="uid://bs4i3aekg7ekh" path="res://shaders/ground_grid.gdshader" id="6_grid"]
 [ext_resource type="Script" uid="uid://bcpc0dt015qg3" path="res://scripts/level.gd" id="7_level"]
 
 [sub_resource type="ProceduralSkyMaterial" id="SkyMat"]
@@ -24,14 +23,12 @@ ambient_light_energy = 0.45
 reflected_light_source = 1
 tonemap_mode = 3
 
-[sub_resource type="ShaderMaterial" id="GridMat"]
-render_priority = 0
-shader = ExtResource("6_grid")
-shader_parameter/base_color = Color(0.5, 0.5, 0.5, 1)
-shader_parameter/line_color = Color(0.33, 0.33, 0.35, 1)
+[sub_resource type="StandardMaterial3D" id="GroundMat"]
+albedo_color = Color(0.1, 0.1, 0.11, 1)
+roughness = 1.0
 
 [sub_resource type="PlaneMesh" id="GroundMesh"]
-material = SubResource("GridMat")
+material = SubResource("GroundMat")
 size = Vector2(80, 80)
 
 [sub_resource type="BoxShape3D" id="GroundShape"]

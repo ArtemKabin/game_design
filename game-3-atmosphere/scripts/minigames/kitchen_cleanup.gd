@@ -76,8 +76,8 @@ func _init() -> void:
 	game_title = "Küche & Notizsuche"
 	goal_text = "Die Gemeinschaftsküche versinkt im Chaos – und irgendwo darunter liegen deine verlorenen Vorlesungsnotizen."
 	controls_text = "Maus: Geschirr → Spüle, Essensreste → Mülleimer. Flecken: Maustaste halten und schrubben. Notizen unter dem Kram anklicken: jede erhöht den Multiplikator dieser Runde und deinen Lernbonus."
-	duration = 50.0
-	par_score = 280.0
+	duration = 45.0
+	par_score = 310.0
 	accent = C_SATIETY
 
 

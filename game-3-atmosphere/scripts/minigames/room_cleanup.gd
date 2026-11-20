@@ -35,8 +35,8 @@ func _init() -> void:
 	game_title = "Zimmer aufräumen"
 	goal_text = "Chaos im Zimmer, Chaos im Kopf. Räum alles an seinen Platz, bevor die Zeit um ist."
 	controls_text = "Maus: Sachen ziehen. Kleidung → Wäschekorb, Müll → Mülleimer, Bücher & Kram → Regal. Falscher Platz kostet Punkte. Unter dem Chaos liegen verlorene Notizen – anklicken!"
-	duration = 45.0
-	par_score = 260.0
+	duration = 40.0
+	par_score = 290.0
 	accent = C_ENERGY
 
 

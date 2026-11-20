@@ -285,6 +285,9 @@ func _build_entrances(list: Array, by_dorm: Dictionary) -> void:
 		l.pixel_size = 0.01
 		l.font_size = 32
 		l.outline_size = 10
+		l.no_depth_test = true
+		l.render_priority = 5
+		l.outline_render_priority = 4
 		var lp := p + n * 1.0
 		l.position = Vector3(lp.x, base + 3.0, lp.y)
 		parts.append(l)
@@ -312,6 +315,11 @@ func _build_doors(list: Array, nodes: Array) -> void:
 
 
 func _add_door_action(at: Vector2, title: String) -> void:
+	# Doors with a minigame station in outside.tscn (group door_station) need no placeholder.
+	for s in get_tree().get_nodes_in_group("door_station"):
+		var p: Vector3 = (s as Node3D).position
+		if Vector2(p.x, p.z).distance_to(at) < 3.0:
+			return
 	var it := Interactable.new()
 	it.title = title + " betreten"
 	it.minutes = 0

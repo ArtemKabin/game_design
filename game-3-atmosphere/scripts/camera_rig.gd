@@ -41,12 +41,21 @@ func _process(delta: float) -> void:
 	_place_camera()
 
 
+## Map view on/off (key M and the map app on the phone).
+func toggle_overview() -> void:
+	set_overview(not overview)
+
+
+func set_overview(on: bool) -> void:
+	overview = on
+	# Shadows only cover ~90 m around the camera; from map height they would end in a visible seam.
+	for light in get_tree().current_scene.find_children("*", "DirectionalLight3D", true, false):
+		light.shadow_enabled = not overview
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("map_view"):
-		overview = not overview
-		# Shadows only cover ~90 m around the camera; from map height they would end in a visible seam.
-		for light in get_tree().current_scene.find_children("*", "DirectionalLight3D", true, false):
-			light.shadow_enabled = not overview
+		toggle_overview()
 		get_viewport().set_input_as_handled()
 	elif event is InputEventMouseMotion and overview and event.button_mask != 0:
 		# Drag: move the map with the mouse, 1 pixel = the ground distance one pixel covers.
