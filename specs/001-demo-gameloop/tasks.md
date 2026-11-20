@@ -55,6 +55,13 @@ Pfade relativ zu `game-3-atmosphere/`.
 - [x] T022 Headless-Start ohne Skriptfehler (`tests/loop_smoke_test.tscn`, 23 Checks grün)
 - [ ] T023 Manueller Quickstart-Durchlauf im Editor (Optik: Handy, Kartenlabels, Weg zu Gebäude B/LB/A)
 
+## Phase 9: Geplant (nach Playtest 1)
+
+- [ ] T024 OSM-Namensnennung im Spiel: Zeile „Kartendaten © OpenStreetMap-Mitwirkende (ODbL)“ unten im Hauptmenü, neuer Web-Build und ZIP (auch für den Dozenten), ZIP auf itch.io tauschen
+- [ ] T025 Ladeschirm „Campus wird geladen…“ vor dem Wechsel nach draußen
+- [ ] T026 Shader im Hauptmenü vorwärmen (Hänger beim ersten Campus/Karte/Minispiel)
+- [ ] T027 Word-Doku (Entwicklungsprotokoll) zu Game 3
+
 ## Dependencies
 
 - T003, T004 vor allen Stories. US4 (T016) braucht T012. T015 braucht T012–T014, T016 (Szenen müssen existieren).

@@ -70,8 +70,18 @@ What follows from it? What do we give up?
 | [0034](0034-game3-wc-and-showers.md) | Game 3: two WCs and a shower block (mini corridor, two separate cabins) south of the main corridor; transparent `Block` colours | accepted |
 | [0035](0035-game3-room-view-zones.md) | Game 3: full walls; RoomView + Zones: active room lit, others shaded, occluders in front cut; dorm exit with doormat | accepted |
 | [0036](0036-game3-outside-and-portals.md) | Game 3: real dorm and campus outside 1:1 from OSM (north up, relations, connected roads, no overlaps), entrances on the shared footway; Portals + Spawns; RoomView outdoors | accepted |
+| [0037](0037-game3-demo-gameloop.md) | Game 3: the demo loop is one week, Monday to Friday, ending with the submission | accepted |
+| [0038](0038-game3-menu-intro-settings-placeholder.md) | Game 3: main menu with story intro, settings as a maintenance screen, title placeholder | accepted |
+| [0039](0039-game3-phone.md) | Game 3: the phone (Tab) holds map, contacts, to-dos and timetable | accepted |
+| [0040](0040-game3-uni-minigame-stations.md) | Game 3: two minigames at university doors, timetable bonus, harder minigames overall | accepted |
+| [0041](0041-game3-submission-difficulty-and-exam-points.md) | Game 3: Friday submission gets easier with Prüfungssicherheit and gives exam points; missing it is a 5,0 | accepted |
+| [0042](0042-game3-forgetting.md) | Game 3: time without learning slowly takes back up to half of what was learned | accepted |
+| [0043](0043-game3-web-build-itch.md) | Game 3: single-threaded web export on itch.io, zipped build for the lecturer | accepted |
+| [0044](0044-spec-kit-workflow.md) | GitHub Spec Kit for larger features, headless smoke test and screenshot tool | accepted |
 
 ## Open questions (not yet decided)
 
 * Polish of Level 2 (final level): wording of the three clearance steps, look of the shuttle, end screen text. The level itself is built (0020).
+* Game 3: OSM attribution must also be shown in the game (planned: line in the main menu); today only README and itch.io page.
+* Game 3: final name (menu shows "[Name in Abstimmung]"), saving, weekend, the exam after three weeks.
 * Difficulty of the two rails and the junk shove in Level 1: needs playtesting with a keyboard.

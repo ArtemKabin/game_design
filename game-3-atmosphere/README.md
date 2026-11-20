@@ -16,7 +16,7 @@ Uni-Stress-Simulation in unserer Hochschule. Top-down, echtes 3D, Godot 4.7 (GL 
 | Esc (Handy / Story-Intro) | zurück zum Homescreen bzw. schließen / Intro überspringen |
 
 ## Spielablauf (Demo)
-Hauptmenü → Story-Intro → Montag 08:00 im Zimmer → Woche Mo–Fr → Abgabe Freitag 08:00–18:00 in Gebäude A → Wochenbilanz → Hauptmenü. Verpasst man die Frist (18:00, oder Schlafen am Freitag ohne Abgabe), endet die Woche mit „nicht abgegeben“. Die Abgabe ist leichter, je höher die Prüfungssicherheit ist, und bringt bis zu 25 Klausurpunkte für die Klausur nach 3 Wochen (finales Release). Spec, Plan und Tasks: `specs/001-demo-gameloop/` (GitHub Spec Kit), Entscheidung `docs/decisions/0037`.
+Hauptmenü → Story-Intro → Montag 08:00 im Zimmer → Woche Mo–Fr → Abgabe Freitag 08:00–18:00 in Gebäude A → Wochenbilanz → Hauptmenü. Verpasst man die Frist (18:00, oder Schlafen am Freitag ohne Abgabe), endet die Woche mit „nicht abgegeben“. Die Abgabe ist leichter, je höher die Prüfungssicherheit ist, und bringt bis zu 25 Klausurpunkte für die Klausur nach 3 Wochen (finales Release). Spec, Plan und Tasks: `specs/001-demo-gameloop/` (GitHub Spec Kit), Entscheidungen `docs/decisions/0037`–`0044`.
 
 ## Aufbau
 * `scripts/game_state.gd` (Autoload `GameState`): Uhr (08:00–22:00 in ~4,7 min Echtzeit, `GAME_MINUTES_PER_SECOND` = 3), Woche Mo–Fr (Demo), Stats Energie, Sättigung, Prüfungssicherheit, Stress (abgeleitet), Geld. Jede Aktion kostet Zeit. Dazu der Lernfortschritt aus den Minispielen: Lernpunkte, gefundene Notizen, Rekorde.
@@ -71,6 +71,15 @@ Drei Stationen im Wohnheim und drei an Uni-Eingängen öffnen je ein eigenes Vol
 * Spielstand in `GameState`: `story_index`, `story_seen`, `npc_last_met`, `encounter_seed`. Das HUD zeigt Stress, Lernpunkte, Notizen und Story-Fortschritt.
 
 Maßstab: 1 Einheit = 1 Meter (siehe `docs/decisions/0029`).
+
+## Build (Web)
+Export-Preset „Web“ in `export_presets.cfg`: single-threaded, ohne PWA, `tests/*` und `addons/*` ausgeschlossen (Entscheidung `docs/decisions/0043`).
+
+```
+Godot_v4.7.2-stable_win64_console.exe --headless --path game-3-atmosphere --export-release "Web" build/web/index.html
+```
+
+Danach den Inhalt von `build/web/` (ohne Unterordner, `index.html` ganz oben) als `build/atmosphere-web.zip` packen. Diese Datei geht auf itch.io und an den Dozenten. Text und Einstellungen der itch.io-Seite inklusive bekannter Mängel: `itch_page.md`.
 
 ## Quellen
 Gebäudeumrisse draußen abgeleitet aus Daten von © OpenStreetMap-Mitwirkende (ODbL), https://www.openstreetmap.org/copyright
